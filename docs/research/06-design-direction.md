@@ -16,9 +16,9 @@ Two findings shape everything:
 | Dispatcher console | 24-hour ICCC operations cockpit for trained operators on large screens, quiet and exact, own tokens on Radix primitives with dense tables. | 2 | 2 | 8 |
 | Marketing site | Sober trust-first landing for citizens, officials and procurement, Tailwind v4 with one real product preview. | 5 | 4 | 3 |
 
-- **Citizen 2/3/4.** Taste's trust-first row is 3-4 / 2-3 / 4-5. Map plus bottom sheet is a learned pattern (apple: familiarity), so variance stays low. Motion covers feedback, sheet physics and one reroute highlight. One decision per screen.
+- **Citizen 2/3/4.** Taste's trust-first row is 3-4 / 2-3 / 4-5. Map plus sheet is a learned pattern (apple: familiarity). Motion is feedback, sheet physics and one reroute highlight.
 - **Console 2/2/8.** Predictability matters at 3 a.m. Density above 7 triggers taste rules: no card containers, hairline rows, tabular numerals.
-- **Site 5/4/3.** Asymmetric split hero (centered is banned above variance 4). Motion above 3 needs reduced-motion handling and "motion shown", so the one motion moment is a real reroute on a real map component.
+- **Site 5/4/3.** Asymmetric split hero (centered is banned above variance 4). Motion above 3 must be shown, so the one motion moment is a real reroute on a real map component.
 
 ---
 
@@ -44,7 +44,7 @@ Predict which roads become unusable in heavy rain, say so early and honestly, an
 A flood-specific layer, not general navigation. Honest about uncertainty and data age, light enough for weak phones, reachable by SMS and WhatsApp when the app is not.
 
 ## Operating Context
-Rain at night, underpasses, wet fingers, power cuts, congested networks, alerts arriving mid-ride. Control rooms are dim and staffed around the clock. Feeds can be late or wrong, and the interface must say so.
+Rain at night, underpasses, wet fingers, power cuts, congested networks, alerts mid-ride. Dim control rooms staffed around the clock. Feeds can be late or wrong, and the interface must say so.
 
 ## Capabilities and Constraints
 - Risk levels: safe, watch, risky, impassable, plus unknown. Passability depends on vehicle class.
@@ -77,10 +77,10 @@ WCAG 2.2 AA minimum, AAA for risk text. Targets 48 px (56 px emergency actions).
 
 ### C.1 Principles
 1. **Operate, not Persuade.** Familiar patterns win. Delight is one calm moment: "Route updated. You are clear."
-2. **Unknown is a state.** Five states, never four. No data never renders as safe.
-3. **Redundant encoding.** Level = color + icon + label + line style. Adjacent levels differ in at least two non-color cues.
+2. **Unknown is a state.** Five states; no data never renders as safe.
+3. **Redundant encoding.** Level = color + icon + label + line style; adjacent levels differ in two non-color cues.
 4. **Direct and interruptible** (apple): feedback on pointer-down, 1:1 drag, springs start from the live value.
-5. **One system.** Same tokens on all surfaces. Console is a density mode, not a second system.
+5. **One system.** Same tokens everywhere; console is a density mode.
 
 ### C.2 Color
 Neutrals are blue-slate tinted: no pure `#000`, no `#fff`, no neutral gray. One brand accent. Risk is a separate status system. Risk hues stay inside the IMD families people recognise, but green shifts to cyan-teal and impassable is near-black crimson so deuteranopia and protanopia do not collapse the scale.
