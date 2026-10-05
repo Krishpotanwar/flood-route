@@ -1,4 +1,4 @@
-""""""SACHET (NDMA, built by C-DOT) CAP 1.2 alerts into official_alert, keyed by CAP identifier.
+"""SACHET (NDMA, built by C-DOT) CAP 1.2 alerts into official_alert, keyed by CAP identifier.
 
 Observed on 2026-10-05 (docs/research/01 section 3 had these as unverified):
   * Feed https://sachet.ndma.gov.in/cap_public_website/rss/rss_india.xml: RSS 2.0, 99 items newest

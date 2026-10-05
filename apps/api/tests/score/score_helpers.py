@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from floodroute.score import (
     RainFcst,
@@ -16,7 +16,7 @@ from floodroute.score import (
 )
 
 CFG = load_config()
-T0 = datetime(2027, 5, 18, 11, 0, tzinfo=timezone.utc)
+T0 = datetime(2027, 5, 18, 11, 0, tzinfo=UTC)
 ZONE = 10
 
 

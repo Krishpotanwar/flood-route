@@ -25,7 +25,7 @@
   },
 
   "rain": {
-    "source_priority": ["gauge", "imd_nowcast", "nwp", "imerg"],
+    "source_priority": ["gauge", "imd_nowcast", "nwp", "metno", "imerg"],
     "max_age_s": 1800,
     "blend_window_min": 60,
     "forecast_match_tol_s": 1800,

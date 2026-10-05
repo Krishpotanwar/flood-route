@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import itertools
 import random
 from datetime import timedelta
 
 import pytest
+from score_helpers import CFG, T0, at, row, seg, step
+
 from floodroute.score import Evidence, RunInput, SegmentInput, score_run
 from floodroute.score.state import state_from_p
-from score_helpers import CFG, T0, at, row, seg, step
 
 CLOSED = "impassable"
 
@@ -122,11 +124,11 @@ def test_fr_r3_noisy_series_flips_closure_at_most_once_per_10_minutes():
     flips = [i for i in range(1, len(closed)) if closed[i] != closed[i - 1]]
     naive = sum(
         (state_from_p(a, CFG) == CLOSED) != (state_from_p(b, CFG) == CLOSED)
-        for a, b in zip(ps, ps[1:])
+        for a, b in itertools.pairwise(ps)
     )
     assert naive >= 10  # the series is noisy enough that banding alone would flap
     assert len(flips) == 2  # one close on the way up, one reopen on the way down
-    assert all(b - a >= 10 for a, b in zip(flips, flips[1:]))  # never two flips within 10 min
+    assert all(b - a >= 10 for a, b in itertools.pairwise(flips))  # never two flips within 10 min
 
 
 @pytest.mark.parametrize("seed", range(40))

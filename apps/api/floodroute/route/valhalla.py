@@ -75,7 +75,11 @@ def encode_polyline6(points: Iterable[LatLon]) -> str:
 
 
 def request_body(
-    origin: LatLon, dest: LatLon, vclass: str, exclude_polygons: Sequence[Polygon] = ()
+    origin: LatLon,
+    dest: LatLon,
+    vclass: str,
+    exclude_polygons: Sequence[Polygon] = (),
+    depart: datetime | None = None,
 ) -> dict:
     body: dict = {
         "locations": [{"lat": origin[0], "lon": origin[1]}, {"lat": dest[0], "lon": dest[1]}],
@@ -83,6 +87,10 @@ def request_body(
         "directions_type": "maneuvers",
         "units": "kilometers",
     }
+    if depart is not None:
+        body["date_time"] = {"type": 1, "value": depart.strftime("%Y-%m-%dT%H:%M")}
+    else:
+        body["date_time"] = {"type": 0}
     if exclude_polygons:  # exterior rings as [lon, lat] pairs
         body["exclude_polygons"] = [[[lon, lat] for lat, lon in ring] for ring in exclude_polygons]
     return body
@@ -135,10 +143,13 @@ class ValhallaRouter:
         origin: LatLon,
         dest: LatLon,
         vclass: str,
-        depart: datetime,  # ponytail: unused, the traffic overlay is time-invariant (TRD 7.2)
+        depart: datetime,
         exclude_polygons: Sequence[Polygon] = (),
     ) -> Route | None:
-        r = self.client.post("/route", json=request_body(origin, dest, vclass, exclude_polygons))
+        r = self.client.post(
+            "/route",
+            json=request_body(origin, dest, vclass, exclude_polygons=exclude_polygons, depart=depart),
+        )
         if r.status_code == 400 and _error_code(r) in NO_ROUTE_CODES:
             return None
         r.raise_for_status()

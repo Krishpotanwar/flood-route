@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import itertools
 import math
 
 import pytest
-from floodroute.score import Evidence, Override
 from score_helpers import CFG, at, fcst, logit, row, seg, step
+
+from floodroute.score import Evidence, Override
 
 BASE = 0.05  # model p for a car at horizon 0 in these tests
 
@@ -132,7 +134,7 @@ def test_evidence_effect_decays_toward_zero_at_later_horizons():
     _, rows = step(at(), [seg(1, p=BASE, evidence=tuple(ev))])
     gains = [row(rows, h=h).p - BASE for h in CFG.horizons_min]
     assert gains[0] == pytest.approx(0.9 - BASE)  # full effect at horizon 0
-    assert all(a > b > 0 for a, b in zip(gains, gains[1:]))  # strictly fading
+    assert all(a > b > 0 for a, b in itertools.pairwise(gains))  # strictly fading
     assert gains[-1] < 0.2 * gains[0]
     # the fade matches exp(-h / horizon_tau) for the floor that dominates here
     for h, gain in zip(CFG.horizons_min, gains):
@@ -268,7 +270,7 @@ def test_closure_expiry_reverts_to_the_model_and_logs_the_reason():
 
 def test_reopen_override_lowers_a_model_closure_to_at_most_watch_and_expires():
     s = [seg(1, p=0.8, overrides=(Override("reopen", at(), at(30)),))]
-    r1, rows = step(at(), s)
+    _r1, rows = step(at(), s)
     r = row(rows)
     assert (r.state, r.override, r.reason) == ("watch", "reopen", "override_reopen")
     assert r.p == pytest.approx(CFG.overrides.reopen_cap_p)

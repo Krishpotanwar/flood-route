@@ -7,8 +7,9 @@ import json
 from dataclasses import fields
 
 import pytest
-from floodroute.score.config import DEFAULT_PATH, Config, ConfigError, Group, parse_config
 from score_helpers import CFG
+
+from floodroute.score.config import DEFAULT_PATH, Config, ConfigError, Group, parse_config
 
 RAW = json.loads(DEFAULT_PATH.read_text(encoding="utf-8"))
 

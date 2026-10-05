@@ -8,10 +8,11 @@ import random
 from datetime import timedelta
 
 import pytest
+from score_helpers import CFG, T0, at, fcst, row, seg, step
+
 from floodroute.score import RainObs, ZoneInput
 from floodroute.score.config import DEFAULT_PATH, parse_config
 from floodroute.score.model import effective_rain, g, sigmoid, zone_rain
-from score_helpers import CFG, T0, at, fcst, row, seg, step
 
 RAW = json.loads(DEFAULT_PATH.read_text(encoding="utf-8"))
 
@@ -123,7 +124,7 @@ def test_more_rain_never_lowers_p(structure):
         for _ in range(2):
             fc_rate, wet = rng.uniform(0, 100), rng.uniform(0, 150)  # fixed while rain rises
             last = {}
-            for rate in [float(x) for x in range(0, 121)]:
+            for rate in [float(x) for x in range(121)]:
                 fc = [fcst(at(h), fc_rate + rate) for h in (30, 60, 120)]
                 _, rows = step(at(), s, rate=rate, mm_24h=wet, fcst=fc)
                 for key, r in rows.items():
