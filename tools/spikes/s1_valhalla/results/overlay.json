@@ -1,0 +1,52 @@
+{
+ "valhalla": "3.9.0",
+ "traffic_tiles": 15,
+ "directed_edges": 1213938,
+ "closure_rows": 60,
+ "closure": {
+  "pairs": 60,
+  "route_exists": 60,
+  "avoided_closed_edge": 60,
+  "route_changed": 60,
+  "no_date_time_ignores_closure": 60,
+  "reverse_direction_unaffected": 60,
+  "restored_after_clear": 60,
+  "extra_time_s_p50": 46.5,
+  "extra_time_s_p90": 152
+ },
+ "snapshot_semantics": {
+  "pairs": 40,
+  "closed_now": 40,
+  "closed_in_90min": 40,
+  "slow_now": 20,
+  "slow_in_30min": 4,
+  "slow_in_90min": 0,
+  "slow_no_date_time": 0
+ },
+ "publish_inplace": {
+  "inplace_100": {
+   "apply_ms_p50": 0.368,
+   "apply_ms_max": 0.644,
+   "msync_ms_p50": 5.484
+  },
+  "inplace_1000": {
+   "apply_ms_p50": 2.231,
+   "apply_ms_max": 9.495,
+   "msync_ms_p50": 7.556
+  }
+ },
+ "visibility": {
+  "trials": 25,
+  "first_poll_already_new": 25,
+  "ms_p50": 20.3,
+  "ms_max": 70.3
+ },
+ "publish_by_rename": {
+  "copy_skeleton_s": 0.004,
+  "rename_ms": 0.052,
+  "running_router_sees_renamed_file": false,
+  "restart_to_ready_s": 0.23,
+  "first_route_after_restart_ms": 26.9,
+  "router_sees_file_after_restart": true
+ }
+}

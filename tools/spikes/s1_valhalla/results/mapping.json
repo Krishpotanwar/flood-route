@@ -1,0 +1,163 @@
+{
+ "segments": 3000,
+ "v1": {
+  "summary": {
+   "fwd": {
+    "exact": 2617,
+    "no_edge": 188,
+    "inside_longer_edge": 92,
+    "error_444": 1,
+    "split": 100,
+    "degenerate": 2
+   },
+   "rev": {
+    "exact": 1935,
+    "no_edge": 867,
+    "inside_longer_edge": 136,
+    "error_444": 6,
+    "split": 54,
+    "degenerate": 2
+   },
+   "by_oneway_tag": {
+    "unset": {
+     "fwd_exact|rev_exact": 1778,
+     "fwd_no_edge|rev_no_edge": 84,
+     "fwd_exact|rev_no_edge": 38,
+     "fwd_inside_longer_edge|rev_inside_longer_edge": 66,
+     "fwd_no_edge|rev_exact": 52,
+     "fwd_split|rev_split": 50,
+     "fwd_split|rev_inside_longer_edge": 26,
+     "fwd_inside_longer_edge|rev_split": 1,
+     "fwd_degenerate|rev_degenerate": 2,
+     "fwd_split|rev_no_edge": 1,
+     "fwd_no_edge|rev_inside_longer_edge": 1,
+     "fwd_no_edge|rev_split": 1
+    },
+    "yes": {
+     "fwd_exact|rev_no_edge": 668,
+     "fwd_no_edge|rev_inside_longer_edge": 8,
+     "fwd_no_edge|rev_no_edge": 28,
+     "fwd_exact|rev_inside_longer_edge": 26,
+     "fwd_split|rev_no_edge": 16,
+     "fwd_exact|rev_error_444": 5,
+     "fwd_inside_longer_edge|rev_no_edge": 20,
+     "fwd_inside_longer_edge|rev_inside_longer_edge": 3,
+     "fwd_split|rev_inside_longer_edge": 2,
+     "fwd_split|rev_exact": 1
+    },
+    "alternating": {
+     "fwd_exact|rev_exact": 1
+    },
+    "no": {
+     "fwd_no_edge|rev_no_edge": 10,
+     "fwd_exact|rev_exact": 99,
+     "fwd_error_444|rev_error_444": 1,
+     "fwd_no_edge|rev_exact": 4,
+     "fwd_exact|rev_no_edge": 2,
+     "fwd_split|rev_inside_longer_edge": 2,
+     "fwd_split|rev_split": 2,
+     "fwd_inside_longer_edge|rev_inside_longer_edge": 2
+    }
+   }
+  },
+  "timing": {
+   "calls": 5996,
+   "ms_p50": 1.63,
+   "ms_p95": 2.64
+  }
+ },
+ "map_while_closed_exact_count": {
+  "with_date_time_closed": 21,
+  "without_date_time_closed": 100,
+  "n": 100
+ },
+ "v2": {
+  "summary": {
+   "fwd": {
+    "exact": 2540,
+    "no_edge": 232,
+    "inside_longer_edge": 126,
+    "error_444": 3,
+    "split": 97,
+    "degenerate": 2
+   },
+   "rev": {
+    "exact": 1883,
+    "no_edge": 897,
+    "inside_longer_edge": 156,
+    "error_444": 8,
+    "split": 54,
+    "degenerate": 2
+   },
+   "by_oneway_tag": {
+    "unset": {
+     "fwd_exact|rev_exact": 1728,
+     "fwd_no_edge|rev_no_edge": 111,
+     "fwd_exact|rev_no_edge": 37,
+     "fwd_inside_longer_edge|rev_inside_longer_edge": 85,
+     "fwd_no_edge|rev_exact": 50,
+     "fwd_split|rev_split": 50,
+     "fwd_split|rev_inside_longer_edge": 25,
+     "fwd_inside_longer_edge|rev_split": 1,
+     "fwd_inside_longer_edge|rev_no_edge": 4,
+     "fwd_degenerate|rev_degenerate": 2,
+     "fwd_no_edge|rev_inside_longer_edge": 3,
+     "fwd_split|rev_no_edge": 1,
+     "fwd_error_444|rev_error_444": 1,
+     "fwd_no_edge|rev_split": 1,
+     "fwd_no_edge|rev_error_444": 1
+    },
+    "yes": {
+     "fwd_exact|rev_no_edge": 642,
+     "fwd_no_edge|rev_no_edge": 44,
+     "fwd_no_edge|rev_inside_longer_edge": 8,
+     "fwd_exact|rev_inside_longer_edge": 26,
+     "fwd_split|rev_no_edge": 14,
+     "fwd_exact|rev_error_444": 5,
+     "fwd_inside_longer_edge|rev_no_edge": 31,
+     "fwd_error_444|rev_no_edge": 1,
+     "fwd_inside_longer_edge|rev_inside_longer_edge": 3,
+     "fwd_split|rev_inside_longer_edge": 2,
+     "fwd_split|rev_exact": 1
+    },
+    "alternating": {
+     "fwd_exact|rev_exact": 1
+    },
+    "no": {
+     "fwd_no_edge|rev_no_edge": 10,
+     "fwd_exact|rev_exact": 99,
+     "fwd_error_444|rev_error_444": 1,
+     "fwd_no_edge|rev_exact": 4,
+     "fwd_exact|rev_no_edge": 2,
+     "fwd_split|rev_inside_longer_edge": 2,
+     "fwd_split|rev_split": 2,
+     "fwd_inside_longer_edge|rev_inside_longer_edge": 2
+    }
+   }
+  },
+  "timing": {
+   "calls": 5996,
+   "ms_p50": 1.67,
+   "ms_p95": 3.23
+  }
+ },
+ "rebuild_compare": {
+  "untouched_way": {
+   "n": 4461,
+   "same_key_exact": 4411,
+   "node_pair_chain_found": 4411,
+   "same_edge_id": 11,
+   "no_edge": 4
+  },
+  "dropped_way": {
+   "n": 46,
+   "no_edge": 42
+  },
+  "split_way": {
+   "n": 45,
+   "same_key_exact": 12,
+   "node_pair_chain_found": 12,
+   "no_edge": 25
+  }
+ }
+}

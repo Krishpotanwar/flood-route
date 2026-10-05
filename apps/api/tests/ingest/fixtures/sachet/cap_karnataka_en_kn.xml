@@ -1,0 +1,71 @@
+<cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+<cap:identifier>IN-1791194123192019_19</cap:identifier>
+<cap:sender>Karnataka-SNDMC</cap:sender>
+<cap:sent>2026-10-05T15:33:13+05:30</cap:sent>
+<cap:status>Actual</cap:status>
+<cap:msgType>Update</cap:msgType>
+<cap:scope>Public</cap:scope>
+<cap:restriction/>
+<cap:addresses/>
+<cap:note/>
+<cap:references>IMD-Bengaluru,IN-1791194123192019_51,2026-10-05T15:24:57+05:30</cap:references>
+<cap:incidents/>
+<cap:info>
+<cap:language>en-IN</cap:language>
+<cap:category>Met</cap:category>
+<cap:event>Thunder shower</cap:event>
+<cap:urgency>Expected</cap:urgency>
+<cap:severity>Moderate</cap:severity>
+<cap:certainty>Possible</cap:certainty>
+<cap:audience>1</cap:audience>
+<cap:effective>2026-10-05T15:24:00+05:30</cap:effective>
+<cap:onset>2026-10-05T15:33:13+05:30</cap:onset>
+<cap:expires>2026-10-05T18:24:00+05:30</cap:expires>
+<cap:headline>Thunder shower is likely to occur at isolated places over Belagavi district in next 3 hours. Source IMD MC BNG</cap:headline>
+<cap:description/>
+<cap:instruction>Please follow SDMA guidelines.</cap:instruction>
+<cap:contact/>
+<cap:parameter>
+<cap:valueName>Polygon URL</cap:valueName>
+<cap:value>https://sachet.ndma.gov.in/cap_public_website/FetchPolygonXMLFile?identifier=1791194123192019</cap:value>
+</cap:parameter>
+<cap:area>
+<cap:areaDesc>Belagavi district of Karnataka</cap:areaDesc>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>527</cap:value>
+</cap:geocode>
+<cap:altitude>0</cap:altitude>
+<cap:ceiling>0</cap:ceiling>
+</cap:area>
+</cap:info>
+<cap:info>
+<cap:language>KN</cap:language>
+<cap:category>Met</cap:category>
+<cap:event>Thunder shower</cap:event>
+<cap:urgency>Expected</cap:urgency>
+<cap:severity>Moderate</cap:severity>
+<cap:certainty>Possible</cap:certainty>
+<cap:audience>1</cap:audience>
+<cap:effective>2026-10-05T15:24:00+05:30</cap:effective>
+<cap:onset>2026-10-05T15:33:13+05:30</cap:onset>
+<cap:expires>2026-10-05T18:24:00+05:30</cap:expires>
+<cap:headline>ಮುಂದಿನ 3 ಗಂಟೆಗಳಲ್ಲಿ ಬೆಳಗಾವಿ ಜಿಲ್ಲೆಯ ಒಂದೆರಡು ಕಡೆಗಳಲ್ಲಿ ಗುಡುಗು ಸಹಿತ ಮಳೆಯಾಗುವ ಸಾಧ್ಯತೆಯಿದೆ. IMD MC BNG</cap:headline>
+<cap:description/>
+<cap:instruction>Please follow SDMA guidelines.</cap:instruction>
+<cap:contact/>
+<cap:parameter>
+<cap:valueName>Polygon URL</cap:valueName>
+<cap:value>https://sachet.ndma.gov.in/cap_public_website/FetchPolygonXMLFile?identifier=1791194123192019</cap:value>
+</cap:parameter>
+<cap:area>
+<cap:areaDesc>Belagavi district of Karnataka</cap:areaDesc>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>527</cap:value>
+</cap:geocode>
+<cap:altitude>0</cap:altitude>
+<cap:ceiling>0</cap:ceiling>
+</cap:area>
+</cap:info>
+</cap:alert>

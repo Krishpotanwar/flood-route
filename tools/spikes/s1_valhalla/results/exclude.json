@@ -1,0 +1,207 @@
+{
+ "reference_trip": {
+  "km": 4.322,
+  "s": 396
+ },
+ "size_and_precision": {
+  "on_centreline_half_0.5m": {
+   "status": 200,
+   "avoids": true
+  },
+  "on_centreline_half_1m": {
+   "status": 200,
+   "avoids": true
+  },
+  "on_centreline_half_2m": {
+   "status": 200,
+   "avoids": true
+  },
+  "on_centreline_half_5m": {
+   "status": 200,
+   "avoids": true
+  },
+  "on_centreline_half_10m": {
+   "status": 200,
+   "avoids": true
+  },
+  "on_centreline_half_25m": {
+   "status": 200,
+   "avoids": true
+  },
+  "beside_road_4m_half_1m": {
+   "status": 200,
+   "route_unchanged": true
+  },
+  "beside_road_8m_half_1m": {
+   "status": 200,
+   "route_unchanged": true
+  },
+  "beside_road_12m_half_1m": {
+   "status": 200,
+   "route_unchanged": true
+  },
+  "beside_road_20m_half_1m": {
+   "status": 200,
+   "route_unchanged": true
+  }
+ },
+ "direction": {
+  "reverse_baseline_crosses_box": false,
+  "reverse_with_polygon_avoids": true
+ },
+ "endpoints": {
+  "origin_inside_polygon": {
+   "status": 400,
+   "error_code": 442,
+   "error": "No path could be found for input"
+  },
+  "destination_inside_polygon": {
+   "status": 400,
+   "error_code": 442,
+   "error": "No path could be found for input"
+  },
+  "destination_inside_250m_polygon": {
+   "status": 400,
+   "error_code": 442,
+   "error": "No path could be found for input"
+  }
+ },
+ "limits_default_config": {
+  "1x_half400m_perimeter3200m": {
+   "status": 200,
+   "error_code": null,
+   "error": ""
+  },
+  "1x_half1250m_perimeter10000m": {
+   "status": 200,
+   "error_code": null,
+   "error": ""
+  },
+  "1x_half1300m_perimeter10400m": {
+   "status": 400,
+   "error_code": 167,
+   "error": "Exceeded maximum circumference for exclude_polygons: 10000 meters"
+  },
+  "20x_half60m_perimeter9600m": {
+   "status": 200,
+   "error_code": null,
+   "error": ""
+  },
+  "41x_half30m_perimeter9840m": {
+   "status": 400,
+   "error_code": 176,
+   "error": "Exceeded maximum number of vertices for exclude_polygons: 100"
+  },
+  "42x_half30m_perimeter10080m": {
+   "status": 400,
+   "error_code": 167,
+   "error": "Exceeded maximum circumference for exclude_polygons: 10000 meters"
+  },
+  "one_polygon_99_vertices": {
+   "status": 200,
+   "error_code": null,
+   "error": ""
+  },
+  "one_polygon_100_vertices": {
+   "status": 400,
+   "error_code": 176,
+   "error": "Exceeded maximum number of vertices for exclude_polygons: 100"
+  },
+  "one_polygon_101_vertices": {
+   "status": 400,
+   "error_code": 176,
+   "error": "Exceeded maximum number of vertices for exclude_polygons: 100"
+  },
+  "one_polygon_150_vertices": {
+   "status": 400,
+   "error_code": 176,
+   "error": "Exceeded maximum number of vertices for exclude_polygons: 100"
+  }
+ },
+ "latency_one_client": {
+  "on_route_0_polygons": {
+   "ms_p50": 16.8,
+   "ms_p95": 63.8,
+   "route_changed": 0,
+   "no_route_or_error": 0,
+   "n": 150
+  },
+  "on_route_1_polygons": {
+   "ms_p50": 22.7,
+   "ms_p95": 66.0,
+   "route_changed": 142,
+   "no_route_or_error": 8,
+   "n": 150
+  },
+  "on_route_5_polygons": {
+   "ms_p50": 31.3,
+   "ms_p95": 98.2,
+   "route_changed": 118,
+   "no_route_or_error": 32,
+   "n": 150
+  },
+  "on_route_20_polygons": {
+   "ms_p50": 38.6,
+   "ms_p95": 95.6,
+   "route_changed": 69,
+   "no_route_or_error": 81,
+   "n": 150
+  },
+  "on_route_50_polygons": {
+   "ms_p50": 59.0,
+   "ms_p95": 113.3,
+   "route_changed": 42,
+   "no_route_or_error": 108,
+   "n": 150
+  },
+  "on_route_100_polygons": {
+   "ms_p50": 70.5,
+   "ms_p95": 116.8,
+   "route_changed": 19,
+   "no_route_or_error": 131,
+   "n": 150
+  },
+  "off_route_0_polygons": {
+   "ms_p50": 17.9,
+   "ms_p95": 55.1,
+   "route_changed": 0,
+   "no_route_or_error": 0,
+   "n": 150
+  },
+  "off_route_1_polygons": {
+   "ms_p50": 19.4,
+   "ms_p95": 62.6,
+   "route_changed": 12,
+   "no_route_or_error": 1,
+   "n": 150
+  },
+  "off_route_5_polygons": {
+   "ms_p50": 22.1,
+   "ms_p95": 62.0,
+   "route_changed": 62,
+   "no_route_or_error": 0,
+   "n": 150
+  },
+  "off_route_20_polygons": {
+   "ms_p50": 31.4,
+   "ms_p95": 88.1,
+   "route_changed": 120,
+   "no_route_or_error": 8,
+   "n": 150
+  },
+  "off_route_50_polygons": {
+   "ms_p50": 37.4,
+   "ms_p95": 96.0,
+   "route_changed": 119,
+   "no_route_or_error": 29,
+   "n": 150
+  },
+  "off_route_100_polygons": {
+   "ms_p50": 48.8,
+   "ms_p95": 94.5,
+   "route_changed": 107,
+   "no_route_or_error": 43,
+   "n": 150
+  }
+ }
+}

@@ -1,0 +1,111 @@
+<cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+<cap:identifier>IN-1791207808206029_29</cap:identifier>
+<cap:sender>Maharashtra-SDMA</cap:sender>
+<cap:sent>2026-10-05T19:17:53+05:30</cap:sent>
+<cap:status>Actual</cap:status>
+<cap:msgType>Update</cap:msgType>
+<cap:scope>Public</cap:scope>
+<cap:restriction/>
+<cap:addresses/>
+<cap:note/>
+<cap:references>IMD-Mumbai,IN-1791207808206029_46,2026-10-05T19:11:09+05:30</cap:references>
+<cap:incidents/>
+<cap:info>
+<cap:language>en-IN</cap:language>
+<cap:category>Met</cap:category>
+<cap:event>Low Cloud to Ground Lightning</cap:event>
+<cap:urgency>Expected</cap:urgency>
+<cap:severity>Moderate</cap:severity>
+<cap:certainty>Likely</cap:certainty>
+<cap:audience>1</cap:audience>
+<cap:effective>2026-10-05T19:00:00+05:30</cap:effective>
+<cap:onset>2026-10-05T19:17:53+05:30</cap:onset>
+<cap:expires>2026-10-05T22:00:00+05:30</cap:expires>
+<cap:headline>Light spells of rain with possibility of thunder/ lightning in some areas very likely to occur at isolated places over Ahilyanagar, Kolhapur, Ratnagiri, Sangli, Satara, Sindhudurg in next 3 hours.</cap:headline>
+<cap:description/>
+<cap:instruction>Please follow SDMA guidelines.</cap:instruction>
+<cap:contact/>
+<cap:parameter>
+<cap:valueName>Polygon URL</cap:valueName>
+<cap:value>https://sachet.ndma.gov.in/cap_public_website/FetchPolygonXMLFile?identifier=1791207808206029</cap:value>
+</cap:parameter>
+<cap:area>
+<cap:areaDesc>6 districts of Maharashtra</cap:areaDesc>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>493</cap:value>
+</cap:geocode>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>466</cap:value>
+</cap:geocode>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>492</cap:value>
+</cap:geocode>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>480</cap:value>
+</cap:geocode>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>494</cap:value>
+</cap:geocode>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>495</cap:value>
+</cap:geocode>
+<cap:altitude>0.0</cap:altitude>
+<cap:ceiling>0.0</cap:ceiling>
+</cap:area>
+</cap:info>
+<cap:info>
+<cap:language>MR</cap:language>
+<cap:category>Met</cap:category>
+<cap:event>Low Cloud to Ground Lightning</cap:event>
+<cap:urgency>Expected</cap:urgency>
+<cap:severity>Moderate</cap:severity>
+<cap:certainty>Likely</cap:certainty>
+<cap:audience>1</cap:audience>
+<cap:effective>2026-10-05T19:00:00+05:30</cap:effective>
+<cap:onset>2026-10-05T19:17:53+05:30</cap:onset>
+<cap:expires>2026-10-05T22:00:00+05:30</cap:expires>
+<cap:headline>पुढील ३ तासांत आपल्या जिल्ह्यांतील काही ठिकाणी विजांच्या कडकडाटासह हलक्या पावसाची शक्यता आहे. नागरिकांनी सतर्क राहावे, मंत्रालय, मुंबई.</cap:headline>
+<cap:description/>
+<cap:instruction>Please follow SDMA guidelines.</cap:instruction>
+<cap:contact/>
+<cap:parameter>
+<cap:valueName>Polygon URL</cap:valueName>
+<cap:value>https://sachet.ndma.gov.in/cap_public_website/FetchPolygonXMLFile?identifier=1791207808206029</cap:value>
+</cap:parameter>
+<cap:area>
+<cap:areaDesc>6 districts of Maharashtra</cap:areaDesc>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>493</cap:value>
+</cap:geocode>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>466</cap:value>
+</cap:geocode>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>492</cap:value>
+</cap:geocode>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>480</cap:value>
+</cap:geocode>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>494</cap:value>
+</cap:geocode>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>495</cap:value>
+</cap:geocode>
+<cap:altitude>0</cap:altitude>
+<cap:ceiling>0</cap:ceiling>
+</cap:area>
+</cap:info>
+</cap:alert>

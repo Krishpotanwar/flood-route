@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>FloodRoute design tokens</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  /* Preview chrome only. Every colour, size and duration comes from tokens.css. */
+  :root { --hairline: color-mix(in srgb, var(--fr-ink-2) 35%, transparent); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--fr-canvas);
+    color: var(--fr-ink);
+    font: var(--fr-text-body) / var(--fr-leading-body) var(--fr-font-sans);
+    letter-spacing: var(--fr-tracking-body);
+    padding: 0 max(var(--fr-space-4), env(safe-area-inset-right)) var(--fr-space-12) max(var(--fr-space-4), env(safe-area-inset-left));
+    touch-action: manipulation;
+  }
+  header, main { max-width: 72rem; margin-inline: auto; }
+  h1, h2 { margin: 0; line-height: var(--fr-leading-heading); letter-spacing: var(--fr-tracking-display); }
+  h1 { font-size: var(--fr-text-2xl); padding-top: var(--fr-space-8); }
+  h2 { font-size: var(--fr-text-xl); }
+  p { margin: var(--fr-space-2) 0 0; max-width: 65ch; }
+  section { border-top: 1px solid var(--hairline); margin-top: var(--fr-space-12); padding-top: var(--fr-space-6); }
+  section > p + * , section > h2 + * { margin-top: var(--fr-space-4); }
+  .muted { color: var(--fr-ink-2); }
+  .num { font-variant-numeric: tabular-nums; }
+  .mono { font-family: var(--fr-font-mono); font-size: var(--fr-text-sm); }
+  svg.icon { width: var(--fr-icon); height: var(--fr-icon); flex: none; }
+  :focus-visible { outline: var(--fr-focus-width) solid var(--fr-focus); outline-offset: var(--fr-focus-offset); }
+
+  /* Theme switcher: native radios, drawn as a segmented control */
+  fieldset { border: 0; margin: var(--fr-space-6) 0 0; padding: 0; }
+  legend { padding: 0; font-weight: 600; margin-bottom: var(--fr-space-2); }
+  .seg { display: flex; flex-wrap: wrap; gap: var(--fr-space-2); }
+  .seg label { position: relative; }
+  .seg input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .seg span {
+    display: flex; align-items: center; min-height: 3rem; padding: 0 var(--fr-space-4);
+    border: 2px solid var(--fr-ink-2); border-radius: var(--fr-radius-control);
+    background: var(--fr-surface); color: var(--fr-ink);
+  }
+  .seg input:checked + span { background: var(--fr-ink); color: var(--fr-canvas); border-color: var(--fr-ink); font-weight: 600; }
+  .seg input:focus-visible + span { outline: var(--fr-focus-width) solid var(--fr-focus); outline-offset: var(--fr-focus-offset); }
+
+  /* Pair tables */
+  table { border-collapse: collapse; width: 100%; max-width: 46rem; table-layout: fixed; }
+  caption { text-align: left; font-weight: 600; padding-bottom: var(--fr-space-2); }
+  th, td { text-align: left; padding: var(--fr-space-2) var(--fr-space-3) var(--fr-space-2) 0; border-top: 1px solid var(--hairline); vertical-align: middle; }
+  th:first-child { width: 15rem; }
+  th:last-child { width: 12rem; }
+  thead th { font-weight: 400; color: var(--fr-ink-2); font-size: var(--fr-text-sm); border-top: 0; }
+  .pairs { margin-top: var(--fr-space-6); }
+  .pair { display: flex; align-items: center; gap: var(--fr-space-2); width: 100%; min-height: 2.5rem; padding: 0 var(--fr-space-3); background: var(--bg); color: var(--fg); border-radius: var(--fr-radius-control); box-shadow: inset 0 0 0 1px var(--hairline); }
+  .pair b { font-size: var(--fr-text-xl); line-height: 1; }
+  .pair .bar { flex: 1; height: 0.75rem; background: currentColor; }
+  .pair .bar.cased { outline: var(--fr-casing-width) solid var(--fr-casing); outline-offset: 0; }
+  .pair .ring { width: 3rem; height: 1.5rem; border-radius: var(--fr-radius-control); outline: var(--fr-focus-width) solid currentColor; outline-offset: var(--fr-focus-offset); margin-left: var(--fr-space-2); }
+  .verdict .word { font-weight: 600; }
+  @media (max-width: 40rem) {
+    th:first-child { width: 6rem; }
+    th:last-child { width: 7.5rem; }
+    .pair { padding: 0 var(--fr-space-2); }
+    .pair > span:not(.bar):not(.ring) { display: none; }
+    .pair .ring { margin-left: 0; width: 2.5rem; }
+  }
+
+  /* Chips, buttons, banners */
+  .chip {
+    display: inline-flex; align-items: center; gap: var(--fr-space-2); min-height: 2rem; padding: var(--fr-space-2) var(--fr-space-3);
+    border-radius: var(--fr-radius-control); border: var(--fr-edge-width) solid currentColor;
+    background: var(--tint); color: var(--ink); font-size: var(--fr-text-sm); font-weight: 600; line-height: var(--fr-leading-chip);
+    font-variant-numeric: tabular-nums;
+  }
+  .chip svg.icon { width: 1rem; height: 1rem; } /* inside the 32px badge: 8px padding plus a 16px icon; the 24px size is for standalone icons */
+  .chip[data-level="safe"] { --tint: var(--fr-safe-tint); --ink: var(--fr-safe-ink); }
+  .chip[data-level="watch"] { --tint: var(--fr-watch-tint); --ink: var(--fr-watch-ink); }
+  .chip[data-level="risky"] { --tint: var(--fr-risky-tint); --ink: var(--fr-risky-ink); }
+  .chip[data-level="impassable"] { --tint: var(--fr-impassable-tint); --ink: var(--fr-impassable-ink); }
+  .chip[data-level="unknown"] { --tint: var(--fr-unknown-tint); --ink: var(--fr-unknown-ink); }
+  .chip.neutral { --tint: var(--fr-canvas); --ink: var(--fr-ink-2); border: 1px solid var(--hairline); }
+  .btn {
+    min-height: 3rem; padding: 0 var(--fr-space-4); border: 2px solid transparent; border-radius: var(--fr-radius-control);
+    background: var(--fr-accent); color: var(--fr-canvas); font: inherit; font-weight: 600; cursor: pointer;
+    transition: transform var(--fr-dur-press) var(--fr-ease-out);
+  }
+  .btn:active { transform: scale(var(--fr-press-scale)); }
+  .banner {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--fr-space-3) var(--fr-space-4); padding: var(--fr-space-4);
+    border-radius: var(--fr-radius-sheet); border: var(--fr-edge-width) solid currentColor;
+    background: var(--fr-watch-tint); color: var(--fr-watch-ink);
+  }
+  .banner p { margin: 0; flex: 1 1 18rem; }
+
+  /* Risk states */
+  .states { list-style: none; margin: var(--fr-space-6) 0 0; padding: 0; }
+  .states li { display: grid; grid-template-columns: 1fr; gap: var(--fr-space-3); padding: var(--fr-space-4) 0; border-top: 1px solid var(--hairline); }
+  .states .chips { display: flex; flex-wrap: wrap; gap: var(--fr-space-2); align-items: center; }
+  .states .cues { display: flex; flex-wrap: wrap; gap: var(--fr-space-4); align-items: center; }
+  .states svg.line { width: 9rem; height: 2rem; background: var(--fr-canvas); border-radius: var(--fr-radius-control); }
+  .states svg.poly { width: 4.5rem; height: 3rem; background: var(--fr-canvas); border-radius: var(--fr-radius-control); }
+  .line .casing, .line .fill { fill: none; stroke-linecap: butt; }
+  .line .casing { stroke: var(--fr-casing); }
+  .line .tick { stroke: var(--fr-canvas); stroke-width: 2; }
+  .line [data-level="safe"] .fill { stroke: var(--fr-safe); stroke-width: var(--fr-line-safe); stroke-dasharray: var(--fr-dash-safe); }
+  .line [data-level="safe"] .casing { stroke-width: calc(var(--fr-line-safe) + 2 * var(--fr-casing-width)); stroke-dasharray: var(--fr-dash-safe); }
+  .line [data-level="watch"] .fill { stroke: var(--fr-watch); stroke-width: var(--fr-line-watch); stroke-dasharray: var(--fr-dash-watch); }
+  .line [data-level="watch"] .casing { stroke-width: calc(var(--fr-line-watch) + 2 * var(--fr-casing-width)); stroke-dasharray: var(--fr-dash-watch); }
+  .line [data-level="risky"] .fill { stroke: var(--fr-risky); stroke-width: var(--fr-line-risky); stroke-dasharray: var(--fr-dash-risky); }
+  .line [data-level="risky"] .casing { stroke-width: calc(var(--fr-line-risky) + 2 * var(--fr-casing-width)); stroke-dasharray: var(--fr-dash-risky); }
+  .line [data-level="impassable"] .fill { stroke: var(--fr-impassable); stroke-width: var(--fr-line-impassable); stroke-dasharray: var(--fr-dash-impassable); }
+  .line [data-level="impassable"] .casing { stroke-width: calc(var(--fr-line-impassable) + 2 * var(--fr-casing-width)); stroke-dasharray: var(--fr-dash-impassable); }
+  .line [data-level="unknown"] .fill { stroke: var(--fr-unknown); stroke-width: var(--fr-line-unknown); stroke-dasharray: var(--fr-dash-unknown); stroke-linecap: round; }
+  .line [data-level="unknown"] .casing { stroke-width: calc(var(--fr-line-unknown) + 2 * var(--fr-casing-width)); stroke-dasharray: var(--fr-dash-unknown); stroke-linecap: round; }
+  .poly rect { stroke-width: 2; }
+  .poly [data-level="safe"], .poly [data-level="unknown"] { fill: none; }
+  .poly [data-level="safe"] { stroke: var(--fr-safe); }
+  .poly [data-level="unknown"] { stroke: var(--fr-unknown); stroke-dasharray: var(--fr-dash-unknown); stroke-linecap: round; }
+  .poly [data-level="watch"] { stroke: var(--fr-watch); fill: url(#pat-watch); }
+  .poly [data-level="risky"] { stroke: var(--fr-risky); fill: url(#pat-risky); }
+  .poly [data-level="impassable"] { stroke: var(--fr-impassable); fill: url(#pat-impassable); }
+  .pat-watch circle { fill: var(--fr-watch); }
+  .pat-risky path, .pat-impassable path { stroke-width: 2; fill: none; }
+  .pat-risky path { stroke: var(--fr-risky); }
+  .pat-impassable path { stroke: var(--fr-impassable); }
+  .states .desc { color: var(--fr-ink-2); font-size: var(--fr-text-sm); }
+  @media (min-width: 52rem) {
+    .states li { grid-template-columns: 24rem 1fr; align-items: center; }
+  }
+
+  /* Stale-data samples */
+  .stale { display: grid; gap: var(--fr-space-4); background: var(--fr-surface); border: var(--fr-edge-width) solid var(--fr-ink); border-radius: var(--fr-radius-sheet); padding: var(--fr-space-4); box-shadow: var(--fr-shadow); }
+  .stale .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--fr-space-3); }
+  .stale h3 { margin: 0; font-size: var(--fr-text-base); font-weight: 600; flex: 1 1 100%; }
+  .stale .segs { display: grid; gap: var(--fr-space-2); margin: 0; padding: 0; list-style: none; }
+  .stale .segs li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--fr-space-2) var(--fr-space-3); }
+
+  /* Scales */
+  .scale-type > * { margin: 0; }
+  .scale-type .t { display: flex; align-items: baseline; gap: var(--fr-space-4); }
+  .scale-type .t small { flex: none; width: 3rem; color: var(--fr-ink-2); font-size: var(--fr-text-sm); font-variant-numeric: tabular-nums; }
+  .space-bars { display: grid; gap: var(--fr-space-2); }
+  .space-bars div { display: flex; align-items: center; gap: var(--fr-space-3); font-size: var(--fr-text-sm); }
+  .space-bars i { display: block; height: 0.75rem; background: var(--fr-accent); }
+  .shapes { display: flex; flex-wrap: wrap; gap: var(--fr-space-6); align-items: flex-end; }
+  .box { width: 8rem; height: 5rem; display: grid; place-items: center; background: var(--fr-surface); border: 1px solid var(--hairline); font-size: var(--fr-text-sm); text-align: center; }
+  .box.raised { background: var(--fr-surface-elevated); box-shadow: var(--fr-shadow); border: var(--fr-edge-width) solid var(--fr-ink); }
+
+  /* Sheet material over a map-like backdrop (geometry only) */
+  .mapdemo { position: relative; height: 15rem; max-width: 36rem; overflow: hidden; border: 1px solid var(--hairline); border-radius: var(--fr-radius-sheet); background: var(--fr-canvas); }
+  .mapdemo > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .mapdemo .water { fill: var(--fr-accent); opacity: 0.2; }
+  .mapdemo .road { fill: none; stroke: var(--fr-ink-2); stroke-width: 6; opacity: 0.55; stroke-linecap: round; }
+  .mapdemo .road.minor { stroke-width: 3; }
+  .sheet {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: var(--fr-space-3) var(--fr-space-4) var(--fr-space-4);
+    background: var(--fr-sheet-bg); -webkit-backdrop-filter: var(--fr-sheet-blur); backdrop-filter: var(--fr-sheet-blur);
+    border-top: var(--fr-sheet-edge); border-radius: var(--fr-radius-sheet) var(--fr-radius-sheet) 0 0;
+  }
+  .sheet .grab { width: 2.5rem; height: 0.25rem; margin: 0 auto var(--fr-space-3); border-radius: var(--fr-radius-control); background: var(--fr-ink-2); }
+  .sheet .inner { background: var(--fr-surface); border-radius: var(--fr-radius-control); padding: var(--fr-space-3); display: flex; flex-wrap: wrap; align-items: center; gap: var(--fr-space-3); }
+  .sheet .inner span.t { flex: 1 1 10rem; }
+
+  /* Forced colors. Chromium paints a Canvas backplate behind text, so Canvas-coloured text on an accent or ink fill disappears.
+     Selected and primary controls therefore use system pairs and a thicker border, never an inverted fill. */
+  @media (forced-colors: active) {
+    .btn { background: ButtonFace; color: ButtonText; border-color: ButtonText; }
+    .seg input:checked + span { background: Canvas; color: CanvasText; border: 4px solid Highlight; padding-inline: calc(var(--fr-space-4) - 2px); }
+    .pair { forced-color-adjust: none; } /* samples must show the token colours themselves */
+  }
+</style>
+</head>
+<body>
+<!-- Icons: Phosphor Icons, regular weight (check-circle, drop, warning, prohibit, question, clock),
+     https://github.com/phosphor-icons/core, copied as inline SVG symbols. MIT License.
+
+     MIT License
+
+     Copyright (c) 2023 Phosphor Icons
+
+     Permission is hereby granted, free of charge, to any person obtaining a copy
+     of this software and associated documentation files (the "Software"), to deal
+     in the Software without restriction, including without limitation the rights
+     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the Software is
+     furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in all
+     copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     SOFTWARE. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="ph-check-circle" viewBox="0 0 256 256"><path fill="currentColor" d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></symbol>
+    <symbol id="ph-drop" viewBox="0 0 256 256"><path fill="currentColor" d="M174,47.75a254.19,254.19,0,0,0-41.45-38.3,8,8,0,0,0-9.18,0A254.19,254.19,0,0,0,82,47.75C54.51,79.32,40,112.6,40,144a88,88,0,0,0,176,0C216,112.6,201.49,79.32,174,47.75ZM128,216a72.08,72.08,0,0,1-72-72c0-57.23,55.47-105,72-118,16.53,13,72,60.75,72,118A72.08,72.08,0,0,1,128,216Zm55.89-62.66a57.6,57.6,0,0,1-46.56,46.55A8.75,8.75,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68Z"/></symbol>
+    <symbol id="ph-warning" viewBox="0 0 256 256"><path fill="currentColor" d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"/></symbol>
+    <symbol id="ph-prohibit" viewBox="0 0 256 256"><path fill="currentColor" d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.56,87.56,0,0,1-20.41,56.28L71.72,60.4A88,88,0,0,1,216,128ZM40,128A87.56,87.56,0,0,1,60.41,71.72L184.28,195.6A88,88,0,0,1,40,128Z"/></symbol>
+    <symbol id="ph-question" viewBox="0 0 256 256"><path fill="currentColor" d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></symbol>
+    <symbol id="ph-clock" viewBox="0 0 256 256"><path fill="currentColor" d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"/></symbol>
+    <pattern id="pat-watch" class="pat-watch" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="9" r="1.5"/></pattern>
+    <pattern id="pat-risky" class="pat-risky" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V8"/></pattern>
+    <pattern id="pat-impassable" class="pat-impassable" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 0L8 8M8 0L0 8"/></pattern>
+  </defs>
+</svg>
+
+<header>
+  <h1>FloodRoute design tokens</h1>
+  <p>Every token pair, risk state and stale-data sample from <span class="mono">packages/ui/tokens.css</span>. Pick a theme to switch the whole page. Ratios are measured in this browser from the rendered colours; <span class="mono">pnpm check</span> measures the same pairs and also checks colour-vision separation.</p>
+  <fieldset>
+    <legend>Theme</legend>
+    <div class="seg" id="themes">
+      <label><input type="radio" name="theme" value="system" checked><span>System</span></label>
+      <label><input type="radio" name="theme" value="light"><span>Light</span></label>
+      <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+      <label><input type="radio" name="theme" value="hc"><span>High contrast</span></label>
+      <label><input type="radio" name="theme" value="hc-dark"><span>High contrast dark</span></label>
+      <label><input type="radio" name="theme" value="sunlight"><span>Sunlight</span></label>
+    </div>
+  </fieldset>
+  <p class="muted">Active token set: <b class="mono" id="active">light</b>. System follows your OS settings for colour scheme and contrast.</p>
+  <noscript><p>The theme switcher and the pair tables need JavaScript.</p></noscript>
+</header>
+
+<main>
+  <section aria-labelledby="h-pairs">
+    <h2 id="h-pairs">Token pairs</h2>
+    <p>Text needs 4.5 to 1. Risk text on chips needs 7 to 1 (AAA). Graphics and focus rings need 3 to 1. Watch is never a bare line on canvas: its casing carries it.</p>
+    <div id="pair-tables"></div>
+  </section>
+
+  <section aria-labelledby="h-risk">
+    <h2 id="h-risk">Risk states</h2>
+    <p>Level is colour, icon, label and line style together. Labels in Hindi come from report 06 and still need native review.</p>
+    <ul class="states">
+      <li>
+        <div class="chips">
+          <span class="chip" data-level="safe"><svg class="icon" aria-hidden="true"><use href="#ph-check-circle"/></svg><span lang="en">Clear</span></span>
+          <span class="chip" data-level="safe"><svg class="icon" aria-hidden="true"><use href="#ph-check-circle"/></svg><span lang="hi">साफ़</span></span>
+        </div>
+        <div class="cues">
+          <svg class="line" viewBox="0 0 144 32" role="img" aria-label="Map line sample: solid, 4 pixels"><g data-level="safe"><path class="casing" d="M8 16H136"/><path class="fill" d="M8 16H136"/></g></svg>
+          <svg class="poly" viewBox="0 0 72 48" role="img" aria-label="Polygon sample: no pattern"><rect data-level="safe" x="6" y="6" width="60" height="36"/></svg>
+          <span class="desc">Line solid 4 px. Polygon none.</span>
+        </div>
+      </li>
+      <li>
+        <div class="chips">
+          <span class="chip" data-level="watch"><svg class="icon" aria-hidden="true"><use href="#ph-drop"/></svg><span lang="en">Watch</span></span>
+          <span class="chip" data-level="watch"><svg class="icon" aria-hidden="true"><use href="#ph-drop"/></svg><span lang="hi">सावधानी</span></span>
+        </div>
+        <div class="cues">
+          <svg class="line" viewBox="0 0 144 32" role="img" aria-label="Map line sample: long dash, 5 pixels"><g data-level="watch"><path class="casing" d="M8 16H136"/><path class="fill" d="M8 16H136"/></g></svg>
+          <svg class="poly" viewBox="0 0 72 48" role="img" aria-label="Polygon sample: sparse dots"><rect data-level="watch" x="6" y="6" width="60" height="36"/></svg>
+          <span class="desc">Line long dash 5 px. Polygon sparse dots.</span>
+        </div>
+      </li>
+      <li>
+        <div class="chips">
+          <span class="chip" data-level="risky"><svg class="icon" aria-hidden="true"><use href="#ph-warning"/></svg><span lang="en">Likely flooded</span></span>
+          <span class="chip" data-level="risky"><svg class="icon" aria-hidden="true"><use href="#ph-warning"/></svg><span lang="hi">पानी भरने की आशंका</span></span>
+        </div>
+        <div class="cues">
+          <svg class="line" viewBox="0 0 144 32" role="img" aria-label="Map line sample: short dash, 6 pixels"><g data-level="risky"><path class="casing" d="M8 16H136"/><path class="fill" d="M8 16H136"/></g></svg>
+          <svg class="poly" viewBox="0 0 72 48" role="img" aria-label="Polygon sample: diagonal hatch"><rect data-level="risky" x="6" y="6" width="60" height="36"/></svg>
+          <span class="desc">Line short dash 6 px. Polygon diagonal hatch.</span>
+        </div>
+      </li>
+      <li>
+        <div class="chips">
+          <span class="chip" data-level="impassable"><svg class="icon" aria-hidden="true"><use href="#ph-prohibit"/></svg><span lang="en">Impassable</span></span>
+          <span class="chip" data-level="impassable"><svg class="icon" aria-hidden="true"><use href="#ph-prohibit"/></svg><span lang="hi">बंद</span></span>
+        </div>
+        <div class="cues">
+          <svg class="line" viewBox="0 0 144 32" role="img" aria-label="Map line sample: solid, 8 pixels, cross ticks"><g data-level="impassable"><path class="casing" d="M8 16H136"/><path class="fill" d="M8 16H136"/><path class="tick" d="M30 12V20M60 12V20M90 12V20M120 12V20"/></g></svg>
+          <svg class="poly" viewBox="0 0 72 48" role="img" aria-label="Polygon sample: cross-hatch"><rect data-level="impassable" x="6" y="6" width="60" height="36"/></svg>
+          <span class="desc">Line solid 8 px with cross ticks. Polygon cross-hatch.</span>
+        </div>
+      </li>
+      <li>
+        <div class="chips">
+          <span class="chip" data-level="unknown"><svg class="icon" aria-hidden="true"><use href="#ph-question"/></svg><span lang="en">No recent data</span></span>
+          <span class="chip" data-level="unknown"><svg class="icon" aria-hidden="true"><use href="#ph-question"/></svg><span lang="hi">ताज़ा डेटा नहीं</span></span>
+        </div>
+        <div class="cues">
+          <svg class="line" viewBox="0 0 144 32" role="img" aria-label="Map line sample: dotted, 3 pixels"><g data-level="unknown"><path class="casing" d="M8 16H136"/><path class="fill" d="M8 16H136"/></g></svg>
+          <svg class="poly" viewBox="0 0 72 48" role="img" aria-label="Polygon sample: none, dotted outline"><rect data-level="unknown" x="6" y="6" width="60" height="36"/></svg>
+          <span class="desc">Line dotted 3 px. Polygon none.</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="h-stale">
+    <h2 id="h-stale">Stale data</h2>
+    <p>Under 5 minutes the age chip is neutral. From 5 to 15 it turns watch-tinted with a clock. Over 15 a persistent banner appears and Clear segments degrade to No recent data. Thresholds are proposals. Sample text, not live data.</p>
+    <div class="stale">
+      <div class="row">
+        <h3>Age chip</h3>
+        <span class="chip neutral"><span>Updated 2 min ago</span></span>
+        <span class="chip" data-level="watch"><svg class="icon" aria-hidden="true"><use href="#ph-clock"/></svg><span>Updated 9 min ago</span></span>
+      </div>
+      <div class="banner" role="status">
+        <svg class="icon" aria-hidden="true"><use href="#ph-clock"/></svg>
+        <p>Road status may be out of date. Last update 18 min ago. Showing last known conditions.</p>
+        <button class="btn" type="button">Refresh</button>
+      </div>
+      <ul class="segs" aria-label="Segment states before and after the data goes stale">
+        <li><span>Wardha Road, 10 min ago:</span><span class="chip" data-level="safe"><svg class="icon" aria-hidden="true"><use href="#ph-check-circle"/></svg><span>Clear as of 14:20</span></span></li>
+        <li><span>Wardha Road, 18 min ago:</span><span class="chip" data-level="unknown"><svg class="icon" aria-hidden="true"><use href="#ph-question"/></svg><span>No recent data</span></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-scales">
+    <h2 id="h-scales">Type, space, radius, elevation</h2>
+    <div class="scale-type" style="margin-top: var(--fr-space-4)">
+      <p class="t" style="font-size: var(--fr-text-3xl); line-height: var(--fr-leading-heading); letter-spacing: var(--fr-tracking-display)"><small>36</small><span>Road ahead may flood</span></p>
+      <p class="t" style="font-size: var(--fr-text-2xl); line-height: var(--fr-leading-heading); letter-spacing: var(--fr-tracking-display)"><small>28</small><span>Road ahead may flood</span></p>
+      <p class="t" style="font-size: var(--fr-text-xl); line-height: var(--fr-leading-heading)"><small>22</small><span>Road ahead may flood</span></p>
+      <p class="t" style="font-size: var(--fr-text-lg)"><small>18</small><span>Road ahead may flood in about 25 min</span></p>
+      <p class="t" style="font-size: var(--fr-text-base)"><small>16</small><span>Road ahead may flood in about 25 min</span></p>
+      <p class="t" style="font-size: var(--fr-text-sm)"><small>14</small><span>Road ahead may flood in about 25 min</span></p>
+      <p class="t" style="font-size: var(--fr-text-xs)"><small>13</small><span class="num">Timestamps only: 14:20</span></p>
+      <p class="t" lang="hi" style="font-size: var(--fr-text-body); line-height: var(--fr-leading-body)"><small>16 hi</small><span>पानी भरने की आशंका, ताज़ा डेटा नहीं</span></p>
+    </div>
+    <div class="space-bars" style="margin-top: var(--fr-space-6)" aria-label="Spacing scale">
+      <div><span class="mono" style="width:3rem">1</span><i style="width: var(--fr-space-1)"></i><span class="muted">4 px</span></div>
+      <div><span class="mono" style="width:3rem">2</span><i style="width: var(--fr-space-2)"></i><span class="muted">8 px</span></div>
+      <div><span class="mono" style="width:3rem">3</span><i style="width: var(--fr-space-3)"></i><span class="muted">12 px</span></div>
+      <div><span class="mono" style="width:3rem">4</span><i style="width: var(--fr-space-4)"></i><span class="muted">16 px</span></div>
+      <div><span class="mono" style="width:3rem">6</span><i style="width: var(--fr-space-6)"></i><span class="muted">24 px</span></div>
+      <div><span class="mono" style="width:3rem">8</span><i style="width: var(--fr-space-8)"></i><span class="muted">32 px</span></div>
+      <div><span class="mono" style="width:3rem">12</span><i style="width: var(--fr-space-12)"></i><span class="muted">48 px</span></div>
+    </div>
+    <div class="shapes" style="margin-top: var(--fr-space-6)">
+      <div class="box" style="border-radius: var(--fr-radius-control)">Control, chip, input: 8 px</div>
+      <div class="box" style="border-radius: var(--fr-radius-sheet)">Sheet, banner, route card: 16 px</div>
+      <div class="box raised" style="border-radius: var(--fr-radius-sheet)">Elevated: shadow in light, tone in dark</div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-sheet">
+    <h2 id="h-sheet">Sheet material</h2>
+    <p>One translucent layer over the map. Risk text sits on an opaque inner surface. High contrast, Sunlight, forced colors and reduced transparency all fall back to solid.</p>
+    <div class="mapdemo" style="margin-top: var(--fr-space-4)">
+      <svg viewBox="0 0 576 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+        <path class="water" d="M-10 150C80 120 140 190 240 160S420 90 590 130V250H-10Z"/>
+        <path class="road" d="M-10 60C120 40 220 110 340 70S520 20 590 40"/>
+        <path class="road minor" d="M120 -10C140 60 100 130 150 250"/>
+        <path class="road minor" d="M400 -10C380 50 430 120 410 250"/>
+      </svg>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="inner">
+          <span class="t">Safest route, 24 min</span>
+          <span class="chip" data-level="risky"><svg class="icon" aria-hidden="true"><use href="#ph-warning"/></svg><span>Likely flooded</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const GROUPS = [
+    { title: 'Text on surfaces', need: 4.5, kind: 'text', rows: [
+      ['ink', 'canvas'], ['ink', 'surface'], ['ink', 'surface-elevated'],
+      ['ink-2', 'canvas'], ['ink-2', 'surface'], ['ink-2', 'surface-elevated'],
+      ['accent', 'canvas'], ['accent', 'surface'], ['accent', 'surface-elevated'],
+      ['unknown', 'canvas'], ['unknown', 'surface'], ['unknown', 'surface-elevated']] },
+    { title: 'Risk text on chips and canvas (AAA)', need: 7, kind: 'text', rows: [
+      ['safe-ink', 'safe-tint'], ['watch-ink', 'watch-tint'], ['risky-ink', 'risky-tint'],
+      ['impassable-ink', 'impassable-tint'], ['unknown-ink', 'unknown-tint'], ['watch-ink', 'canvas']] },
+    { title: 'Graphics and focus', need: 3, kind: 'bar', rows: [
+      ['safe', 'canvas'], ['watch', 'canvas'], ['risky', 'canvas'], ['impassable', 'canvas'], ['casing', 'canvas'],
+      ['focus', 'canvas', 'ring'], ['focus', 'surface', 'ring'], ['focus', 'surface-elevated', 'ring']] },
+  ];
+  const el = (tag, attrs = {}, html = '') => Object.assign(document.createElement(tag), attrs, { innerHTML: html });
+  const host = document.getElementById('pair-tables');
+  for (const g of GROUPS) {
+    const t = el('table', { className: 'pairs' }, `<caption>${g.title}: ${g.need} to 1</caption><thead><tr><th scope="col">Sample</th><th scope="col">Pair</th><th scope="col">Measured</th></tr></thead>`);
+    const body = el('tbody');
+    for (const [fg, bg, shape] of g.rows) {
+      const cased = fg === 'watch' && bg === 'canvas';
+      const sample = (shape || g.kind) === 'text' ? '<b>Aa</b><span>Road status</span>'
+        : shape === 'ring' ? '<span class="ring"></span>' : `<span class="bar${cased ? ' cased' : ''}"></span>`;
+      const tr = el('tr', {}, `<td><span class="pair" style="--fg: var(--fr-${fg}); --bg: var(--fr-${bg})">${sample}</span></td><td class="mono">${fg} on ${bg}</td><td class="verdict num"></td>`);
+      tr.dataset.need = g.need; tr.dataset.cased = cased ? '1' : '';
+      body.append(tr);
+    }
+    t.append(body); host.append(t);
+  }
+
+  const rgb = (s) => s.match(/[\d.]+/g).slice(0, 3).map(Number);
+  const lum = ([r, g, b]) => [r, g, b].map((v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }).reduce((a, v, i) => a + v * [0.2126, 0.7152, 0.0722][i], 0);
+  function measure() {
+    document.getElementById('active').textContent = getComputedStyle(root).getPropertyValue('--fr-theme').trim() || 'light';
+    for (const tr of document.querySelectorAll('#pair-tables tbody tr')) {
+      const cs = getComputedStyle(tr.querySelector('.pair'));
+      const [a, b] = [lum(rgb(cs.color)), lum(rgb(cs.backgroundColor))].sort((x, y) => y - x);
+      const ratio = (a + 0.05) / (b + 0.05), need = Number(tr.dataset.need);
+      const ok = ratio + 1e-9 >= need;
+      const word = ok ? 'pass' : tr.dataset.cased ? 'casing carries it' : 'fail';
+      tr.lastElementChild.innerHTML = `${ratio.toFixed(2)} to 1 <span class="word">${word}</span>`;
+    }
+  }
+
+  const radios = [...document.querySelectorAll('input[name=theme]')];
+  function apply(v) {
+    if (v === 'system') root.removeAttribute('data-theme'); else root.dataset.theme = v;
+    history.replaceState(null, '', `#${v}`);
+    measure();
+  }
+  for (const r of radios) r.addEventListener('change', () => apply(r.value));
+  const start = location.hash.slice(1), hit = radios.find((r) => r.value === start);
+  if (hit) { hit.checked = true; apply(hit.value); } else measure();
+})();
+</script>
+</body>
+</html>

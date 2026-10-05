@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet title="XSL_formatting" type="text/xsl" href="feed.xsl"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>All India: CAP Disaster Alert Feeds</title>
+    <description>CAP Integrated Alert System Warning Updates</description>
+    <language>en</language>
+    <link>https://sachet.ndma.gov.in/cap_public_website/rss/rss_india.xml</link>
+    <atom:link href="https://sachet.ndma.gov.in/cap_public_website/rss/rss_india.xml" rel="self" type="application/rss+xml"/>
+    <copyright>public domain</copyright>
+    <pubDate>Tue, 15 Sep 2026 09:02:00 GMT</pubDate>
+    
+    <item>
+      <title>Thunderstorm with Lightning is likely to occur at isolated places over Bengaluru Rural, Bengaluru Urban, Chamarajanagara, Chikkaballapura, Hassan, Kolar, Mandya, Mysuru, Ramanagara, Tumakuru districts in next 3 hours Source : IMD Bengaluru.</title>
+      <description/>
+      <category>Met</category>
+      <link>https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1791229078945019</link>
+      <author>controlroom@ndma.gov.in (IMD Bengaluru)</author>
+      <guid isPermaLink="false">1791229078945019</guid>
+      <pubDate>Mon, 05 Oct 2026 19:55:05 GMT</pubDate>
+    </item>
+    <item>
+      <title>[2026/10/06 01:12] अगले 3 घंटो के दौरान, आपके क्षेत्र में, कहीं-कहीं गर्जन के साथ आकाशीय बिजली चमकने/वर्षा के तीव्र दौर होने की संभवना हैं I</title>
+      <description/>
+      <category>Met</category>
+      <link>https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1791229518905009</link>
+      <author>controlroom@ndma.gov.in (IMD Dehradun)</author>
+      <guid isPermaLink="false">1791229518905009</guid>
+      <pubDate>Mon, 05 Oct 2026 19:48:21 GMT</pubDate>
+    </item>
+    <item>
+      <title>మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.</title>
+      <description/>
+      <category>Met</category>
+      <link>https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1791227005191008</link>
+      <author>controlroom@ndma.gov.in (Andhra Pradesh SDMA)</author>
+      <guid isPermaLink="false">1791227005191008</guid>
+      <pubDate>Mon, 05 Oct 2026 19:04:08 GMT</pubDate>
+    </item>
+    <item>
+      <title>पुढील ३ तासांत आपल्या जिल्ह्यांतील काही ठिकाणी विजांच्या कडकडाटासह हलक्या पावसाची शक्यता आहे. नागरिकांनी सतर्क राहावे, मंत्रालय, मुंबई.</title>
+      <description/>
+      <category>Met</category>
+      <link>https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1791207808206029</link>
+      <author>controlroom@ndma.gov.in (IMD Mumbai)</author>
+      <guid isPermaLink="false">1791207808206029</guid>
+      <pubDate>Mon, 05 Oct 2026 13:47:56 GMT</pubDate>
+    </item>
+    <item>
+      <title>River Adhwara Group at Kamtaul in Darbhanga district of Bihar continues to flow in severe flood situation at 6:00 pm today.</title>
+      <description/>
+      <category>Met</category>
+      <link>https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1791205725481016</link>
+      <author>controlroom@ndma.gov.in (CWC)</author>
+      <guid isPermaLink="false">1791205725481016</guid>
+      <pubDate>Mon, 05 Oct 2026 13:08:46 GMT</pubDate>
+    </item>
+    <item>
+      <title>পশ্চিমবঙ্গের মুর্শিদাবাদ জেলার ফারাক্কায় গঙ্গা নদী আজ সন্ধ্যা ৬টা থেকে তীব্র বন্যা পরিস্থিতির মধ্যে প্রবাহিত হচ্ছে।</title>
+      <description/>
+      <category>Met</category>
+      <link>https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1791204453036017</link>
+      <author>controlroom@ndma.gov.in (CWC)</author>
+      <guid isPermaLink="false">1791204453036017</guid>
+      <pubDate>Mon, 05 Oct 2026 13:00:11 GMT</pubDate>
+    </item>
+    <item>
+      <title>കേരളത്തിലെ തൃശ്ശൂർ ജില്ലയിൽ ഒറ്റപ്പെട്ടയിടങ്ങളിൽ ഇടിമിന്നലോട് കൂടിയ ഇടത്തരം മഴയ്ക്കും മണിക്കൂറിൽ 50 കിലോമീറ്റർ വരെ വേഗതയിൽ ശക്തമായ കാറ്റിനും സാധ്യത. 05.10.2026; 05.00 pm; IMD -KSDMA</title>
+      <description/>
+      <category>Met</category>
+      <link>https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1791201232335006</link>
+      <author>controlroom@ndma.gov.in (IMD Thiruvananthapuram)</author>
+      <guid isPermaLink="false">1791201232335006</guid>
+      <pubDate>Mon, 05 Oct 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>ಮುಂದಿನ 3 ಗಂಟೆಗಳಲ್ಲಿ ಬೆಳಗಾವಿ ಜಿಲ್ಲೆಯ ಒಂದೆರಡು ಕಡೆಗಳಲ್ಲಿ ಗುಡುಗು ಸಹಿತ ಮಳೆಯಾಗುವ ಸಾಧ್ಯತೆಯಿದೆ. IMD MC BNG</title>
+      <description/>
+      <category>Met</category>
+      <link>https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1791194123192019</link>
+      <author>controlroom@ndma.gov.in (IMD Bengaluru)</author>
+      <guid isPermaLink="false">1791194123192019</guid>
+      <pubDate>Mon, 05 Oct 2026 10:03:16 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

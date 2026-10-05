@@ -1,0 +1,1551 @@
+candidate_id,osm_way_id,name,highway,structure,reasons,length_m,lat,lon,tunnel,bridge,layer,flood_prone,crossing
+22660989-x1,22660989,Haddows Road,primary,dip,waterway_crossing,577,13.062796,80.247673,,,,,drain#28502295
+22688276-x1,22688276,Greams Road,tertiary,dip,waterway_crossing,797,13.062754,80.25441,,,,,stream#217688013
+22977703-x1,22977703,Wallajah Road,secondary,underpass,under_rail_bridge,261,13.064429,80.27962,,,,,railway#240340228
+22977703-x2,22977703,Wallajah Road,secondary,underpass,under_rail_bridge,261,13.064429,80.27962,,,,,railway#549727267
+22977706,22977706,,secondary,low_bridge,bridge_over_water,25,13.064229,80.280738,,yes,1,,
+23030553-x1,23030553,,residential,dip,waterway_crossing,279,13.071621,80.248096,,,,,drain#217696076
+23030841,23030841,Harris Bridge,secondary,low_bridge,bridge_over_water,71,13.068353,80.269269,,yes,1,,
+23046393-x1,23046393,Mayor Sathiyamoorthy Road,residential,dip,waterway_crossing,723,13.074205,80.252386,,,,,drain#217696076
+23066164-x1,23066164,Gengu Reddy Road,secondary,dip,waterway_crossing,72,13.074172,80.252268,,,,,drain#217696076
+23110065,23110065,Thiru Vi Ka Bridge,primary,low_bridge,bridge_over_water,339,13.011645,80.259188,,yes,1,,
+23110071,23110071,Thiru Vi Ka Bridge,primary,low_bridge,bridge_over_water,339,13.014715,80.259173,,yes,1,,
+23186322-x1,23186322,Aranganathan Subway,secondary,underpass,under_rail_bridge,200,13.028352,80.224617,,,,,railway#240340232
+23186322-x2,23186322,Aranganathan Subway,secondary,underpass,under_rail_bridge,200,13.028343,80.224658,,,,,railway#240340262
+23186322-x3,23186322,Aranganathan Subway,secondary,underpass,under_rail_bridge,200,13.028333,80.224707,,,,,railway#240340269
+23186322-x4,23186322,Aranganathan Subway,secondary,underpass,under_rail_bridge,200,13.028362,80.224569,,,,,railway#240340273
+23500007-x1,23500007,D'Mellows Salai,secondary,dip,waterway_crossing,703,13.09677,80.263213,,,,,drain#30981164
+23500025-x1,23500025,Tana street,tertiary,dip,waterway_crossing,420,13.09121,80.254194,,,,,drain#30981164
+23500030-x1,23500030,Arunachalam Street,residential,dip,waterway_crossing,268,13.092667,80.256534,,,,,drain#30981164
+23647177,23647177,Maraimalai Adigal Bridge,primary,low_bridge,bridge_over_water,237,13.018111,80.224685,,yes,1,,
+23648240-x1,23648240,,residential,dip,waterway_crossing,419,12.939203,80.087371,,,,,drain#383857990
+23698640-x1,23698640,,residential,dip,waterway_crossing,228,13.032074,80.201998,,,,,canal:Maruthur Gopalan Ramachandran Nagar Canal#25460321
+23803992-x1,23803992,Konnur High Road,primary,culvert,waterway_crossing,1047,13.096897,80.246856,,,,,drain:Egankipuram Canal#1202685098
+23803998-x1,23803998,Konnur High Road,primary,dip,waterway_crossing,1316,13.098797,80.221548,,,,,drain#217926516
+23804006-x1,23804006,Portious Road,secondary,culvert,waterway_crossing,313,13.102282,80.231032,,,,,drain:Ainsley Canal#1188575636
+23885100,23885100,Stanley Viaduct,secondary,low_bridge,bridge_over_water,528,13.078634,80.275248,,yes,2,,
+23885101-x1,23885101,,service,culvert,waterway_crossing,163,13.082162,80.274834,,,,,canal:Buckingham Canal#1080352339
+23954894,23954894,Kasim Street,residential,underpass,tunnel=yes;layer<0,139,13.052651,80.26514,yes,,-1,,
+24375561-x1,24375561,Wallace Garden 2nd Street,residential,dip,waterway_crossing,385,13.062778,80.249784,,,,,drain#28502295
+24888589,24888589,Napier Bridge,primary,low_bridge,bridge_over_water,154,13.068073,80.284364,,yes,1,,
+24888594-x1,24888594,Victoria Hostel Road,residential,underpass,under_rail_bridge,752,13.06422,80.280629,,,,,railway#240340228
+24888594-x2,24888594,Victoria Hostel Road,residential,underpass,under_rail_bridge,752,13.06422,80.280629,,,,,railway#549727267
+25392296-x1,25392296,Railway Station Road,residential,dip,waterway_crossing,534,13.114308,80.16642,,,,,drain#835007994
+25459322,25459322,Station Road,residential,dip,flood_prone=yes,230,13.038358,80.226889,,,,yes,
+25504467-x1,25504467,West Karikalan Street,residential,culvert,waterway_crossing,348,12.992298,80.198343,,,,,drain#881880738
+25594260-x1,25594260,Chennai Bypass Expressway,trunk,dip,waterway_crossing,1812,13.02363,80.140418,,,,,drain:Thanthi Channel#837068308
+25689776-x1,25689776,Nagi Reddy thottam Garden Rd,residential,dip,waterway_crossing,279,13.01852,80.211838,,,,,stream#32742657
+26518353-x1,26518353,Madhavaram High Road,primary,dip,waterway_crossing,1743,13.123459,80.242182,,,,,drain:Jawahar Canal#102550241
+26607459-x1,26607459,,residential,culvert,waterway_crossing,226,13.028682,80.21274,,,,,canal:Jafferkhanpet Canal#27709396
+27319909-x1,27319909,,residential,culvert,waterway_crossing,289,12.981097,80.218622,,,,,canal:drain path#103716694
+27319921-x1,27319921,13th Main Road,residential,culvert,waterway_crossing,203,12.970997,80.217994,,,,,canal:drain path#1105956376
+27320131-x1,27320131,Main Road,residential,culvert,waterway_crossing,141,12.984413,80.217123,,,,,canal:drain path#103716694
+27343720-x1,27343720,South Street,residential,culvert,waterway_crossing,152,12.985202,80.21785,,,,,canal:drain path#103716694
+27345485-x1,27345485,,residential,culvert,waterway_crossing,205,12.992298,80.198343,,,,,drain#881880737
+27345487-x1,27345487,,residential,culvert,waterway_crossing,141,12.992657,80.196884,,,,,drain#881880735
+27351932-x1,27351932,Cholan Street,residential,culvert,waterway_crossing,169,12.978861,80.19342,,,,,drain:Veerangal Canal#328358961
+27351934-x1,27351934,V. O. C. Street,residential,culvert,waterway_crossing,233,12.978971,80.194087,,,,,drain:Veerangal Canal#328358961
+27351936-x1,27351936,John Kennady Street,residential,culvert,waterway_crossing,246,12.979292,80.194274,,,,,drain:Veerangal Canal#328358961
+27351951-x1,27351951,Alex Street,residential,culvert,waterway_crossing,210,12.981314,80.195091,,,,,drain:Veerangal Canal#328358961
+27355157-x1,27355157,Sarathy Nagar 5th street,residential,dip,waterway_crossing,139,12.97482,80.222572,,,,,drain#384187223
+27369871-x1,27369871,,tertiary,underpass,under_rail_bridge,198,12.989214,80.195401,,,,,railway#28620048
+27369871-x2,27369871,,tertiary,underpass,under_rail_bridge,198,12.989214,80.195401,,,,,railway#235921450
+27369882-x1,27369882,,residential,underpass,under_rail_bridge,278,12.991478,80.194977,,,,,railway#28620048
+27369882-x2,27369882,,residential,underpass,under_rail_bridge,278,12.991472,80.195033,,,,,railway#235921450
+27442494-x1,27442494,,residential,culvert,waterway_crossing,117,13.028184,80.212205,,,,,canal:Jafferkhanpet Canal#27709396
+27483141-x1,27483141,,residential,underpass,under_rail_bridge,220,12.993024,80.195768,,,,,railway#28620048
+27483141-x2,27483141,,residential,underpass,under_rail_bridge,220,12.993024,80.195768,,,,,railway#235921450
+27505292-x1,27505292,Kalvivaru Street,residential,underpass,under_rail_bridge,333,13.036673,80.268676,,,,,railway#549727229
+27505292-x2,27505292,Kalvivaru Street,residential,underpass,under_rail_bridge,333,13.036673,80.268676,,,,,railway#549727259
+27768972,27768972,Laws Bridge,service,low_bridge,bridge_over_water,90,13.078985,80.270529,,yes,1,,
+27769330,27769330,Grand Southern Trunk Road,trunk,underpass,layer<0,1766,12.988335,80.17727,,,-1,,
+27838213-x1,27838213,,residential,dip,waterway_crossing,658,13.062913,80.217085,,,,,canal:Virugambakkam Canal#1284526464
+28067351,28067351,Maraimalai Adigal Bridge,primary,low_bridge,bridge_over_water,237,13.016783,80.225356,,yes,1,,
+28138946-x1,28138946,,service,underpass,under_rail_bridge,331,13.074684,80.273907,,,,,railway#1237151537
+28138946-x2,28138946,,service,underpass,under_rail_bridge,331,13.074684,80.273907,,,,,railway#1237151538
+28138946-x3,28138946,,service,underpass,under_rail_bridge,331,13.072527,80.274015,,,,,railway#240340228
+28138946-x4,28138946,,service,underpass,under_rail_bridge,331,13.072527,80.274015,,,,,railway#549727267
+28138953,28138953,Periyar Bridge,primary,low_bridge,bridge_over_water,130,13.072849,80.275495,,yes,1,,
+28138957,28138957,Periyar Bridge,primary,low_bridge,bridge_over_water,130,13.071959,80.274706,,yes,1,,
+28138961,28138961,Quaid-e-Milleth Bridge,primary,low_bridge,bridge_over_water,49,13.078843,80.281863,,yes,1,,
+28138973-x1,28138973,,tertiary,underpass,under_rail_bridge,149,13.071208,80.274532,,,,,railway#240340228
+28138973-x2,28138973,,tertiary,underpass,under_rail_bridge,149,13.071208,80.274532,,,,,railway#549727267
+28152148,28152148,Commander-In-Chief Bridge,secondary,low_bridge,bridge_over_water,75,13.063777,80.260211,,yes,1,,
+28225365-x1,28225365,,service,culvert,waterway_crossing,195,13.023819,80.179098,,,,,drain#122063612
+28225369-x1,28225369,Anuradha Paint Road,tertiary,culvert,waterway_crossing,877,13.02554,80.17715,,,,,drain#122063612
+28295242,28295242,Napier Bridge,primary,low_bridge,bridge_over_water,155,13.069464,80.284563,,yes,1,,
+28295586-x1,28295586,,living_street,dip,waterway_crossing,247,13.078523,80.249133,,,,,drain#217696076
+28295587-x1,28295587,,residential,dip,waterway_crossing,251,13.078355,80.248129,,,,,drain#217696076
+28534270,28534270,Nanganallur Road,tertiary,underpass,tunnel=yes;layer<0,237,12.989071,80.185268,yes,,-1,,
+28682386,28682386,Koyambedu Bridge,primary,low_bridge,bridge_over_water,117,13.077273,80.199087,,yes,1,,
+28682394,28682394,Koyambedu Bridge,primary,low_bridge,bridge_over_water,118,13.078304,80.198806,,yes,1,,
+28927273,28927273,Quaid-e-Milleth Bridge,primary,low_bridge,bridge_over_water,49,13.078472,80.281597,,yes,1,,
+29044820,29044820,College Bridge,secondary,low_bridge,bridge_over_water,64,13.066892,80.254361,,yes,1,,
+29044852,29044852,College Bridge,secondary,low_bridge,bridge_over_water,64,13.06735,80.254726,,yes,1,,
+29071453,29071453,Barbers Bridge,tertiary,low_bridge,bridge_over_water,46,13.041781,80.274449,,yes,1,,
+29114655,29114655,Maduvankarai Bridge,tertiary,low_bridge,bridge_over_water,117,13.07836,80.21201,,yes,1,,
+30128611-x1,30128611,Chembarambakkam Dam Road,unclassified,culvert,waterway_crossing,3630,12.996918,80.06954,,,,,ditch#696533211
+30128611-x2,30128611,Chembarambakkam Dam Road,unclassified,culvert,waterway_crossing,3630,12.997945,80.07954,,,,,ditch#696533197
+30128825-x1,30128825,Malyambakkam Harijan Colony Road,tertiary,culvert,waterway_crossing,3303,13.020084,80.085057,,,,,canal#1151629362
+30128825-x2,30128825,Malyambakkam Harijan Colony Road,tertiary,culvert,waterway_crossing,3303,13.018121,80.08656,,,,,drain:Chembarambakkam Irrigation canal#1151629364
+30128825-x3,30128825,Malyambakkam Harijan Colony Road,tertiary,dip,waterway_crossing,3303,13.01796,80.087004,,,,,ditch:Chembarambakkam irrigation canal#383742981
+30128825-x4,30128825,Malyambakkam Harijan Colony Road,tertiary,culvert,waterway_crossing,3303,13.0085,80.088306,,,,,stream:Chembarampakkam water for irrigation#1151629366
+30247643-x1,30247643,Pudu Manickam Naigar Street,residential,dip,waterway_crossing,272,13.09121,80.254194,,,,,drain#30981164
+30437886-x1,30437886,Nandanam Main Road,tertiary,culvert,waterway_crossing,594,13.028871,80.240744,,,,,drain#1229272624
+30604291-x1,30604291,,residential,dip,waterway_crossing,29,12.975154,80.223178,,,,,drain#384187223
+30604301-x1,30604301,Velachery Bypass Road,primary,culvert,waterway_crossing,831,12.981451,80.217951,,,,,canal:drain path#103716694
+30604301-x2,30604301,Velachery Bypass Road,primary,dip,waterway_crossing,831,12.987462,80.218223,,,,,drain#102550213
+30606826,30606826,,residential,low_bridge,bridge_over_water,6,12.990988,80.214261,,yes,1,,
+30609728-x1,30609728,Taramani Link Road,primary,underpass,under_rail_bridge,840,12.980874,80.247261,,,,,railway#59909721
+30609728-x2,30609728,Taramani Link Road,primary,underpass,under_rail_bridge,840,12.980874,80.247261,,,,,railway#235920568
+30742142,30742142,Padikuppam Causeway,residential,low_bridge,bridge_over_water,54,13.074562,80.190601,,yes,1,,
+30851278,30851278,EVR Periyar Salai,primary,low_bridge,bridge_over_water,59,13.074199,80.221834,,yes,1,,
+30852838-x1,30852838,Palli Arasan street,residential,dip,waterway_crossing,184,13.088426,80.231392,,,,,drain#217926518
+30970591,30970591,Choolaimedu Bridge,tertiary,low_bridge,bridge_over_water,92,13.067832,80.231689,,yes,1,,
+30977345-x1,30977345,Errand Street,residential,dip,waterway_crossing,274,13.092519,80.256093,,,,,drain#30981164
+30977348-x1,30977348,Chinnathambi Street,residential,dip,waterway_crossing,490,13.092918,80.255478,,,,,drain#30981164
+30981165-x1,30981165,KM Garden Street,residential,dip,waterway_crossing,284,13.094533,80.261689,,,,,drain#30981164
+31011617-x1,31011617,,track,dip,waterway_crossing,235,13.247571,80.257529,,,,,river:Kortallaiyar River#133599488
+31011632-x1,31011632,,track,dip,waterway_crossing,297,13.23005,80.272143,,,,,river:Kortallaiyar River#133599488
+31020449-x1,31020449,Kamarajar Salai,secondary,culvert,waterway_crossing,5304,13.166113,80.252143,,,,,drain#1201028112
+31241503,31241503,Poonamallee - Kundrathur - Pallavaram Road,primary,low_bridge,bridge_over_water,194,12.986419,80.119341,,yes,1,,
+31242168-x1,31242168,Chennai Bypass Expressway,trunk,culvert,waterway_crossing,1655,13.005463,80.127394,,,,,drain#1255150780
+31242169-x1,31242169,Chennai Bypass Expressway,trunk,dip,waterway_crossing,1348,13.016379,80.131514,,,,,canal:Chembarambakkam irrigation canal#837068336
+31243202,31243202,Small Street,residential,underpass,layer<0,264,12.998978,80.094593,,,-1,,
+31243205-x1,31243205,Ponniamman Koil Street,residential,culvert,waterway_crossing,866,13.004354,80.090994,,,,,stream#836320336
+31243205-x2,31243205,Ponniamman Koil Street,residential,culvert,waterway_crossing,866,13.002163,80.091781,,,,,drain#836326670
+31243211-x1,31243211,Gangai Amman Koil Street,residential,culvert,waterway_crossing,348,13.001108,80.089862,,,,,drain#836320338
+31897157,31897157,,secondary,low_bridge,bridge_over_water,29,13.064399,80.281008,,yes,1,,
+31956734,31956734,Krishna Street,residential,low_bridge,bridge_over_water,20,13.061151,80.199413,,yes,1,,
+31959760,31959760,RA Puram 2nd Main Road,secondary,none,tunnel=building_passage,6,13.027039,80.260283,building_passage,,,,
+32015994-x1,32015994,,tertiary,culvert,waterway_crossing,1911,13.218797,80.091319,,,,,canal#1191352300
+32142576,32142576,Munro Bridge,primary,low_bridge,bridge_over_water,81,13.068569,80.242544,,yes,1,,
+32142586,32142586,Munro Bridge,primary,low_bridge,bridge_over_water,81,13.067884,80.242825,,yes,1,,
+32424222,32424222,Jafferkhanpet Bridge,primary,low_bridge,bridge_over_water,370,13.027602,80.208168,,yes,1,,
+32427417,32427417,Mount - Poonamallee - Avadi Road,primary,low_bridge,bridge_over_water,161,13.019861,80.185838,,yes,1,,
+32427418,32427418,Mount - Poonamallee - Avadi Road,primary,low_bridge,bridge_over_water,158,13.018681,80.186702,,yes,1,,
+32427461-x1,32427461,Miot International Hospital road,service,culvert,waterway_crossing,302,13.02357,80.186222,,,,,drain#1123838348
+32427668,32427668,Jafferkhanpet Bridge,primary,low_bridge,bridge_over_water,380,13.026379,80.207533,,yes,1,,
+32520563-x1,32520563,Jawaharlal Nehru Road (100 Feet Road),primary,culvert,waterway_crossing,1724,13.120247,80.199251,,,,,drain#1282455640
+32543791,32543791,Abraham Bridge,secondary,low_bridge,bridge_over_water,278,13.017637,80.218048,,yes,1,,
+32613670-x1,32613670,K Karunanidhi Road,tertiary,dip,waterway_crossing,546,13.031777,80.200723,,,,,canal:Maruthur Gopalan Ramachandran Nagar Canal#25460321
+32724324-x1,32724324,,residential,culvert,waterway_crossing,616,12.977832,80.148713,,,,,drain#1147391893
+32801767-x1,32801767,,tertiary,dip,waterway_crossing,199,13.016951,80.209288,,,,,stream#32742657
+33276954,33276954,Kotturpuram Bridge,secondary,low_bridge,bridge_over_water,299,13.026783,80.243954,,yes,1,,
+33631856-x1,33631856,,residential,dip,waterway_crossing,330,13.049001,80.125414,,,,,drain#102575799
+33876055,33876055,,residential,low_bridge,bridge_over_water,13,13.068064,80.219156,,yes,1,,
+33876622,33876622,,residential,low_bridge,bridge_over_water,23,13.066036,80.21799,,yes,1,,
+33876623,33876623,,residential,low_bridge,bridge_over_water,21,13.06652,80.217279,,yes,1,,
+33876629,33876629,,residential,low_bridge,bridge_over_water,24,13.068,80.217991,,yes,1,,
+33876631,33876631,,residential,low_bridge,bridge_over_water,16,13.067959,80.219989,,yes,1,,
+33876634,33876634,Collectorate Colony 6th Cross Street,residential,low_bridge,bridge_over_water,23,13.068457,80.22056,,yes,1,,
+33876635,33876635,,residential,low_bridge,bridge_over_water,24,13.068115,80.222151,,yes,1,,
+33876639,33876639,Anna High Road,residential,low_bridge,bridge_over_water,22,13.067589,80.223207,,yes,1,,
+33876641,33876641,,residential,low_bridge,bridge_over_water,9,13.067348,80.224202,,yes,1,,
+33876643,33876643,Vada Agaram Road,tertiary,low_bridge,bridge_over_water,24,13.06697,80.22561,,yes,1,,
+33876646,33876646,,residential,low_bridge,bridge_over_water,35,13.065449,80.22674,,yes,1,,
+33876648,33876648,Thiruvenkata Puram 1st Street,residential,low_bridge,bridge_over_water,33,13.065955,80.226933,,yes,1,,
+33876649,33876649,,residential,low_bridge,bridge_over_water,31,13.066376,80.226997,,yes,1,,
+33876651,33876651,,residential,low_bridge,bridge_over_water,27,13.066777,80.227139,,yes,1,,
+33876661,33876661,,residential,low_bridge,bridge_over_water,30,13.060837,80.226553,,yes,1,,
+33876669,33876669,Vanniyar Street,tertiary,low_bridge,bridge_over_water,17,13.058712,80.226038,,yes,1,,
+33876672,33876672,3rd Cross Street,residential,low_bridge,bridge_over_water,14,13.057827,80.226302,,yes,1,,
+33876673,33876673,,residential,low_bridge,bridge_over_water,18,13.058139,80.226274,,yes,1,,
+33876674,33876674,,residential,low_bridge,bridge_over_water,25,13.056413,80.226092,,yes,1,,
+34618003,34618003,Mount - Poonamallee - Avadi Road,primary,low_bridge,bridge_over_water,135,13.085033,80.108656,,yes,1,,
+34622008-x1,34622008,Santhosh Nagar 5th Street,residential,dip,waterway_crossing,329,13.128993,80.200898,,,,,drain#1289814513
+34622008-x2,34622008,Santhosh Nagar 5th Street,residential,dip,waterway_crossing,329,13.128993,80.200898,,,,,drain#1290230925
+34622008-x3,34622008,Santhosh Nagar 5th Street,residential,dip,waterway_crossing,329,13.129416,80.200008,,,,,drain#1096754048
+34622008-x4,34622008,Santhosh Nagar 5th Street,residential,dip,waterway_crossing,329,13.129779,80.198967,,,,,drain#1290230927
+34622026-x1,34622026,,secondary,dip,waterway_crossing,260,13.130378,80.20233,,,,,drain#1089712389
+34690168-x1,34690168,Gangai Amman Koil Street,tertiary,culvert,waterway_crossing,337,13.025076,80.212325,,,,,canal:Jafferkhanpet Canal#1225579229
+34828498,34828498,Venkatesa Agraharam Road,tertiary,low_bridge,bridge_over_water,25,13.033368,80.264182,,yes,1,,
+47800425-x1,47800425,,tertiary,dip,waterway_crossing,375,13.015718,80.130413,,,,,canal:Chembarambakkam irrigation canal#837068336
+47800435-x1,47800435,Chennai Bypass Expressway,trunk,dip,waterway_crossing,1806,13.024349,80.141049,,,,,drain:Thanthi Channel#837068308
+47800437-x1,47800437,Chennai Bypass Expressway,trunk,dip,waterway_crossing,1345,13.015714,80.130872,,,,,canal:Chembarambakkam irrigation canal#837068336
+47997854-x1,47997854,Motilal Nehru Street,residential,dip,waterway_crossing,199,13.09682,80.26612,,,,,drain#30981164
+48042297-x1,48042297,,living_street,dip,waterway_crossing,201,13.097065,80.264829,,,,,drain#30981164
+48042310-x1,48042310,Main Road,residential,dip,waterway_crossing,163,13.096974,80.265557,,,,,drain#30981164
+48042328-x1,48042328,,living_street,dip,waterway_crossing,110,13.097221,80.266259,,,,,drain#30981164
+48042332-x1,48042332,,living_street,dip,waterway_crossing,105,13.096979,80.266169,,,,,drain#30981164
+48057010-x1,48057010,Venkatadri Street,residential,dip,waterway_crossing,553,13.091668,80.254716,,,,,drain#30981164
+48115222-x1,48115222,Venkatesa Street,residential,dip,waterway_crossing,335,13.093275,80.25667,,,,,drain#30981164
+48737655-x1,48737655,,residential,dip,waterway_crossing,419,13.101632,80.246891,,,,,drain:Egankipuram Canal#346285803
+48738636-x1,48738636,,tertiary,dip,waterway_crossing,849,13.092797,80.226394,,,,,drain#240869135
+48738642-x1,48738642,,residential,dip,waterway_crossing,85,13.094366,80.224495,,,,,drain#240869135
+48738651-x1,48738651,,residential,dip,waterway_crossing,639,13.087748,80.234766,,,,,drain#217926518
+48738662-x1,48738662,Vellala Street,tertiary,dip,waterway_crossing,586,13.096573,80.22173,,,,,drain#217926516
+48741289-x1,48741289,,residential,dip,waterway_crossing,74,13.097062,80.222322,,,,,drain#217926516
+48741295-x1,48741295,,residential,dip,waterway_crossing,1219,13.098216,80.222578,,,,,drain#217926516
+48741374-x1,48741374,,residential,culvert,waterway_crossing,356,13.102934,80.227046,,,,,drain:Ainsley Canal#1188575632
+48753878-x1,48753878,,residential,dip,waterway_crossing,305,13.091412,80.227498,,,,,drain#217926518
+48756731-x1,48756731,,residential,culvert,waterway_crossing,272,13.09757,80.249484,,,,,drain:Egankipuram Canal#1202685104
+48756751-x1,48756751,,living_street,culvert,waterway_crossing,165,13.097003,80.250308,,,,,drain:Egankipuram Canal#1202685100
+51541652,51541652,Jones Subway,tertiary,underpass,tunnel=yes;layer<0,56,13.025273,80.224099,yes,,-1,,
+52873389-x1,52873389,Periyar salai,residential,dip,waterway_crossing,417,13.015204,80.172195,,,,,drain:Open drain#210934230
+59294072,59294072,Maduravoyal Interchange,trunk,low_bridge,bridge_over_water,382,13.06209,80.161141,,yes,1,,
+59909741,59909741,Inner Ring Road (Southern Sector),primary,low_bridge,bridge_over_water,305,12.985604,80.19595,,yes,1,,
+84100987-x1,84100987,Inner Ring Road (Southern Sector),primary,underpass,under_rail_bridge,268,12.990119,80.195572,,,,,railway#28620048
+84100987-x2,84100987,Inner Ring Road (Southern Sector),primary,underpass,under_rail_bridge,268,12.990119,80.195572,,,,,railway#235921450
+85857843-x1,85857843,Pasumpon Muthuramalingar Thevar Salai (Chamiers Road),secondary,culvert,waterway_crossing,650,13.030452,80.241322,,,,,drain#1229272626
+85862576,85862576,Kotturpuram Bridge,secondary,low_bridge,bridge_over_water,299,13.024196,80.243143,,yes,1,,
+85863030-x1,85863030,Pasumpon Muthuramalingar Thevar Salai (Chamiers Road),secondary,culvert,waterway_crossing,629,13.030375,80.241289,,,,,drain#1229272626
+95641751-x1,95641751,Rajiv Gandhi IT Expressway,primary,underpass,under_rail_bridge,506,12.98625,80.251739,,,,,railway#59909721
+95641751-x2,95641751,Rajiv Gandhi IT Expressway,primary,underpass,under_rail_bridge,506,12.986489,80.251677,,,,,railway#235920568
+96936232-x1,96936232,Grand Northern Trunk Road,trunk,dip,waterway_crossing,1367,13.14972,80.213053,,,,,drain#102553767
+96944712,96944712,Thiruverkadu - Ambattur Road,secondary,low_bridge,bridge_over_water,102,13.061699,80.138431,,yes,1,,
+97000446,97000446,Chennai Bypass Entry,trunk_link,underpass,tunnel=yes;layer<0,43,12.913027,80.101512,yes,,-1,,
+97554149-x1,97554149,Kadappa Road,secondary,dip,waterway_crossing,934,13.131742,80.199426,,,,,drain#1089517860
+97554149-x2,97554149,Kadappa Road,secondary,dip,waterway_crossing,934,13.132349,80.196557,,,,,drain#1316676520
+100857266,100857266,EVR Periyar Salai,primary,low_bridge,bridge_over_water,69,13.074298,80.222409,,yes,1,,
+102030553,102030553,Gengu Reddy Subway,secondary,underpass,tunnel=yes;layer<0,76,13.076189,80.252071,yes,,-1,,
+102032962,102032962,Darga Road,tertiary,underpass,tunnel=yes;layer<0,36,12.965254,80.150418,yes,,-1,,
+102454746-x1,102454746,Chennai Bypass,trunk,culvert,waterway_crossing,1036,13.139275,80.188201,,,,,drain:Underpass#1289631730
+102457951,102457951,Mambalam Canal Bridge,primary,low_bridge,bridge_over_water,43,13.024686,80.229256,,yes,1,,
+102457956,102457956,St Mary's Road,secondary,low_bridge,bridge_over_water,21,13.029241,80.260915,,yes,1,,
+102457958,102457958,Mambalam Canal Bridge,primary,low_bridge,bridge_over_water,42,13.025082,80.229421,,yes,1,,
+102469908,102469908,Inner Ring Road (Southern Sector),primary,low_bridge,bridge_over_water,310,12.985976,80.196132,,yes,1,,
+102469913,102469913,Sardar Patel Road,primary,low_bridge,bridge_over_water,27,13.006765,80.248077,,yes,1,,
+102469927,102469927,Sardar Patel Road,primary,low_bridge,bridge_over_water,24,13.006659,80.247822,,yes,1,,
+102469934,102469934,Canal Bank Road,tertiary,low_bridge,bridge_over_water,40,13.015241,80.24857,,yes,1,,
+102469935-x1,102469935,Sardar Patel Road,primary,underpass,under_rail_bridge,20,13.006654,80.247637,,,,,railway#549727236
+102470559,102470559,Rajiv Gandhi Salai,primary,low_bridge,bridge_over_water,102,12.924387,80.23062,,yes,1,,
+102472718-x1,102472718,OMR Service Road,service,underpass,under_rail_bridge,340,12.986093,80.251683,,,,,railway#59909721
+102472718-x2,102472718,OMR Service Road,service,underpass,under_rail_bridge,340,12.986312,80.251622,,,,,railway#235920568
+102479294,102479294,Mattankuppam Foot Bridge,residential,low_bridge,bridge_over_water,24,13.056283,80.280356,,yes,1,,
+102479297-x1,102479297,Avvai Shanmugam Salai,tertiary,underpass,under_rail_bridge,331,13.046583,80.277473,,,,,railway#549727226
+102479297-x2,102479297,Avvai Shanmugam Salai,tertiary,underpass,under_rail_bridge,331,13.046583,80.277473,,,,,railway#549727262
+102479302,102479302,Sunkuwar Street,residential,low_bridge,bridge_over_water,26,13.053334,80.280228,,yes,1,,
+102479303,102479303,Anna Nagar Bridge,secondary,low_bridge,bridge_over_water,62,13.08041,80.217821,,yes,1,,
+102479306-x1,102479306,Swami Sivananda Salai,tertiary,underpass,under_rail_bridge,986,13.071635,80.274737,,,,,railway#549727267
+102479306-x2,102479306,Swami Sivananda Salai,tertiary,underpass,under_rail_bridge,986,13.071611,80.274614,,,,,railway#240340228
+102479309,102479309,Greenways Road,tertiary,low_bridge,bridge_over_water,26,13.02226,80.252863,,yes,1,,
+102479310,102479310,Kutchery Road,secondary,low_bridge,bridge_over_water,29,13.036326,80.268817,,yes,1,,
+102479318,102479318,Kamarajar Salai,tertiary,low_bridge,bridge_over_water,33,13.02474,80.258018,,yes,1,,
+102479321,102479321,Anna Nagar Bridge,secondary,low_bridge,bridge_over_water,62,13.080971,80.217769,,yes,1,,
+102479323,102479323,Dr Radhakrishnan Salai,primary,low_bridge,bridge_over_water,29,13.043298,80.276142,,yes,1,,
+102479329,102479329,Besant Road,secondary,low_bridge,bridge_over_water,33,13.050816,80.279092,,yes,1,,
+102479331,102479331,Avvai Shanmugam Salai,tertiary,low_bridge,bridge_over_water,30,13.04661,80.277232,,yes,1,,
+102479333,102479333,Mundakanniamman Koil Street,residential,low_bridge,bridge_over_water,24,13.039327,80.269464,,yes,1,,
+102479337,102479337,Swami Sivananda Salai,tertiary,low_bridge,bridge_over_water,26,13.067896,80.282612,,yes,1,,
+102479338,102479338,Swami Sivananda Salai,tertiary,low_bridge,bridge_over_water,26,13.067816,80.282368,,yes,1,,
+102479339,102479339,Dr Radhakrishnan Salai,primary,low_bridge,bridge_over_water,33,13.04338,80.276418,,yes,1,,
+102479341,102479341,RK Mutt Road,secondary,low_bridge,bridge_over_water,24,13.035768,80.267889,,yes,1,,
+102479343,102479343,RK Mutt Road,secondary,low_bridge,bridge_over_water,33,13.035953,80.26777,,yes,1,,
+102484452,102484452,Coovam Bridge,residential,low_bridge,bridge_over_water,84,13.072826,80.185776,,yes,1,,
+102484457,102484457,Thiruvalluvar Saalai,secondary,low_bridge,bridge_over_water,108,13.072505,80.182035,,yes,1,,
+102547857,102547857,Jawaharlal Nehru Road (100 Feet Road),primary,low_bridge,bridge_over_water,27,13.061078,80.211749,,yes,1,,
+102547860,102547860,Thirumangalam – Mogappair Road,primary,low_bridge,bridge_over_water,19,13.087516,80.192222,,yes,1,,
+102547881,102547881,Jawaharlal Nehru Road (100 Feet Road),primary,low_bridge,bridge_over_water,29,13.061323,80.211544,,yes,1,,
+102547891,102547891,Thirumangalam – Mogappair Road,primary,low_bridge,bridge_over_water,15,13.087401,80.19202,,yes,1,,
+102550192,102550192,,residential,low_bridge,bridge_over_water,21,13.060941,80.1902,,yes,1,,
+102550195,102550195,Anna Main Road,secondary,low_bridge,bridge_over_water,13,13.035965,80.203911,,yes,1,,
+102550197,102550197,Kovilpadagai Main Road,secondary,low_bridge,bridge_over_water,24,13.176513,80.08466,,yes,1,,
+102550198,102550198,Singaperumalkoil - Sriperumbudur - Thiruvallur - Red Hills Road,primary,low_bridge,bridge_over_water,37,13.193926,80.174171,,yes,1,,
+102550204,102550204,Grand Northern Trunk Road:old NH5,trunk,low_bridge,bridge_over_water,103,13.186248,80.192046,,yes,1,,
+102550205,102550205,Grand Northern Trunk Road,trunk,low_bridge,bridge_over_water,104,13.185306,80.192123,,yes,1,,
+102550215,102550215,Mount - Poonamallee - Avadi Road,primary,low_bridge,bridge_over_water,25,13.021947,80.181896,,yes,1,,
+102550218,102550218,South Avenue,tertiary,low_bridge,bridge_over_water,18,13.130722,80.250197,,yes,1,,
+102550219,102550219,,tertiary,low_bridge,bridge_over_water,32,13.061895,80.192971,,yes,1,,
+102550227,102550227,Poonamallee - Pattabiram Road,tertiary,low_bridge,bridge_over_water,88,13.10774,80.059838,,yes,1,,
+102550228,102550228,Anna Main Road,secondary,low_bridge,bridge_over_water,12,13.036061,80.204044,,yes,1,,
+102550229,102550229,Morai Road,tertiary,low_bridge,bridge_over_water,32,13.176085,80.084075,,yes,1,,
+102550230,102550230,Grand Northern Trunk Road,trunk,low_bridge,bridge_over_water,46,13.131173,80.238534,,yes,1,,
+102550233,102550233,Mount - Poonamallee - Avadi Road,primary,low_bridge,bridge_over_water,31,13.021934,80.18225,,yes,1,,
+102550239,102550239,Grand Northern Trunk Road,trunk,low_bridge,bridge_over_water,46,13.123021,80.249028,,yes,1,,
+102550244,102550244,,residential,low_bridge,bridge_over_water,60,13.103008,80.091461,,yes,1,,
+102550245,102550245,Kaliamman Koil Street,secondary,low_bridge,bridge_over_water,25,13.060872,80.195993,,yes,1,,
+102553763,102553763,Thiruvottriyur – Ponneri – Panchetty Road,primary,low_bridge,bridge_over_water,50,13.180324,80.270095,,yes,1,,
+102553786,102553786,Thiruvottriyur – Ponneri – Panchetty Road,primary,low_bridge,bridge_over_water,49,13.180771,80.269951,,yes,1,,
+102553792,102553792,Kosapur Road,tertiary,low_bridge,bridge_over_water,99,13.177247,80.235466,,yes,1,,
+102553814,102553814,Madhavaram - Red Hills Road,primary,low_bridge,bridge_over_water,74,13.169742,80.221774,,yes,1,,
+102553828,102553828,Jawaharlal Nehru Road (100 Feet Road),primary,low_bridge,bridge_over_water,467,13.12973,80.213493,,yes,1,,
+102553835,102553835,Gandhi Salai,tertiary,low_bridge,bridge_over_water,75,13.169837,80.219138,,yes,1,,
+102553847,102553847,Inner Ring Road,primary,low_bridge,bridge_over_water,41,13.179801,80.256056,,yes,1,,
+102554327,102554327,Thiruvottriyur – Ponneri – Panchetty Road,primary,low_bridge,bridge_over_water,141,13.216609,80.272393,,yes,,,
+102559087,102559087,Mount - Medavakkam Road,primary,low_bridge,bridge_over_water,36,12.950257,80.185697,,yes,,,
+102574433,102574433,,tertiary,low_bridge,bridge_over_water,104,13.066204,80.123859,,yes,1,,
+102574493-x1,102574493,,unclassified,dip,waterway_crossing,919,13.10861,80.157932,,,,,drain#102574446
+102574541,102574541,,secondary,low_bridge,bridge_over_water,24,13.108488,80.179894,,yes,1,,
+102574566,102574566,,residential,low_bridge,bridge_over_water,69,13.073957,80.112746,,yes,,,
+102657791,102657791,,service,low_bridge,bridge_over_water,105,13.006133,80.179831,,yes,1,,
+102658264-x1,102658264,Chinnapanicheri Road,tertiary,culvert,waterway_crossing,1423,13.016902,80.121007,,,,,canal:Chembarambakkam irrigation canal#1151035780
+102661703,102661703,,residential,low_bridge,bridge_over_water,18,13.063909,80.217056,,yes,1,,
+102661705,102661705,Kosumani Street,residential,low_bridge,bridge_over_water,19,13.061544,80.215669,,yes,1,,
+102661706,102661706,,residential,low_bridge,bridge_over_water,20,13.063378,80.217127,,yes,1,,
+102661712,102661712,,living_street,low_bridge,bridge_over_water,16,13.061435,80.216258,,yes,1,,
+102661714,102661714,3rd Street,residential,low_bridge,bridge_over_water,19,13.064279,80.217122,,yes,1,,
+103716678-x1,103716678,,primary_link,underpass,under_rail_bridge,16,12.987428,80.195456,,,,,railway#28620048
+103716678-x2,103716678,,primary_link,underpass,under_rail_bridge,16,12.987428,80.195456,,,,,railway#235921450
+103716681,103716681,Thillaiganga Nagar Subway,primary,underpass,tunnel=yes;layer<0,31,12.99252,80.193467,yes,,-1,,
+103716688,103716688,Thillaiganga Nagar Subway,primary,underpass,tunnel=yes;layer<0,32,12.992771,80.193357,yes,,-1,,
+103716703,103716703,St Thomas Mount Subway,primary,underpass,tunnel=yes;layer<0,46,12.995424,80.201176,yes,,-1,,
+103730451-x1,103730451,,residential,culvert,waterway_crossing,125,12.992582,80.196419,,,,,drain#881880733
+103730453-x1,103730453,,residential,underpass,under_rail_bridge,130,12.990934,80.195035,,,,,railway#28620048
+103730453-x2,103730453,,residential,underpass,under_rail_bridge,130,12.990934,80.195035,,,,,railway#235921450
+108150167-x1,108150167,Church Road,service,culvert,waterway_crossing,70,13.022882,80.180784,,,,,drain#122063612
+112716535-x1,112716535,Dr. Santosham Road,residential,dip,waterway_crossing,255,13.072054,80.249443,,,,,drain#217696076
+112716549-x1,112716549,,living_street,dip,waterway_crossing,394,13.077838,80.247247,,,,,drain#217696076
+112716562-x1,112716562,,living_street,dip,waterway_crossing,245,13.078426,80.248521,,,,,drain#217696076
+112716566-x1,112716566,,residential,dip,waterway_crossing,290,13.077838,80.247247,,,,,drain#217696076
+121120057,121120057,Balaji Nagar Main Road,tertiary,low_bridge,bridge_over_water,16,12.978687,80.204192,,yes,1,,
+121120060-x1,121120060,Inner Ring Road (Southern Sector),primary,culvert,waterway_crossing,675,12.979035,80.202385,,,,,drain:Veerangal Canal#1080320415
+125180613,125180613,MKB Nagar East Avenue,secondary,low_bridge,bridge_over_water,48,13.127364,80.265969,,yes,1,,
+125180623,125180623,MKB Nagar Bridge,secondary,low_bridge,bridge_over_water,51,13.12662,80.259101,,yes,1,,
+125180629,125180629,Manali Road,secondary,low_bridge,bridge_over_water,18,13.128038,80.269684,,yes,1,,
+126679756-x1,126679756,,residential,underpass,under_rail_bridge,50,12.979554,80.200788,,,,,railway#28620048
+126679756-x2,126679756,,residential,underpass,under_rail_bridge,50,12.979554,80.200788,,,,,railway#235921450
+132191984-x1,132191984,Dr MGR Main Road,secondary,underpass,under_rail_bridge,1946,12.978641,80.243311,,,,,railway#59909721
+132191984-x2,132191984,Dr MGR Main Road,secondary,underpass,under_rail_bridge,1946,12.978641,80.243311,,,,,railway#235920568
+132510307-x1,132510307,Taramani Station Road,residential,underpass,under_rail_bridge,339,12.979177,80.239573,,,,,railway#558926035
+132510307-x2,132510307,Taramani Station Road,residential,underpass,under_rail_bridge,339,12.979177,80.239573,,,,,railway#558926036
+133602693-x1,133602693,Kodambakkam – Sriperumbudur Road,primary,dip,waterway_crossing,2583,13.017765,80.141196,,,,,drain#102657803
+133602703-x1,133602703,,residential,dip,waterway_crossing,168,13.128736,80.199148,,,,,drain#1288582910
+157911938-x1,157911938,Sir Thyagaraya Road,secondary,culvert,waterway_crossing,326,13.039471,80.24572,,,,,canal:Mambalam Canal#1272450539
+157911939,157911939,,secondary,low_bridge,bridge_over_water,44,13.049011,80.246892,,yes,1,,
+157989487,157989487,Blackers Road,residential,low_bridge,bridge_over_water,10,13.046494,80.24706,,yes,1,,
+163384124-x1,163384124,"3rd Street Krishna Nagar, Periyar Road",residential,dip,waterway_crossing,50,13.014753,80.172152,,,,,drain:Open drain#210934230
+165273142-x1,165273142,,residential,culvert,waterway_crossing,34,12.970819,80.222531,,,,,drain:Stormwater Drain#835785681
+177370720,177370720,Vanagaram Bridge,primary,low_bridge,bridge_over_water,96,13.061815,80.151645,,yes,1,,
+178751017-x1,178751017,,residential,culvert,waterway_crossing,1237,13.018099,80.111777,,,,,canal:Chembarambakkam irrigation canal#1151035774
+178751018-x1,178751018,,residential,culvert,waterway_crossing,755,13.017379,80.118025,,,,,canal:Chembarambakkam irrigation canal#1151035778
+178751023-x1,178751023,Palanthandalam Road,tertiary,culvert,waterway_crossing,2845,12.961358,80.079431,,,,,ditch#1191369637
+178752244-x1,178752244,,residential,culvert,waterway_crossing,823,13.022915,80.103052,,,,,drain:Thanthi Channel#1301947367
+179253585,179253585,Mount - Medavakkam Road,primary,low_bridge,bridge_over_water,36,12.950598,80.185725,,yes,,,
+181313783-x1,181313783,,residential,dip,waterway_crossing,318,13.114871,80.167469,,,,,drain#835007994
+184110366,184110366,Rajiv Gandhi Salai,primary,low_bridge,bridge_over_water,101,12.923447,80.230787,,yes,1,,
+184913295,184913295,Athreyapuram 3rd Street,residential,low_bridge,bridge_over_water,33,13.062923,80.226615,,yes,1,,
+184913302,184913302,,residential,low_bridge,bridge_over_water,20,13.061767,80.215062,,yes,1,,
+185024071-x1,185024071,DLF IT Park Road,service,culvert,waterway_crossing,747,13.023657,80.176953,,,,,drain#1123838338
+198549091-x1,198549091,Pallavaram - Thoraipakkam Road,primary,dip,waterway_crossing,515,12.949176,80.184322,,,,,drain#102559098
+204215366,204215366,road to Manapakkam,tertiary,low_bridge,bridge_over_water,112,13.015232,80.182741,,yes,1,,
+205773150-x1,205773150,Velachery Main Road,secondary,dip,waterway_crossing,280,12.99523,80.216889,,,,,drain:Raj Bhavan Canal#102580561
+206398437-x1,206398437,"4th Street, Krishna Nagar, Periyar Salai, Manapakkam",residential,dip,waterway_crossing,84,13.015187,80.171059,,,,,drain:Open drain#210934230
+206644476-x1,206644476,,residential,culvert,waterway_crossing,193,13.11864,80.257079,,,,,drain:Vyasarpadi Canal#1202708872
+206653804-x1,206653804,,residential,culvert,waterway_crossing,90,12.979106,80.201277,,,,,drain:Veerangal Canal#328358961
+206829526-x1,206829526,,service,culvert,waterway_crossing,212,13.02346,80.177214,,,,,drain#1123838344
+206836573-x1,206836573,,residential,culvert,waterway_crossing,72,13.028151,80.171099,,,,,drain#122063612
+206856293-x1,206856293,,tertiary,culvert,waterway_crossing,540,13.103068,80.220375,,,,,drain:Ainsley Canal#1188575628
+207135952-x1,207135952,Ayyavu Street,living_street,dip,waterway_crossing,73,13.095641,80.26308,,,,,drain#30981164
+207897634-x1,207897634,,residential,culvert,waterway_crossing,612,12.856128,80.052835,,,,,drain#1151570549
+207897652-x1,207897652,,residential,culvert,waterway_crossing,354,12.857381,80.053057,,,,,drain#1151570543
+207897657-x1,207897657,,residential,culvert,waterway_crossing,487,12.858264,80.05222,,,,,drain#1302997346
+207897660-x1,207897660,,residential,culvert,waterway_crossing,715,12.860201,80.051912,,,,,drain#1151570535
+208168416-x1,208168416,,residential,dip,waterway_crossing,1178,12.894236,80.079947,,,,,drain#383861895
+208168501-x1,208168501,,residential,dip,waterway_crossing,273,12.894275,80.079424,,,,,drain#383861895
+208168510-x1,208168510,,residential,dip,waterway_crossing,302,12.894159,80.081117,,,,,drain#383861895
+208832404-x1,208832404,,residential,dip,waterway_crossing,200,12.957595,80.128685,,,,,drain:Naattu Kaalvaai#30118691
+209317534-x1,209317534,,residential,culvert,waterway_crossing,84,12.977416,80.148826,,,,,drain#1147391895
+209513213,209513213,Doraiswamy Subway,secondary,underpass,tunnel=yes;layer<0,285,13.041296,80.228511,yes,,-1,,
+209549883-x1,209549883,Inner Ring Road (Southern Sector),primary,underpass,under_rail_bridge,20,12.973591,80.209969,,,,,railway#28620048
+209549883-x2,209549883,Inner Ring Road (Southern Sector),primary,underpass,under_rail_bridge,20,12.973591,80.209969,,,,,railway#235921450
+210441982,210441982,Grand Southern Trunk Road,trunk,underpass,layer<0,2986,12.985945,80.174097,,,-1,,
+211260243-x1,211260243,Mayor Ramanathan Road (Spur Tank Road),secondary,dip,waterway_crossing,878,13.071335,80.248136,,,,,drain#217696076
+211435489-x1,211435489,Wallajah Road,secondary,underpass,under_rail_bridge,262,13.064378,80.280317,,,,,railway#240340228
+211435489-x2,211435489,Wallajah Road,secondary,underpass,under_rail_bridge,262,13.064378,80.280317,,,,,railway#549727267
+214180580,214180580,Bazaar Road Subway,tertiary,underpass,tunnel=yes;layer<0,73,13.021074,80.222773,yes,,-1,,
+214202908,214202908,Madley subway,tertiary,underpass,tunnel=yes;layer<0,42,13.035304,80.227358,yes,,-1,,
+214356690-x1,214356690,,secondary,underpass,under_rail_bridge,539,13.028201,80.225718,,,,,railway#240340232
+214356690-x2,214356690,,secondary,underpass,under_rail_bridge,539,13.028192,80.225761,,,,,railway#240340262
+214356690-x3,214356690,,secondary,underpass,under_rail_bridge,539,13.028183,80.225809,,,,,railway#240340269
+214356690-x4,214356690,,secondary,underpass,under_rail_bridge,539,13.028211,80.225672,,,,,railway#240340273
+214413838-x1,214413838,West Avenue Road,primary,underpass,under_rail_bridge,42,12.987986,80.251803,,,,,railway#59909721
+214413838-x2,214413838,West Avenue Road,primary,underpass,under_rail_bridge,42,12.987986,80.251803,,,,,railway#235920568
+214698554,214698554,Stanley Viaduct,secondary,low_bridge,bridge_over_water,531,13.078659,80.275146,,yes,2,,
+214698601-x1,214698601,,service,underpass,under_rail_bridge,67,13.078377,80.27381,,,,,railway#549727222
+214698601-x2,214698601,,service,underpass,under_rail_bridge,67,13.078377,80.27381,,,,,railway#549727268
+215762558-x1,215762558,,residential,culvert,waterway_crossing,232,13.028291,80.212619,,,,,canal:Jafferkhanpet Canal#27709396
+217723251-x1,217723251,Angalamman Kovli Street,tertiary,dip,waterway_crossing,564,13.094924,80.26262,,,,,drain#30981164
+217745270,217745270,Mehta Nagar Bridge,residential,low_bridge,bridge_over_water,136,13.07122,80.229339,,yes,1,,
+217747519,217747519,,residential,low_bridge,bridge_over_water,36,13.061815,80.217395,,yes,1,,
+217920502,217920502,,tertiary,underpass,tunnel=yes;layer<0,154,13.111375,80.206719,yes,,-1,,
+217936096-x1,217936096,Main Road,residential,culvert,waterway_crossing,242,13.121792,80.251461,,,,,drain:Vyasarpadi Canal#1202708880
+232401914-x1,232401914,,service,dip,waterway_crossing,145,13.074862,80.252037,,,,,drain#217696076
+232401915-x1,232401915,,service,dip,waterway_crossing,39,13.078608,80.251416,,,,,drain#217696076
+237376085-x1,237376085,Grand Northern Trunk Road,trunk,dip,waterway_crossing,1395,13.14942,80.213545,,,,,drain#102553767
+240340223,240340223,Harrington Road,tertiary,underpass,tunnel=yes;layer<0,99,13.069707,80.234047,yes,,-1,,
+240340224,240340224,Harrington Road,tertiary,underpass,tunnel=yes;layer<0,98,13.070047,80.233206,yes,,-1,,
+240472105,240472105,Commander-In-Chief Bridge,secondary,low_bridge,bridge_over_water,75,13.063657,80.260899,,yes,1,,
+241218778-x1,241218778,Swami Sivananda Salai,tertiary,underpass,under_rail_bridge,980,13.07175,80.274661,,,,,railway#240340228
+241218778-x2,241218778,Swami Sivananda Salai,tertiary,underpass,under_rail_bridge,980,13.07175,80.274661,,,,,railway#549727267
+244466147-x1,244466147,Inner Ring Road (Southern Sector),primary,culvert,waterway_crossing,647,12.979365,80.201242,,,,,drain:Veerangal Canal#1080320415
+262230672-x1,262230672,,track,dip,waterway_crossing,43,13.015372,80.171166,,,,,drain:Open drain#210934230
+263458094,263458094,,residential,low_bridge,bridge_over_water,30,13.101965,80.234153,,yes,1,,
+275459532,275459532,Nungambakkam Subway,secondary,underpass,tunnel=yes;layer<0,83,13.065948,80.233314,yes,,-1,,
+275459533,275459533,Nungambakkam Subway,secondary,underpass,tunnel=yes;layer<0,83,13.066119,80.232562,yes,,-1,,
+306732037,306732037,Kodambakkam – Sriperumbudur Road,primary,low_bridge,bridge_over_water,9,12.994614,80.084018,,yes,1,,
+306732038,306732038,Kodambakkam – Sriperumbudur Road,primary,low_bridge,bridge_over_water,25,12.997467,80.094487,,yes,1,,
+306732041,306732041,,residential,low_bridge,bridge_over_water,20,12.998134,80.094624,,yes,1,,
+306732042,306732042,Poonamallee - Kundrathur - Pallavaram Road,primary,low_bridge,bridge_over_water,36,13.021437,80.105802,,yes,1,,
+306732043,306732043,,residential,low_bridge,bridge_over_water,20,12.999007,80.094202,,yes,1,,
+312878631-x1,312878631,,residential,underpass,under_rail_bridge,70,12.992522,80.195313,,,,,railway#28620048
+312878631-x2,312878631,,residential,underpass,under_rail_bridge,70,12.992522,80.195313,,,,,railway#235921450
+313423388,313423388,Pattaravakam ROB,secondary,low_bridge,bridge_over_water,670,13.115734,80.174358,,yes,1,,
+315524594,315524594,,residential,low_bridge,bridge_over_water,16,12.959822,80.128381,,yes,1,,
+321738507,321738507,Tiruneermalai Main Road,secondary,low_bridge,bridge_over_water,32,12.958423,80.128757,,yes,1,,
+331658840,331658840,KKD Nagar Service Bridge,residential,low_bridge,bridge_over_water,71,13.127196,80.261627,,yes,1,,
+331901996,331901996,Velachery MRTS,tertiary,underpass,tunnel=yes;layer<0,28,12.967437,80.22151,yes,,-1,,
+354099036-x1,354099036,Vidhya Nagar Main Road,residential,culvert,waterway_crossing,43,12.979106,80.201277,,,,,drain:Veerangal Canal#328358961
+354200286,354200286,,tertiary,underpass,tunnel=yes;layer<0,25,13.173052,80.302501,yes,,-1,,
+363759251-x1,363759251,Mount - Poonamallee - Avadi Road,primary,culvert,waterway_crossing,323,13.116447,80.101279,,,,,drain#1040499033
+364383368-x1,364383368,"kamarajar Salai, AVM Avenue 1st Main Road",tertiary,culvert,waterway_crossing,1480,13.054826,80.186527,,,,,drain:Virugambakkam Canal#1298345128
+367465307,367465307,Thirumudivakkam High Road,secondary,low_bridge,bridge_over_water,92,12.965789,80.109841,,yes,1,,
+367465308-x1,367465308,Kundrathur Road,tertiary,culvert,waterway_crossing,3688,12.990004,80.094071,,,,,drain#1150294716
+377123628,377123628,,service,none,tunnel=building_passage,48,12.99023,80.24193,building_passage,,,,
+383730516,383730516,Poonamallee - Kundrathur - Pallavaram Road,primary,low_bridge,bridge_over_water,25,12.991182,80.115747,,yes,1,,
+383754560,383754560,Kodambakkam – Sriperumbudur Road,primary,low_bridge,bridge_over_water,30,13.004828,80.104416,,yes,1,,
+383833226-x1,383833226,,residential,culvert,waterway_crossing,277,13.014508,80.085314,,,,,ditch:Chembarambakkam irrigation canal#836320369
+383833226-x2,383833226,,residential,dip,waterway_crossing,277,13.014778,80.08291,,,,,drain:Chembarambakkam Irrigation canal#383730513
+384143084-x1,384143084,,residential,dip,waterway_crossing,135,12.997977,80.088823,,,,,drain#1150294708
+384143088-x1,384143088,,residential,culvert,waterway_crossing,257,12.992732,80.081127,,,,,ditch#696533232
+384228967-x1,384228967,,unclassified,culvert,waterway_crossing,365,13.005748,80.086933,,,,,stream#836320342
+384228971-x1,384228971,,unclassified,culvert,waterway_crossing,401,13.006192,80.085721,,,,,drain#836326675
+384228971-x2,384228971,,unclassified,culvert,waterway_crossing,401,13.007519,80.086017,,,,,stream#836320358
+384228987-x1,384228987,,track,dip,waterway_crossing,488,13.013795,80.089659,,,,,canal#383833229
+384228994-x1,384228994,,residential,culvert,waterway_crossing,270,13.012926,80.08568,,,,,ditch:Chembarambakkam irrigation canal#836320367
+384311375-x1,384311375,,track,dip,waterway_crossing,405,12.949722,80.202077,,,,,drain#102559091
+384337756,384337756,,residential,low_bridge,bridge_over_water,30,12.920603,80.075741,,yes,1,,
+384412008-x1,384412008,,residential,dip,waterway_crossing,384,13.004421,80.115616,,,,,drain#102658265
+384412132-x1,384412132,,residential,dip,waterway_crossing,206,13.006132,80.129197,,,,,drain#102658271
+384412150-x1,384412150,,residential,dip,waterway_crossing,335,13.017444,80.11927,,,,,canal:Chembarambakkam irrigation canal#1151035779
+384437274-x1,384437274,,residential,culvert,waterway_crossing,474,12.961763,80.079998,,,,,ditch#1191369641
+384466797-x1,384466797,,residential,culvert,waterway_crossing,675,12.986808,80.070413,,,,,drain#696363613
+384466798-x1,384466798,,residential,culvert,waterway_crossing,670,12.986382,80.070391,,,,,drain#696533217
+384478264-x1,384478264,,track,culvert,waterway_crossing,741,13.009876,80.085382,,,,,stream:Chembarampakkam water for irrigation#706900387
+384478272-x1,384478272,,unclassified,culvert,waterway_crossing,584,13.019486,80.081939,,,,,canal#706900380
+384479660-x1,384479660,,unclassified,culvert,waterway_crossing,316,13.0093,80.086664,,,,,stream:Chembarampakkam water for irrigation#836326673
+384491033-x1,384491033,,track,culvert,waterway_crossing,386,12.981804,80.075996,,,,,ditch#696533227
+384529827-x1,384529827,,residential,dip,waterway_crossing,439,13.109849,80.187203,,,,,drain#102574544
+384610997-x1,384610997,Cochrane Basin Road,secondary,underpass,under_rail_bridge,422,13.110356,80.273814,,,,,railway#23966126
+384610997-x2,384610997,Cochrane Basin Road,secondary,underpass,under_rail_bridge,422,13.110356,80.273814,,,,,railway#53349203
+384976472-x1,384976472,,residential,culvert,waterway_crossing,201,13.002833,80.092361,,,,,stream#836320341
+384986793-x1,384986793,,residential,culvert,waterway_crossing,429,12.992399,80.093954,,,,,drain#1150294714
+385085292-x1,385085292,,residential,culvert,waterway_crossing,212,12.858625,80.052134,,,,,drain#1151570514
+385085299-x1,385085299,,residential,culvert,waterway_crossing,704,12.853372,80.052494,,,,,drain#1151570508
+385085307-x1,385085307,,residential,culvert,waterway_crossing,194,12.865276,80.054633,,,,,drain#1151570523
+385085308-x1,385085308,,residential,culvert,waterway_crossing,277,12.866074,80.054972,,,,,drain#1151570521
+385177408,385177408,,tertiary,low_bridge,bridge_over_water,30,13.174433,80.090317,,yes,1,,
+385231083,385231083,Singaperumalkoil - Sriperumbudur - Thiruvallur - Red Hills Road,primary,low_bridge,bridge_over_water,34,13.194301,80.174311,,yes,1,,
+385267357,385267357,Grand Northern Trunk Road (Old NH5),primary,low_bridge,bridge_over_water,141,13.186714,80.189885,,yes,1,,
+385279993-x1,385279993,,track,dip,waterway_crossing,1320,13.163089,80.07253,,,,,canal#385279995
+385279993-x2,385279993,,track,dip,waterway_crossing,1320,13.158612,80.070872,,,,,canal#385279994
+385393412,385393412,Darkas Road,secondary,low_bridge,bridge_over_water,34,12.937731,80.094713,,yes,1,,
+385687044-x1,385687044,,residential,dip,waterway_crossing,360,13.130667,80.193027,,,,,drain#1283482441
+385687048-x1,385687048,,residential,dip,waterway_crossing,119,13.133267,80.194371,,,,,drain#1289269138
+385687049-x1,385687049,,residential,dip,waterway_crossing,50,13.133398,80.193878,,,,,drain#1289269138
+385687050-x1,385687050,,residential,culvert,waterway_crossing,208,13.132995,80.192899,,,,,drain#1283482443
+385687050-x2,385687050,,residential,dip,waterway_crossing,208,13.133547,80.193324,,,,,drain#1289269138
+385687052-x1,385687052,,residential,dip,waterway_crossing,54,13.133309,80.194112,,,,,drain#1289269138
+385687056-x1,385687056,,residential,dip,waterway_crossing,85,13.133168,80.194631,,,,,drain#1289269138
+385688605-x1,385688605,,residential,dip,waterway_crossing,176,13.132073,80.197469,,,,,drain#1289269137
+385688607-x1,385688607,,residential,dip,waterway_crossing,71,13.131812,80.197778,,,,,drain#1289269137
+385688609-x1,385688609,Annai Theresa Street,residential,dip,waterway_crossing,121,13.130564,80.199729,,,,,drain#1089517860
+385688610-x1,385688610,Santhosh Nagar 4th Street,residential,dip,waterway_crossing,119,13.12974,80.200075,,,,,drain#1089517860
+385688611-x1,385688611,Thiruvalluvar Street,residential,dip,waterway_crossing,122,13.13029,80.199495,,,,,drain#1089517860
+385688612-x1,385688612,Santhosh Nagar Annex,residential,dip,waterway_crossing,170,13.130946,80.199821,,,,,drain#1089517860
+385688614-x1,385688614,Teachers Colony 7th Cross Street,residential,dip,waterway_crossing,159,13.12932,80.200396,,,,,drain#1289814514
+385688614-x2,385688614,Teachers Colony 7th Cross Street,residential,dip,waterway_crossing,159,13.12932,80.200396,,,,,drain#1290230926
+385688615-x1,385688615,,residential,dip,waterway_crossing,112,13.130171,80.201069,,,,,drain#1089712389
+385688616-x1,385688616,,residential,dip,waterway_crossing,458,13.129548,80.202182,,,,,drain#1460011776
+385688616-x2,385688616,,residential,dip,waterway_crossing,458,13.12945,80.202759,,,,,drain#1286550656
+385688618-x1,385688618,,residential,dip,waterway_crossing,136,13.129421,80.200883,,,,,drain#1089517858
+385688618-x2,385688618,,residential,dip,waterway_crossing,136,13.129421,80.200883,,,,,drain#1089712389
+385688618-x3,385688618,,residential,culvert,waterway_crossing,136,13.129218,80.201675,,,,,drain#1089712381
+385688619-x1,385688619,,residential,dip,waterway_crossing,257,13.129972,80.202258,,,,,drain#1460011776
+385688619-x2,385688619,,residential,dip,waterway_crossing,257,13.12987,80.202831,,,,,drain#1286550656
+385688620-x1,385688620,,residential,dip,waterway_crossing,325,13.130236,80.203147,,,,,drain#1286550656
+385688622-x1,385688622,,residential,dip,waterway_crossing,263,13.128834,80.204085,,,,,drain#1286550657
+385688625-x1,385688625,Jayanti nagar main road,residential,dip,waterway_crossing,399,13.129242,80.204759,,,,,drain#1286550657
+385688626-x1,385688626,,residential,dip,waterway_crossing,118,13.127639,80.203144,,,,,drain#1089517854
+385688628-x1,385688628,,residential,dip,waterway_crossing,146,13.127387,80.203574,,,,,drain#1285837634
+385688629-x1,385688629,,residential,dip,waterway_crossing,134,13.127395,80.203937,,,,,drain#1285837634
+385688641-x1,385688641,,residential,dip,waterway_crossing,292,13.127945,80.201603,,,,,drain#1289814513
+385688641-x2,385688641,,residential,dip,waterway_crossing,292,13.127945,80.201603,,,,,drain#1290230925
+385688642-x1,385688642,,residential,dip,waterway_crossing,256,13.126833,80.201549,,,,,drain#1289814513
+385688642-x2,385688642,,residential,dip,waterway_crossing,256,13.126833,80.201549,,,,,drain#1290230925
+385688644-x1,385688644,,residential,dip,waterway_crossing,203,13.126076,80.201557,,,,,drain#1289814513
+385688644-x2,385688644,,residential,dip,waterway_crossing,203,13.126076,80.201557,,,,,drain#1290230925
+385688645-x1,385688645,,residential,dip,waterway_crossing,141,13.126437,80.201566,,,,,drain#1289814513
+385688645-x2,385688645,,residential,dip,waterway_crossing,141,13.126437,80.201566,,,,,drain#1290230925
+385688647-x1,385688647,Ganapathy nagar,residential,dip,waterway_crossing,66,13.125887,80.201049,,,,,drain#1285452582
+385688647-x2,385688647,Ganapathy nagar,residential,dip,waterway_crossing,66,13.126063,80.201064,,,,,drain#1285452584
+385691679-x1,385691679,Jupiter street,residential,dip,waterway_crossing,113,13.125194,80.199647,,,,,drain#1285452581
+385691681-x1,385691681,Emerald street,residential,dip,waterway_crossing,91,13.124802,80.199664,,,,,drain#1285452581
+385691686-x1,385691686,,residential,dip,waterway_crossing,92,13.12441,80.200399,,,,,drain#1287938300
+385691706-x1,385691706,,residential,dip,waterway_crossing,407,13.127766,80.194643,,,,,drain#1288635134
+385691719-x1,385691719,,residential,dip,waterway_crossing,114,13.126676,80.197142,,,,,drain#1290286348
+385691721-x1,385691721,,residential,dip,waterway_crossing,135,13.127253,80.198791,,,,,drain#1288582911
+385691723-x1,385691723,Nehru Street,residential,dip,waterway_crossing,185,13.125307,80.197145,,,,,drain#1290248752
+385691730-x1,385691730,,residential,dip,waterway_crossing,202,13.125123,80.197965,,,,,drain#1290286350
+385691734-x1,385691734,Singaravelan Nagar Main Road,residential,dip,waterway_crossing,186,13.132287,80.19889,,,,,drain#1316676520
+385691752-x1,385691752,Mullai Street,residential,dip,waterway_crossing,142,13.129097,80.199916,,,,,drain#1290230927
+385691754-x1,385691754,,residential,dip,waterway_crossing,24,13.129005,80.19935,,,,,drain#1289814517
+385691754-x2,385691754,,residential,dip,waterway_crossing,24,13.129005,80.19935,,,,,drain#1290230928
+385691760-x1,385691760,,residential,dip,waterway_crossing,57,13.1255,80.199242,,,,,drain#1285452582
+385691764-x1,385691764,,residential,dip,waterway_crossing,40,13.125997,80.197473,,,,,drain#1290286348
+385691768-x1,385691768,,residential,dip,waterway_crossing,32,13.126283,80.197387,,,,,drain#1290286348
+385691779-x1,385691779,,residential,dip,waterway_crossing,119,13.124807,80.199595,,,,,drain#1287938299
+385691783-x1,385691783,,residential,dip,waterway_crossing,193,13.123973,80.198356,,,,,drain#1287938300
+385691789-x1,385691789,,residential,dip,waterway_crossing,37,13.124407,80.199281,,,,,drain#1287938300
+385695080-x1,385695080,,residential,culvert,waterway_crossing,168,13.130096,80.193592,,,,,drain#1283482445
+385695082-x1,385695082,,residential,dip,waterway_crossing,343,13.129776,80.193455,,,,,drain#1283482444
+385695083-x1,385695083,Sakthi Nagar 9th Street,residential,dip,waterway_crossing,205,13.12898,80.193622,,,,,drain#1288635133
+385704276-x1,385704276,,residential,dip,waterway_crossing,149,13.124051,80.195354,,,,,drain#1324096389
+385704279-x1,385704279,"6th Cross Street,TVS Nagar",residential,dip,waterway_crossing,224,13.122787,80.193883,,,,,drain#1324096389
+385706154-x1,385706154,,tertiary,dip,waterway_crossing,589,13.12554,80.197708,,,,,drain#1290286348
+385706154-x2,385706154,,tertiary,dip,waterway_crossing,589,13.126639,80.198114,,,,,drain#1290286347
+385706155-x1,385706155,3rd Main Road,residential,dip,waterway_crossing,106,13.125814,80.195303,,,,,drain#1283482446
+385706156-x1,385706156,,residential,dip,waterway_crossing,131,13.126223,80.195105,,,,,drain#1283482446
+385706158-x1,385706158,,residential,dip,waterway_crossing,155,13.131962,80.200432,,,,,drain#1316676520
+385706164-x1,385706164,,residential,dip,waterway_crossing,92,13.123008,80.194176,,,,,drain#1324096389
+386395452-x1,386395452,,residential,culvert,waterway_crossing,264,13.142658,80.198925,,,,,drain#1089517862
+386495718,386495718,,tertiary,low_bridge,bridge_over_water,144,13.146869,80.204029,,yes,1,,
+386499098-x1,386499098,,tertiary,culvert,waterway_crossing,398,13.139254,80.187774,,,,,drain:Underpass#1289631729
+386499771-x1,386499771,,tertiary,culvert,waterway_crossing,329,13.138861,80.188006,,,,,drain:Underpass#386500119
+388889244-x1,388889244,,unclassified,dip,waterway_crossing,455,13.229127,80.264019,,,,,river#25450426
+388889478-x1,388889478,,unclassified,dip,waterway_crossing,547,13.224921,80.266196,,,,,river#25450426
+388892149-x1,388892149,,unclassified,dip,waterway_crossing,505,13.237212,80.25652,,,,,river#25450426
+388923638,388923638,Ottiambakkam Road,tertiary,low_bridge,bridge_over_water,51,12.866374,80.191274,,yes,1,,
+388923648,388923648,Wing Haven Road,tertiary,low_bridge,bridge_over_water,52,12.864116,80.199727,,yes,1,,
+389706572-x1,389706572,,residential,culvert,waterway_crossing,242,13.134687,80.116431,,,,,ditch#1271899739
+389719100-x1,389719100,,residential,culvert,waterway_crossing,148,13.134862,80.116555,,,,,ditch#1271899740
+389889729-x1,389889729,,residential,culvert,waterway_crossing,216,13.137558,80.202748,,,,,drain#1089517861
+389891997-x1,389891997,,residential,culvert,waterway_crossing,235,13.140078,80.202558,,,,,drain#1089517862
+389892052-x1,389892052,,residential,culvert,waterway_crossing,121,13.141322,80.200653,,,,,drain#1089517862
+389892703-x1,389892703,,residential,dip,waterway_crossing,164,13.135043,80.200947,,,,,drain#1089517860
+389892749-x1,389892749,Sriram Nagar 1st Street,residential,dip,waterway_crossing,142,13.134048,80.200007,,,,,drain#1089517860
+391979738-x1,391979738,,tertiary,culvert,waterway_crossing,1511,13.005855,80.127105,,,,,drain#1255150774
+395885019,395885019,Maduravoyal Interchange,trunk,low_bridge,bridge_over_water,147,13.064249,80.160976,,yes,1,,
+441931827-x1,441931827,Airport Service Road,service,culvert,waterway_crossing,5038,12.997229,80.160438,,,,,drain#535357239
+442101101-x1,442101101,,unclassified,dip,waterway_crossing,1029,13.241482,80.152394,,,,,stream#637279656
+442833312,442833312,,track,low_bridge,bridge_over_water,24,13.221416,80.154512,,yes,1,,
+443997612,443997612,,tertiary,underpass,tunnel=yes;layer<0,36,12.923223,80.115111,yes,,-1,,
+446253108,446253108,Easwari Nagar Subway Underpass,residential,underpass,tunnel=yes;layer<0,57,12.970061,80.154308,yes,,-1,,
+447993882-x1,447993882,Bharani Street,tertiary,underpass,under_rail_bridge,72,12.977024,80.232996,,,,,railway#25619829
+447993882-x2,447993882,Bharani Street,tertiary,underpass,under_rail_bridge,72,12.977024,80.232996,,,,,railway#551159595
+452784067-x1,452784067,MGR 2nd Cross Street,residential,culvert,waterway_crossing,71,12.976029,80.192521,,,,,drain:Veerangal Canal#328358961
+482596741,482596741,,service,none,tunnel=building_passage,11,13.007939,80.237847,building_passage,,,,
+496847201,496847201,3rd Main Road,tertiary,underpass,tunnel=yes;layer<0,78,12.98514,80.176863,yes,,-1,,
+503337817-x1,503337817,,service,dip,waterway_crossing,249,13.005445,80.112823,,,,,drain#102658265
+503337818-x1,503337818,,service,dip,waterway_crossing,245,13.005999,80.112787,,,,,drain#102658265
+515560211,515560211,,service,none,tunnel=building_passage,23,13.03839,80.143545,building_passage,,,,
+535357150,535357150,Kilambakkam - Athanur Road,tertiary,low_bridge,bridge_over_water,40,12.868444,80.063011,,yes,1,,
+535357155,535357155,,tertiary,low_bridge,bridge_over_water,12,12.860179,80.06506,,yes,1,,
+535357179,535357179,,residential,low_bridge,bridge_over_water,12,12.865752,80.062472,,yes,1,,
+535357191,535357191,Erikarai road,tertiary,low_bridge,bridge_over_water,27,12.850564,80.05377,,yes,1,,
+535357193,535357193,,tertiary,low_bridge,bridge_over_water,13,12.860552,80.05942,,yes,1,,
+535357197,535357197,,residential,low_bridge,bridge_over_water,9,12.862521,80.064391,,yes,1,,
+535357199,535357199,,residential,low_bridge,bridge_over_water,9,12.864528,80.062617,,yes,1,,
+535357203,535357203,,residential,low_bridge,bridge_over_water,36,12.864613,80.061852,,yes,1,,
+535357206,535357206,Kilambakkam - Athanur Road,tertiary,low_bridge,bridge_over_water,44,12.869712,80.05997,,yes,1,,
+535357221,535357221,Marmalong Bridge - Irumbuliyur - Vandalur - Mudichur - Oragadam - Walajabad Road,primary,low_bridge,bridge_over_water,151,12.895247,80.059182,,yes,1,,
+535357223,535357223,Tambaram - Mudichur - Sriperumbudur Road,primary,low_bridge,bridge_over_water,49,12.916075,80.06518,,yes,1,,
+535357232,535357232,Airport Service Road,service,low_bridge,bridge_over_water,198,13.001875,80.160592,,yes,1,,
+535357236,535357236,Airport Service Road,service,low_bridge,bridge_over_water,203,13.003983,80.164985,,yes,1,,
+543813021-x1,543813021,TC2,service,culvert,waterway_crossing,186,13.021919,80.179004,,,,,drain#1123838336
+543822032-x1,543822032,Kamarajanagar Main Road,secondary,culvert,waterway_crossing,1652,13.113573,80.095959,,,,,drain#1040499043
+543822033,543822033,,secondary,low_bridge,bridge_over_water,122,13.101708,80.092537,,yes,1,,
+549921647-x1,549921647,Vijayaraghavachari Road,tertiary,culvert,waterway_crossing,329,13.043026,80.246796,,,,,canal:Mambalam Canal#1272450538
+553708947,553708947,St George Gate,service,none,tunnel=building_passage,17,13.081939,80.284263,building_passage,,,,
+553708948,553708948,St George Gate,service,low_bridge,bridge_over_water,21,13.081914,80.284111,,yes,1,,
+553708949,553708949,Wallajah Gate,service,low_bridge,bridge_over_water,23,13.078924,80.283221,,yes,1,,
+553708950,553708950,Wallajah Gate,service,none,tunnel=building_passage,17,13.078831,80.283415,building_passage,,,,
+560048822-x1,560048822,,residential,culvert,waterway_crossing,788,12.858759,80.052112,,,,,drain#1151570539
+566855322-x1,566855322,Haddows Road,primary,dip,waterway_crossing,264,13.062973,80.244731,,,,,drain#28502295
+581319733-x1,581319733,,primary_link,underpass,under_rail_bridge,44,12.994418,80.250047,,,,,railway#1201897667
+586255586-x1,586255586,,residential,culvert,waterway_crossing,309,12.905666,80.184304,,,,,canal#1022416524
+588981083,588981083,Canal Bridge,secondary,low_bridge,bridge_over_water,72,13.133931,80.191361,,yes,1,,
+598296564-x1,598296564,Natesan Nagar Main Road,residential,culvert,waterway_crossing,493,13.056871,80.186884,,,,,drain:Virugambakkam Canal#1298345132
+604135768,604135768,Lakshmanasamy Salai,tertiary,low_bridge,bridge_over_water,17,13.038219,80.204237,,yes,1,,
+604714208-x1,604714208,North Gate,service,dip,waterway_crossing,44,13.083019,80.287758,,,,,drain#28746681
+626271197,626271197,Industry-Academia Bridge,service,low_bridge,bridge_over_water,190,12.989991,80.241534,,yes,1,,
+645720479,645720479,,unclassified,low_bridge,bridge_over_water,18,12.929377,80.058391,,yes,1,,
+645733800,645733800,Annasalai Street,tertiary,low_bridge,bridge_over_water,12,13.031084,80.234087,,yes,1,,
+650571895,650571895,North Road,residential,low_bridge,bridge_over_water,22,13.028322,80.227821,,yes,1,,
+665536012,665536012,,tertiary,low_bridge,bridge_over_water,170,13.243024,80.269161,,yes,1,,
+666393460,666393460,Monegar Choultry Road,tertiary,underpass,tunnel=yes;layer<0,34,13.107555,80.286288,yes,,-1,,
+667073822-x1,667073822,,primary_link,underpass,under_rail_bridge,15,12.976276,80.206716,,,,,railway#28620048
+667073822-x2,667073822,,primary_link,underpass,under_rail_bridge,15,12.976276,80.206716,,,,,railway#235921450
+667076805,667076805,,service,low_bridge,bridge_over_water,8,12.948681,80.208819,,yes,1,,
+670042888,670042888,Basin Bridge,trunk,low_bridge,bridge_over_water,31,13.105296,80.27091,,yes,1,,
+670042896,670042896,Basin Bridge,trunk,low_bridge,bridge_over_water,30,13.105078,80.271093,,yes,1,,
+670042903,670042903,,service,low_bridge,bridge_over_water,29,13.105368,80.26905,,yes,1,,
+670057492,670057492,,residential,low_bridge,bridge_over_water,16,13.034653,80.243639,,yes,1,,
+670384691-x1,670384691,Anna Salai (Mount Road),primary,underpass,under_rail_bridge,505,13.071692,80.274538,,,,,railway#240340228
+670384691-x2,670384691,Anna Salai (Mount Road),primary,underpass,under_rail_bridge,505,13.071692,80.274538,,,,,railway#549727267
+672478354-x1,672478354,,residential,dip,waterway_crossing,552,13.147874,80.196974,,,,,drain#1323146587
+673268226-x1,673268226,,residential,culvert,waterway_crossing,169,12.855377,80.052332,,,,,drain#1151570510
+673324270-x1,673324270,,residential,dip,waterway_crossing,101,13.130649,80.202379,,,,,drain#1285521229
+673324271-x1,673324271,,residential,dip,waterway_crossing,108,13.130728,80.202675,,,,,drain#1285521228
+673354275-x1,673354275,,tertiary,culvert,waterway_crossing,459,13.141092,80.198724,,,,,drain#1089517862
+673508803-x1,673508803,,residential,culvert,waterway_crossing,121,13.137701,80.201075,,,,,drain#1089517861
+673508804-x1,673508804,,residential,culvert,waterway_crossing,84,13.138652,80.202275,,,,,drain#1089517861
+675828229,675828229,,residential,low_bridge,bridge_over_water,32,13.022071,80.236229,,yes,1,,
+676026672,676026672,Gopathi Narayanaswami Road,secondary,low_bridge,bridge_over_water,24,13.049314,80.247162,,yes,1,,
+692274684-x1,692274684,,residential,culvert,waterway_crossing,410,13.025744,80.175564,,,,,drain#122063612
+692670681-x1,692670681,,primary_link,underpass,under_rail_bridge,14,12.978437,80.203393,,,,,railway#28620048
+692670681-x2,692670681,,primary_link,underpass,under_rail_bridge,14,12.978437,80.203393,,,,,railway#235921450
+693509698-x1,693509698,,primary_link,underpass,under_rail_bridge,19,12.980524,80.198769,,,,,railway#28620048
+693509698-x2,693509698,,primary_link,underpass,under_rail_bridge,19,12.980524,80.198769,,,,,railway#235921450
+696363489-x1,696363489,,track,culvert,waterway_crossing,6,12.986008,80.070339,,,,,drain#696363487
+696377458-x1,696377458,,service,underpass,under_rail_bridge,189,13.069702,80.277317,,,,,railway#240340228
+696377458-x2,696377458,,service,underpass,under_rail_bridge,189,13.069702,80.277317,,,,,railway#549727267
+696532174,696532174,,residential,low_bridge,bridge_over_water,14,12.990602,80.071883,,yes,1,,
+696533194,696533194,Kodambakkam – Sriperumbudur Road,primary,low_bridge,bridge_over_water,52,12.995404,80.080577,,yes,1,,
+696533201,696533201,Chembarambakkam Dam Road,unclassified,low_bridge,bridge_over_water,72,12.999808,80.081918,,yes,1,,
+696533202-x1,696533202,Chembarambakkam Dam Road,unclassified,culvert,waterway_crossing,4847,13.008885,80.081084,,,,,stream#706896507
+696533216,696533216,,unclassified,low_bridge,bridge_over_water,9,12.987829,80.070103,,yes,1,,
+696560654,696560654,,service,underpass,layer<0,78,12.954862,80.138264,,,-2,,
+696622067,696622067,,residential,underpass,layer<0,236,12.897339,80.221435,,,-1,,
+701495777,701495777,2nd Main Road,residential,low_bridge,bridge_over_water,13,13.025198,80.16959,,yes,1,,
+701580191-x1,701580191,,residential,culvert,waterway_crossing,37,12.975254,80.19149,,,,,drain:Veerangal Canal#1232632861
+701740777,701740777,,secondary,low_bridge,bridge_over_water,110,13.071533,80.182238,,yes,1,,
+702376138,702376138,Padikuppam Road,tertiary,low_bridge,bridge_over_water,28,13.079502,80.189572,,yes,1,,
+706900383,706900383,,unclassified,low_bridge,bridge_over_water,20,13.007406,80.084553,,yes,1,,
+706900384-x1,706900384,,unclassified,culvert,waterway_crossing,322,13.007706,80.081808,,,,,ditch#706900385
+718447784-x1,718447784,,service,culvert,waterway_crossing,151,13.022713,80.186596,,,,,drain#1123838350
+718910059,718910059,,service,underpass,layer<0,457,12.910005,80.22637,,,-1,,
+719967915-x1,719967915,,service,culvert,waterway_crossing,129,12.983922,80.217673,,,,,canal:drain path#103716694
+720223990-x1,720223990,,residential,dip,waterway_crossing,110,13.123983,80.201322,,,,,drain#1285837635
+720223992-x1,720223992,,residential,dip,waterway_crossing,236,13.123469,80.200989,,,,,drain#1285837635
+721872369,721872369,Dr.Ambedkar Salai,residential,low_bridge,bridge_over_water,38,12.951576,80.199331,,yes,1,,
+721922451-x1,721922451,Marudupandi Street,tertiary,dip,waterway_crossing,454,12.988928,80.215136,,,,,drain:Raj Bhavan Canal#102580558
+721922454-x1,721922454,Velachery Bypass Road,primary,dip,waterway_crossing,999,12.986457,80.218147,,,,,drain#102550213
+722195657,722195657,,residential,low_bridge,bridge_over_water,39,12.994476,80.113945,,yes,1,,
+722213741,722213741,,residential,low_bridge,bridge_over_water,32,12.86476,80.197262,,yes,1,,
+722415779-x1,722415779,Godrej Road,service,culvert,waterway_crossing,515,13.11262,80.163559,,,,,drain#835007995
+722482012,722482012,,tertiary,underpass,tunnel=yes;layer<0,33,12.859061,80.066458,yes,,-1,,
+723297365,723297365,,residential,low_bridge,bridge_over_water,14,13.130934,80.21602,,yes,1,,
+723297377,723297377,,residential,low_bridge,bridge_over_water,15,13.130396,80.220129,,yes,1,,
+723314701,723314701,Medavakkam Tank Road,secondary,low_bridge,bridge_over_water,47,13.086539,80.244465,,yes,1,,
+723477928,723477928,Rangarajapuram Main Road,residential,underpass,tunnel=yes;layer<0,54,13.045758,80.230037,yes,,-1,,
+723504198,723504198,Kumaran Street,service,underpass,layer<0,209,12.936837,80.128028,,,-1,,
+723718322,723718322,Kundrathur Road,tertiary,low_bridge,bridge_over_water,71,12.970826,80.102498,,yes,1,,
+723933444,723933444,,residential,low_bridge,bridge_over_water,29,13.108111,80.155915,,yes,1,,
+724052337-x1,724052337,,service,culvert,waterway_crossing,9,12.925448,80.117218,,,,,drain#1356673373
+724220826,724220826,Santhome High Road,primary,low_bridge,bridge_over_water,190,13.022756,80.272255,,yes,1,,
+724220829,724220829,Santhome High Road,primary,low_bridge,bridge_over_water,183,13.023823,80.273555,,yes,1,,
+724224056,724224056,,residential,low_bridge,bridge_over_water,21,13.110552,80.18043,,yes,1,,
+724260860,724260860,Irandamkattalai - Karaimanagar Road,residential,low_bridge,bridge_over_water,14,12.991282,80.117599,,yes,1,,
+725256820,725256820,Chennai - Tiruttani - Renigunta Road,primary,low_bridge,bridge_over_water,19,13.108662,80.152284,,yes,1,,
+725256822,725256822,Chennai - Tiruttani - Renigunta Road,primary,low_bridge,bridge_over_water,17,13.10881,80.15219,,yes,1,,
+725264957,725264957,Valluvar Road,secondary,low_bridge,bridge_over_water,42,13.024512,80.183085,,yes,1,,
+725333479,725333479,,tertiary,low_bridge,bridge_over_water,19,13.075457,80.177929,,yes,1,,
+726035083,726035083,,residential,low_bridge,bridge_over_water,24,13.091482,80.224732,,yes,1,,
+726141115,726141115,,tertiary,low_bridge,bridge_over_water,23,12.988594,80.197522,,yes,1,,
+726773105,726773105,Nookampalayam Road,tertiary,low_bridge,bridge_over_water,37,12.894016,80.197728,,yes,1,,
+727631739-x1,727631739,,residential,dip,waterway_crossing,171,13.132183,80.196995,,,,,drain#1289269137
+727734262-x1,727734262,,primary_link,underpass,under_rail_bridge,84,13.071974,80.274405,,,,,railway#240340228
+727734262-x2,727734262,,primary_link,underpass,under_rail_bridge,84,13.071984,80.274471,,,,,railway#549727267
+729835696,729835696,Marmalong Bridge - Irumbuliyur - Vandalur - Mudichur - Oragadam - Walajabad Road,primary,low_bridge,bridge_over_water,150,12.895208,80.057791,,yes,1,,
+731255015-x1,731255015,,service,culvert,waterway_crossing,352,12.981088,80.158695,,,,,drain#1132154729
+740105149,740105149,,service,underpass,tunnel=building_passage;layer<0,11,12.960226,80.056985,building_passage,,-1,,
+740105153,740105153,,service,underpass,tunnel=building_passage;layer<0,14,12.960108,80.057503,building_passage,,-1,,
+740146563,740146563,,service,underpass,tunnel=building_passage;layer<0,20,12.96075,80.053138,building_passage,yes,-1,,
+740146570,740146570,,service,underpass,tunnel=building_passage;layer<0,33,12.960719,80.052939,building_passage,,-2,,
+746467411,746467411,Mopparappan Street,tertiary,low_bridge,bridge_over_water,22,13.031579,80.237107,,yes,1,,
+750344149,750344149,2nd Street,residential,underpass,layer<0,143,13.021228,80.138199,,,-1,,
+750645372-x1,750645372,,residential,culvert,waterway_crossing,93,13.139905,80.203034,,,,,drain#1089517862
+751461473,751461473,,residential,underpass,layer<0,209,13.130606,80.164769,,,-1,,
+751749388,751749388,,residential,underpass,layer<0,47,13.058767,80.14727,,,-1,,
+751751235,751751235,,residential,low_bridge,bridge_over_water,10,13.001986,80.129181,,yes,1,,
+751771069-x1,751771069,,tertiary,dip,waterway_crossing,403,12.948999,80.18443,,,,,drain#102559098
+752866120,752866120,Marmalong Bridge - Irumbuliyur - Vandalur - Mudichur - Oragadam - Walajabad Road,primary,low_bridge,bridge_over_water,18,12.892559,80.078735,,yes,1,,
+752866122,752866122,Marmalong Bridge - Irumbuliyur - Vandalur - Mudichur - Oragadam - Walajabad Road,primary,low_bridge,bridge_over_water,22,12.89235,80.078613,,yes,1,,
+754131104-x1,754131104,,tertiary,culvert,waterway_crossing,73,13.130377,80.214193,,,,,drain#1205852876
+754185089,754185089,,residential,low_bridge,bridge_over_water,11,13.077015,80.175671,,yes,1,,
+761161026-x1,761161026,,primary_link,underpass,under_rail_bridge,21,12.986686,80.195909,,,,,railway#28620048
+761161026-x2,761161026,,primary_link,underpass,under_rail_bridge,21,12.986686,80.195909,,,,,railway#235921450
+761177261-x1,761177261,DLF IT Park Road,service,culvert,waterway_crossing,273,13.023266,80.177094,,,,,drain#1123838346
+766042449,766042449,Shriram City Road,residential,low_bridge,bridge_over_water,10,13.028058,80.111927,,yes,1,,
+767876329-x1,767876329,,residential,culvert,waterway_crossing,436,13.017112,80.115877,,,,,canal:Chembarambakkam irrigation canal#1151035776
+767910134,767910134,DRA Tuxedo Elite Path,residential,low_bridge,bridge_over_water,8,12.975547,80.207957,,yes,1,,
+768139895,768139895,,secondary,low_bridge,bridge_over_water,25,13.108452,80.179664,,yes,1,,
+788486733,788486733,,residential,low_bridge,bridge_over_water,8,13.033969,80.243372,,yes,1,,
+813634937,813634937,Tamilnadu Housing Board Road,tertiary,low_bridge,bridge_over_water,14,13.111546,80.131282,,yes,1,,
+813634939,813634939,,residential,low_bridge,bridge_over_water,11,13.11044,80.130391,,yes,1,,
+813634941,813634941,Ambattur - Avadi Road,tertiary,low_bridge,bridge_over_water,14,13.106659,80.128131,,yes,1,,
+822593925-x1,822593925,,service,underpass,under_rail_bridge,51,13.006427,80.24756,,,,,railway#549727236
+822593925-x2,822593925,,service,underpass,under_rail_bridge,51,13.006427,80.24756,,,,,railway#549727255
+822593928,822593928,,residential,low_bridge,bridge_over_water,37,13.012383,80.248341,,yes,1,,
+822593930,822593930,,residential,low_bridge,bridge_over_water,55,13.034413,80.26608,,yes,1,,
+822593931-x1,822593931,PVK Koil Street,tertiary,underpass,under_rail_bridge,147,13.042276,80.274493,,,,,railway#549727227
+822593931-x2,822593931,PVK Koil Street,tertiary,underpass,under_rail_bridge,147,13.042276,80.274493,,,,,railway#549727260
+822593941,822593941,General Hospital Road,primary,low_bridge,bridge_over_water,29,13.081708,80.275054,,yes,1,,
+822593942,822593942,General Hospital Road,primary,low_bridge,bridge_over_water,29,13.081595,80.274799,,yes,1,,
+824539734,824539734,,residential,low_bridge,bridge_over_water,64,13.07159,80.225268,,yes,1,,
+827713682,827713682,Chennai - Ennore Road Tunnel,primary,underpass,tunnel=yes;layer<0,67,13.222409,80.319804,yes,,-1,,
+828067969,828067969,Erikarai road,tertiary,low_bridge,bridge_over_water,17,12.867296,80.054503,,yes,1,,
+828068047-x1,828068047,,residential,culvert,waterway_crossing,365,12.863361,80.053966,,,,,drain#1151570531
+828068056-x1,828068056,,residential,culvert,waterway_crossing,187,12.86375,80.054285,,,,,drain#1151570529
+828068060-x1,828068060,,residential,culvert,waterway_crossing,205,12.864911,80.054554,,,,,drain#1151570525
+828068061-x1,828068061,,residential,culvert,waterway_crossing,280,12.86681,80.055393,,,,,drain#1151570517
+828326555,828326555,,service,low_bridge,bridge_over_water,7,12.994395,80.080748,,yes,1,,
+828326561,828326561,,service,dip,flood_prone=yes,455,12.997558,80.07865,,,,yes,
+828326561-x1,828326561,,service,culvert,waterway_crossing,455,12.997582,80.078721,,,,yes,ditch#696533197
+828362041-x1,828362041,,residential,culvert,waterway_crossing,858,13.008749,80.081741,,,,,ditch#828684107
+828362041-x2,828362041,,residential,dip,waterway_crossing,858,13.009118,80.081473,,,,,stream#706896508
+828411839,828411839,,secondary,low_bridge,bridge_over_water,33,13.154718,80.133553,,yes,1,,
+828474153,828474153,,residential,low_bridge,bridge_over_water,7,13.015281,80.079218,,yes,1,,
+828684109,828684109,,residential,low_bridge,bridge_over_water,4,13.012463,80.080575,,yes,1,,
+828684110-x1,828684110,,residential,culvert,waterway_crossing,350,13.0153,80.079325,,,,,canal#828474150
+828761042,828761042,Link Road,tertiary,low_bridge,bridge_over_water,30,13.193054,80.084538,,yes,1,,
+830606929,830606929,,residential,low_bridge,bridge_over_water,82,13.10121,80.053993,,yes,1,,
+830730148,830730148,ETPS Flyash Bridge,unclassified,low_bridge,bridge_over_water,85,13.205548,80.30086,,yes,1,,
+830730150,830730150,ETPS Flyash Bridge,unclassified,low_bridge,bridge_over_water,317,13.201331,80.307651,,yes,1,,
+830730152,830730152,,track,low_bridge,bridge_over_water,149,13.187545,80.294177,,yes,1,,
+830730154,830730154,,service,low_bridge,bridge_over_water,84,13.193239,80.291049,,yes,1,,
+830744753,830744753,,service,low_bridge,bridge_over_water,18,13.153617,80.274859,,yes,1,,
+830744756,830744756,,service,low_bridge,bridge_over_water,12,13.150074,80.273839,,yes,1,,
+830777273,830777273,,service,low_bridge,bridge_over_water,12,13.153645,80.278081,,yes,1,,
+831085339,831085339,,residential,low_bridge,bridge_over_water,15,12.865024,80.189253,,yes,1,,
+831085350,831085350,Medavakkam - Mambakkam - Sembakkam Road,primary,low_bridge,bridge_over_water,48,12.867288,80.175878,,yes,1,,
+832221602,832221602,,tertiary,low_bridge,bridge_over_water,47,12.87093,80.15052,,yes,1,,
+832438264,832438264,,residential,low_bridge,bridge_over_water,33,12.869744,80.147845,,yes,1,,
+832453435,832453435,,track,low_bridge,bridge_over_water,44,12.870185,80.147537,,yes,1,,
+832456363,832456363,,unclassified,low_bridge,bridge_over_water,12,12.966111,80.093798,,yes,1,,
+832456366,832456366,,unclassified,low_bridge,bridge_over_water,13,12.966719,80.087563,,yes,1,,
+832456371,832456371,Thirumudivakkam High Road,tertiary,low_bridge,bridge_over_water,19,12.967344,80.085297,,yes,1,,
+832471811-x1,832471811,,residential,dip,waterway_crossing,828,12.950672,80.100156,,,,,ditch#383841156
+832513987,832513987,,residential,low_bridge,bridge_over_water,11,12.939077,80.088536,,yes,1,,
+832513989,832513989,,residential,low_bridge,bridge_over_water,9,12.939091,80.088289,,yes,1,,
+832513993,832513993,,residential,low_bridge,bridge_over_water,7,12.940042,80.085381,,yes,1,,
+832540255,832540255,,residential,low_bridge,bridge_over_water,7,12.938767,80.090532,,yes,1,,
+832540257,832540257,,residential,low_bridge,bridge_over_water,8,12.938023,80.093248,,yes,1,,
+832897484,832897484,,tertiary,low_bridge,bridge_over_water,122,13.101217,80.074829,,yes,1,,
+832897485,832897485,,residential,low_bridge,bridge_over_water,79,13.098985,80.075768,,yes,1,,
+833401103,833401103,Thirumudivakkam High Road,tertiary,low_bridge,bridge_over_water,15,12.963563,80.079917,,yes,1,,
+833406413,833406413,,residential,low_bridge,bridge_over_water,9,12.965298,80.079369,,yes,1,,
+833439137,833439137,Thiruvottriyur – Ponneri – Panchetty Road,primary,low_bridge,bridge_over_water,139,13.216304,80.272482,,yes,,,
+833454095,833454095,,residential,low_bridge,bridge_over_water,12,12.917091,80.061949,,yes,1,,
+833546236-x1,833546236,,service,culvert,waterway_crossing,264,13.008227,80.168899,,,,,drain:Surplus water drain#833840451
+833818026,833818026,,residential,low_bridge,bridge_over_water,9,12.986582,80.096533,,yes,1,,
+833827096,833827096,,tertiary,low_bridge,bridge_over_water,33,13.176377,80.28667,,yes,1,,
+833851319-x1,833851319,,tertiary,culvert,waterway_crossing,21,13.071691,80.098609,,,,,drain#833881739
+834075668-x1,834075668,,residential,dip,waterway_crossing,173,12.989654,80.09479,,,,,drain#1150294715
+834075669,834075669,,unclassified,low_bridge,bridge_over_water,7,12.988425,80.095322,,yes,1,,
+834087147,834087147,Mount - Poonamallee - Avadi Road,primary,low_bridge,bridge_over_water,133,13.083837,80.108793,,yes,1,,
+834160121,834160121,,residential,low_bridge,bridge_over_water,10,13.168651,80.073633,,yes,1,,
+834160122,834160122,,track,low_bridge,bridge_over_water,14,13.169662,80.07682,,yes,1,,
+834160125,834160125,,residential,low_bridge,bridge_over_water,11,13.172886,80.082565,,yes,1,,
+834160129,834160129,,residential,low_bridge,bridge_over_water,19,13.178366,80.066288,,yes,1,,
+834195292,834195292,,residential,low_bridge,bridge_over_water,10,13.168412,80.071319,,yes,1,,
+834195294,834195294,Morai Road,tertiary,low_bridge,bridge_over_water,29,13.180143,80.070385,,yes,1,,
+834458044,834458044,,residential,low_bridge,bridge_over_water,12,13.169464,80.098235,,yes,1,,
+834458045,834458045,,tertiary,low_bridge,bridge_over_water,17,13.168175,80.098837,,yes,1,,
+834511860-x1,834511860,,residential,underpass,under_rail_bridge,320,12.993937,80.196237,,,,,railway#28620048
+834511860-x2,834511860,,residential,underpass,under_rail_bridge,320,12.993937,80.196237,,,,,railway#235921450
+834511860-x3,834511860,,residential,culvert,waterway_crossing,320,12.994807,80.196433,,,,,drain#881880741
+834533583-x1,834533583,,unclassified,culvert,waterway_crossing,1881,13.164777,80.05719,,,,,drain#834538881
+834538879,834538879,,unclassified,low_bridge,bridge_over_water,12,13.164615,80.051032,,yes,1,,
+834610224,834610224,Ottiambakkam Road,tertiary,low_bridge,bridge_over_water,28,12.893048,80.182238,,yes,1,,
+834621115,834621115,,tertiary,low_bridge,bridge_over_water,98,13.204924,80.085803,,yes,1,,
+834623264,834623264,Kodambakkam – Sriperumbudur Road,primary,low_bridge,bridge_over_water,30,13.004964,80.104662,,yes,1,,
+834657124-x1,834657124,,service,culvert,waterway_crossing,99,13.005969,80.12512,,,,,drain#1255150778
+834657125,834657125,,service,low_bridge,bridge_over_water,6,13.00486,80.124511,,yes,1,,
+834657135-x1,834657135,,residential,dip,waterway_crossing,81,13.004586,80.117663,,,,,drain#102658265
+834662319-x1,834662319,,residential,dip,waterway_crossing,52,13.006575,80.128466,,,,,drain#102658271
+834849054-x1,834849054,,tertiary,dip,waterway_crossing,744,12.997773,80.132062,,,,,drain#102658271
+834855378,834855378,,residential,low_bridge,bridge_over_water,10,12.916859,80.062834,,yes,1,,
+834861146-x1,834861146,,service,dip,waterway_crossing,182,13.011578,80.115573,,,,,drain#102658263
+834861151-x1,834861151,,service,dip,waterway_crossing,209,13.006137,80.112268,,,,,drain#102658265
+834888109-x1,834888109,,service,dip,waterway_crossing,154,12.912406,80.083711,,,,,drain#383861896
+834912604,834912604,Madhavaram - Red Hills Road,primary,low_bridge,bridge_over_water,72,13.170249,80.221353,,yes,1,,
+835005959,835005959,,trunk_link,low_bridge,bridge_over_water,325,13.113915,80.163987,,yes,1,,
+835007223,835007223,,trunk_link,low_bridge,bridge_over_water,326,13.113913,80.16405,,yes,1,,
+835015374,835015374,Chennai Bypass Expressway,trunk,low_bridge,bridge_over_water,205,12.985128,80.121048,,yes,1,,
+835015376,835015376,Chennai Bypass Expressway,trunk,low_bridge,bridge_over_water,205,12.986986,80.121006,,yes,1,,
+835017286,835017286,Chennai Bypass Expressway,trunk,low_bridge,bridge_over_water,54,12.96544,80.119102,,yes,1,,
+835017288,835017288,Chennai Bypass Expressway,trunk,low_bridge,bridge_over_water,54,12.96592,80.11893,,yes,1,,
+835030601,835030601,Nelson Manickam Road,secondary,low_bridge,bridge_over_water,68,13.067149,80.227668,,yes,1,,
+835030603,835030603,Nelson Manickam Road,secondary,low_bridge,bridge_over_water,57,13.066974,80.228237,,yes,1,,
+835253318,835253318,,residential,low_bridge,bridge_over_water,19,13.108654,80.151394,,yes,1,,
+835253320,835253320,,residential,low_bridge,bridge_over_water,23,13.107948,80.151269,,yes,1,,
+835253322,835253322,,residential,low_bridge,bridge_over_water,21,13.10608,80.15015,,yes,1,,
+835253324,835253324,,residential,low_bridge,bridge_over_water,13,13.105598,80.15025,,yes,1,,
+835655063,835655063,Poonamallee - Kundrathur - Pallavaram Road,primary,low_bridge,bridge_over_water,37,13.021149,80.105631,,yes,1,,
+835655065-x1,835655065,Poonamallee - Kundrathur - Pallavaram Road,primary,culvert,waterway_crossing,913,13.004369,80.10009,,,,,stream:Chembarampakkam water for irrigation#836326671
+835674076,835674076,Inner Ring Road,primary,low_bridge,bridge_over_water,41,13.180034,80.256369,,yes,1,,
+835696156-x1,835696156,,residential,culvert,waterway_crossing,60,12.864519,80.054374,,,,,drain#1151570527
+835701994,835701994,Mount - Medavakkam Road,primary,low_bridge,bridge_over_water,17,12.981246,80.195518,,yes,1,,
+835708410,835708410,1st Main Road,tertiary,low_bridge,bridge_over_water,5,12.981484,80.195274,,yes,1,,
+835741613,835741613,Vellanur - Red Hills Road,tertiary,low_bridge,bridge_over_water,23,13.156572,80.10312,,yes,1,,
+835748176,835748176,Kovilpadagai Main Road,secondary,low_bridge,bridge_over_water,20,13.154578,80.099395,,yes,1,,
+835757305,835757305,,residential,low_bridge,bridge_over_water,9,13.15559,80.101532,,yes,1,,
+835951355-x1,835951355,,residential,dip,waterway_crossing,120,13.12351,80.194001,,,,,drain#1324096389
+836053152-x1,836053152,,residential,culvert,waterway_crossing,151,12.856919,80.052414,,,,,drain#1151570512
+836064620,836064620,,residential,low_bridge,bridge_over_water,14,12.852774,80.055779,,yes,1,,
+836066188,836066188,,residential,low_bridge,bridge_over_water,17,13.109113,80.150358,,yes,1,,
+836077114,836077114,,residential,low_bridge,bridge_over_water,10,12.961937,80.123854,,yes,1,,
+836077115,836077115,,residential,low_bridge,bridge_over_water,9,12.962966,80.122113,,yes,1,,
+836080198-x1,836080198,,residential,culvert,waterway_crossing,195,12.857058,80.053054,,,,,drain#1151570545
+836080200-x1,836080200,,residential,culvert,waterway_crossing,164,12.857837,80.053039,,,,,drain#1151570541
+836084676,836084676,,residential,low_bridge,bridge_over_water,14,12.858015,80.059521,,yes,1,,
+836103730,836103730,Pammal - Thiruneermalai Road,tertiary,low_bridge,bridge_over_water,17,12.966519,80.117617,,yes,1,,
+836103733,836103733,,tertiary,low_bridge,bridge_over_water,51,12.965929,80.118848,,yes,1,,
+836105188,836105188,,residential,low_bridge,bridge_over_water,11,12.960975,80.125957,,yes,1,,
+836287135,836287135,,residential,low_bridge,bridge_over_water,5,13.004611,80.09934,,yes,1,,
+836288416-x1,836288416,,residential,dip,waterway_crossing,234,13.000414,80.13012,,,,,drain#102658271
+836295017,836295017,Grand Northern Trunk Road (Old NH5),primary,low_bridge,bridge_over_water,138,13.1865,80.190078,,yes,1,,
+836306185,836306185,,residential,low_bridge,bridge_over_water,24,13.203585,80.169471,,yes,1,,
+836306187,836306187,Pallikuppam Union Road,tertiary,low_bridge,bridge_over_water,15,13.197591,80.193134,,yes,1,,
+836308819-x1,836308819,,residential,culvert,waterway_crossing,107,12.85668,80.053376,,,,,drain#1151570547
+836308829-x1,836308829,,residential,culvert,waterway_crossing,59,12.859765,80.052401,,,,,drain#1151570537
+836314036,836314036,,residential,underpass,layer<0,106,13.132723,80.1572,,,-2,,
+836314037,836314037,,residential,underpass,layer<0,219,13.13189,80.157265,,,-2,,
+836320346-x1,836320346,Kodambakkam – Sriperumbudur Road,primary,culvert,waterway_crossing,260,12.995181,80.08885,,,,,drain#1150294709
+836320353-x1,836320353,,residential,dip,waterway_crossing,55,13.002047,80.090371,,,,,drain#836320339
+836320353-x2,836320353,,residential,culvert,waterway_crossing,55,13.002047,80.090371,,,,,drain#836320351
+836328856,836328856,,residential,low_bridge,bridge_over_water,17,13.104893,80.149936,,yes,1,,
+836352199,836352199,,residential,low_bridge,bridge_over_water,15,12.860938,80.065055,,yes,1,,
+836356395,836356395,,residential,low_bridge,bridge_over_water,7,13.022054,80.10383,,yes,1,,
+836412674-x1,836412674,,service,culvert,waterway_crossing,153,12.982941,80.217853,,,,,canal:drain path#103716694
+836660140,836660140,,service,underpass,layer<0,245,13.135358,80.076216,,,-1,,
+836665576-x1,836665576,,residential,culvert,waterway_crossing,230,13.142362,80.198292,,,,,drain#1089517862
+836665578-x1,836665578,,residential,culvert,waterway_crossing,51,13.144142,80.199212,,,,,drain#1089517862
+836665580-x1,836665580,Surapet Main Road,secondary,culvert,waterway_crossing,1146,13.1398,80.203319,,,,,drain#1089517861
+836665581,836665581,Surapet Main Road,secondary,low_bridge,bridge_over_water,37,13.141184,80.196891,,yes,1,,
+836692553-x1,836692553,,residential,culvert,waterway_crossing,150,13.138715,80.203065,,,,,drain#1089517861
+836692555-x1,836692555,,residential,culvert,waterway_crossing,106,13.138039,80.202165,,,,,drain#1089517861
+836695441,836695441,,track,low_bridge,bridge_over_water,21,13.130653,80.267339,,yes,1,,
+836699661-x1,836699661,,residential,dip,waterway_crossing,52,13.133597,80.20034,,,,,drain#1089517860
+836699663-x1,836699663,,residential,dip,waterway_crossing,96,13.131323,80.201157,,,,,drain#1316676519
+836708274,836708274,,residential,low_bridge,bridge_over_water,8,12.851898,80.06586,,yes,1,,
+836709046-x1,836709046,,residential,dip,waterway_crossing,101,13.125919,80.198261,,,,,drain#1288582911
+836725824-x1,836725824,,residential,dip,waterway_crossing,116,13.129416,80.200008,,,,,drain#1289814514
+836725824-x2,836725824,,residential,dip,waterway_crossing,116,13.129416,80.200008,,,,,drain#1290230926
+836725826-x1,836725826,,residential,dip,waterway_crossing,56,13.128392,80.201588,,,,,drain#1289814513
+836725826-x2,836725826,,residential,dip,waterway_crossing,56,13.128392,80.201581,,,,,drain#1290230925
+836725829-x1,836725829,,residential,dip,waterway_crossing,145,13.130591,80.201449,,,,,drain#1285521229
+836725830-x1,836725830,,residential,dip,waterway_crossing,93,13.130822,80.203098,,,,,drain#1285521228
+836725831-x1,836725831,,residential,dip,waterway_crossing,77,13.130948,80.203509,,,,,drain#1285521228
+836725838-x1,836725838,,residential,dip,waterway_crossing,113,13.130789,80.204647,,,,,drain#1285521228
+836732279,836732279,,track,low_bridge,bridge_over_water,20,13.133236,80.263499,,yes,1,,
+836734601,836734601,,residential,low_bridge,bridge_over_water,6,13.130389,80.217797,,yes,1,,
+836759490-x1,836759490,,residential,culvert,waterway_crossing,130,13.139095,80.203094,,,,,drain#1089517861
+836769553-x1,836769553,,residential,dip,waterway_crossing,67,13.130926,80.203896,,,,,drain#1285521228
+836769554-x1,836769554,,residential,dip,waterway_crossing,76,13.13155,80.204294,,,,,drain#1285521228
+836769555-x1,836769555,,residential,dip,waterway_crossing,127,13.13129,80.205181,,,,,drain#1285521228
+836801854,836801854,Jawaharlal Nehru Road (100 Feet Road),primary,low_bridge,bridge_over_water,347,13.130083,80.21353,,yes,1,,
+836807533-x1,836807533,,residential,culvert,waterway_crossing,129,13.134192,80.11599,,,,,ditch#1271899738
+836818574,836818574,,residential,low_bridge,bridge_over_water,9,12.990947,80.114791,,yes,1,,
+836849258-x1,836849258,Kavingnar Kannadasan Nagar Main Road,residential,culvert,waterway_crossing,701,12.862317,80.053025,,,,,drain#1151570533
+836972959-x1,836972959,,residential,dip,waterway_crossing,220,13.146734,80.202335,,,,,drain#911275609
+836985469,836985469,,residential,low_bridge,bridge_over_water,92,13.077444,80.112207,,yes,1,,
+836997981,836997981,,residential,low_bridge,bridge_over_water,13,13.116925,80.101838,,yes,1,,
+837045309,837045309,,residential,low_bridge,bridge_over_water,7,13.016944,80.144023,,yes,1,,
+837049424,837049424,,residential,low_bridge,bridge_over_water,12,12.948868,80.20313,,yes,1,,
+837049426,837049426,,residential,low_bridge,bridge_over_water,21,12.948893,80.206377,,yes,1,,
+837051908,837051908,Pallavaram - Thoraipakkam Road,primary,low_bridge,bridge_over_water,18,12.948949,80.217812,,yes,1,,
+837051910,837051910,Pallavaram - Thoraipakkam Road,primary,low_bridge,bridge_over_water,17,12.949067,80.217964,,yes,1,,
+837058568-x1,837058568,,residential,dip,waterway_crossing,426,13.011563,80.114403,,,,,drain#102658263
+837060450,837060450,,tertiary,low_bridge,bridge_over_water,16,13.110024,80.184299,,yes,1,,
+837065619,837065619,,residential,low_bridge,bridge_over_water,8,13.145099,80.055511,,yes,1,,
+837068309,837068309,,residential,low_bridge,bridge_over_water,9,13.024232,80.136387,,yes,1,,
+837068311,837068311,,residential,low_bridge,bridge_over_water,6,13.02418,80.130824,,yes,1,,
+837068313,837068313,,tertiary,low_bridge,bridge_over_water,7,13.02413,80.132961,,yes,1,,
+837068314,837068314,Ganga Street,residential,low_bridge,bridge_over_water,6,13.017163,80.151813,,yes,1,,
+837068317,837068317,,residential,low_bridge,bridge_over_water,5,13.017115,80.149779,,yes,1,,
+837068318,837068318,,residential,low_bridge,bridge_over_water,7,13.017719,80.147863,,yes,1,,
+837068319,837068319,,residential,low_bridge,bridge_over_water,7,13.017597,80.146803,,yes,1,,
+837068321,837068321,,residential,low_bridge,bridge_over_water,3,13.017112,80.144978,,yes,1,,
+837068323,837068323,,residential,low_bridge,bridge_over_water,3,13.017036,80.143563,,yes,1,,
+837068325,837068325,,residential,low_bridge,bridge_over_water,11,13.017649,80.139944,,yes,1,,
+837068327,837068327,,service,low_bridge,bridge_over_water,13,13.017154,80.137897,,yes,1,,
+837068329,837068329,,residential,low_bridge,bridge_over_water,14,13.017005,80.136032,,yes,1,,
+837068331,837068331,,service,low_bridge,bridge_over_water,12,13.016652,80.134705,,yes,1,,
+837068334,837068334,,residential,low_bridge,bridge_over_water,10,13.016557,80.133544,,yes,1,,
+837071677,837071677,,residential,low_bridge,bridge_over_water,26,13.144948,80.054958,,yes,1,,
+837071679,837071679,,residential,low_bridge,bridge_over_water,8,13.145302,80.056627,,yes,1,,
+837071680,837071680,,tertiary,low_bridge,bridge_over_water,4,13.145475,80.058238,,yes,1,,
+837071683,837071683,,residential,low_bridge,bridge_over_water,11,13.145485,80.058516,,yes,1,,
+837078763,837078763,,residential,low_bridge,bridge_over_water,8,13.130691,80.05664,,yes,1,,
+837087972,837087972,,service,low_bridge,bridge_over_water,17,13.029355,80.113871,,yes,1,,
+837087999,837087999,,residential,low_bridge,bridge_over_water,12,13.018197,80.110205,,yes,1,,
+837321916,837321916,,residential,low_bridge,bridge_over_water,22,12.952385,80.194484,,yes,1,,
+837608991,837608991,Major Mukund Varadharajan Salai,primary,low_bridge,bridge_over_water,43,12.963621,80.216088,,yes,1,,
+837608992,837608992,Major Mukund Varadharajan Salai,primary,low_bridge,bridge_over_water,46,12.963878,80.216023,,yes,1,,
+837717489,837717489,Tiruvalluvar Street,tertiary,low_bridge,bridge_over_water,16,13.136482,80.255078,,yes,1,,
+837717491,837717491,,residential,low_bridge,bridge_over_water,12,13.135637,80.253866,,yes,1,,
+837717493,837717493,Thirthangal Nadar College Road,tertiary,low_bridge,bridge_over_water,9,13.136645,80.255586,,yes,1,,
+837717499,837717499,,service,low_bridge,bridge_over_water,11,13.136345,80.258079,,yes,1,,
+837726318,837726318,Mahalakshmi Nagar Main Road,residential,low_bridge,bridge_over_water,10,13.015979,80.156741,,yes,1,,
+837726323,837726323,VGN lakshmi Nagar Main Road,tertiary,low_bridge,bridge_over_water,12,13.015181,80.158317,,yes,1,,
+837732302,837732302,North Avenue,tertiary,low_bridge,bridge_over_water,17,13.134118,80.253444,,yes,1,,
+837741249,837741249,5th Main Road,tertiary,low_bridge,bridge_over_water,13,13.136757,80.249187,,yes,1,,
+837759992,837759992,,residential,low_bridge,bridge_over_water,12,13.129817,80.247757,,yes,1,,
+837767441,837767441,Ramakrishna Link Road,tertiary,low_bridge,bridge_over_water,40,13.119403,80.199653,,yes,1,,
+837772605,837772605,,tertiary,low_bridge,bridge_over_water,21,13.125905,80.254244,,yes,1,,
+837804294-x1,837804294,,residential,culvert,waterway_crossing,12,13.130337,80.056159,,,,,ditch#1346832541
+837814536,837814536,,service,low_bridge,bridge_over_water,11,13.015746,80.128808,,yes,1,,
+837814538,837814538,,residential,low_bridge,bridge_over_water,12,13.015825,80.128666,,yes,1,,
+837814597,837814597,Mugalivakkam Road,tertiary,low_bridge,bridge_over_water,25,13.025376,80.167854,,yes,1,,
+837814601,837814601,,service,low_bridge,bridge_over_water,6,13.024816,80.174726,,yes,1,,
+837823108,837823108,VND Sindhu Salai,residential,low_bridge,bridge_over_water,7,13.016988,80.153305,,yes,1,,
+838042505,838042505,Fifth Main Road,residential,low_bridge,bridge_over_water,13,13.059352,80.189641,,yes,1,,
+838046948,838046948,,residential,low_bridge,bridge_over_water,17,13.060882,80.197607,,yes,1,,
+838052922,838052922,Grand Northern Trunk Road,trunk,low_bridge,bridge_over_water,43,13.131339,80.238151,,yes,1,,
+838057523,838057523,kalaimagal Street,residential,low_bridge,bridge_over_water,7,13.129488,80.235729,,yes,1,,
+838057525,838057525,,residential,low_bridge,bridge_over_water,9,13.129342,80.234191,,yes,1,,
+838057527,838057527,80 Feet Road,residential,low_bridge,bridge_over_water,10,13.128887,80.232013,,yes,1,,
+838057534,838057534,,residential,low_bridge,bridge_over_water,9,13.127961,80.230477,,yes,1,,
+838057535,838057535,80 Feet Road,residential,low_bridge,bridge_over_water,15,13.127648,80.229863,,yes,1,,
+838057537,838057537,,residential,low_bridge,bridge_over_water,7,13.127693,80.22787,,yes,1,,
+838057539,838057539,,residential,low_bridge,bridge_over_water,8,13.127757,80.227227,,yes,1,,
+838057542,838057542,,residential,low_bridge,bridge_over_water,3,13.129263,80.22724,,yes,1,,
+838057544,838057544,Balaji Nagar Main Road,secondary,low_bridge,bridge_over_water,8,13.12941,80.224695,,yes,1,,
+838057546,838057546,1st Main Road,residential,low_bridge,bridge_over_water,5,13.129462,80.224262,,yes,1,,
+838062170,838062170,,tertiary_link,low_bridge,bridge_over_water,63,13.176585,80.201966,,yes,1,,
+838065965,838065965,,residential,low_bridge,bridge_over_water,8,13.129271,80.225189,,yes,1,,
+838067001,838067001,,residential,low_bridge,bridge_over_water,7,13.074898,80.177814,,yes,1,,
+838067019,838067019,Gangai Amman Koil Street,tertiary,low_bridge,bridge_over_water,12,13.072698,80.181024,,yes,1,,
+838071440,838071440,7th Main Road,tertiary,low_bridge,bridge_over_water,9,13.078565,80.174602,,yes,1,,
+838074403,838074403,,residential,underpass,layer<0,241,13.138539,80.19299,,,-1,,
+838077984-x1,838077984,,service,culvert,waterway_crossing,1261,12.982345,80.15111,,,,,drain#1065750659
+838082671,838082671,Canal Bridge,secondary,low_bridge,bridge_over_water,70,13.13337,80.191677,,yes,1,,
+838086311,838086311,,residential,dip,flood_prone=yes,419,13.14776,80.226348,,,,yes,
+838086697-x1,838086697,,residential,dip,waterway_crossing,423,13.133784,80.19349,,,,,drain#1316676523
+838091912,838091912,Kaliamman Koil Street,secondary,low_bridge,bridge_over_water,25,13.060652,80.195915,,yes,1,,
+838133937-x1,838133937,,residential,dip,waterway_crossing,190,13.13373,80.193967,,,,,drain#1316676523
+838152637-x1,838152637,,residential,dip,waterway_crossing,216,13.127168,80.19429,,,,,drain#1283482446
+838184638,838184638,,service,none,tunnel=building_passage,9,13.058895,80.127692,building_passage,,,,
+838184639,838184639,,service,none,tunnel=building_passage,9,13.05891,80.127567,building_passage,,,,
+838198179-x1,838198179,,residential,dip,waterway_crossing,84,13.107846,80.158152,,,,,drain#102574585
+838209791-x1,838209791,,residential,dip,waterway_crossing,85,13.108654,80.16108,,,,,drain#102574585
+838223848-x1,838223848,,residential,culvert,waterway_crossing,5,13.128352,80.231274,,,,,drain#1205852880
+838224425,838224425,JPC Main road,secondary,low_bridge,bridge_over_water,10,13.083437,80.173022,,yes,1,,
+838224427,838224427,1st Ave,secondary,low_bridge,bridge_over_water,11,13.083523,80.173106,,yes,1,,
+838224429,838224429,,residential,low_bridge,bridge_over_water,6,13.079148,80.174364,,yes,1,,
+838421880,838421880,,service,dip,flood_prone=yes,411,13.149205,80.224181,,,,yes,
+838483343,838483343,,residential,low_bridge,bridge_over_water,54,13.064591,80.165784,,yes,1,,
+838483345,838483345,,residential,low_bridge,bridge_over_water,73,13.062345,80.15807,,yes,1,,
+838948472,838948472,Manali Road,secondary,low_bridge,bridge_over_water,17,13.127987,80.269856,,yes,1,,
+840532261,840532261,RBI Subway,primary,underpass,tunnel=yes;layer<0,104,13.08523,80.289164,yes,,-1,,
+840532263,840532263,RBI Subway,primary,underpass,tunnel=yes;layer<0,107,13.084838,80.289222,yes,,-1,,
+843860849-x1,843860849,Uttamar Gandhi Salai,primary,dip,waterway_crossing,322,13.062553,80.244846,,,,,drain#28502295
+846872271,846872271,Manapakkam Main Road,secondary,low_bridge,bridge_over_water,12,13.013023,80.168992,,yes,1,,
+858651575-x1,858651575,Balaji Street,residential,dip,waterway_crossing,505,13.124396,80.201223,,,,,drain#1285837635
+858651575-x2,858651575,Balaji Street,residential,dip,waterway_crossing,505,13.124416,80.199598,,,,,drain#1285452581
+864059069-x1,864059069,Pallavaram - Thoraipakkam Road,primary,dip,waterway_crossing,517,12.949188,80.18499,,,,,drain#102559098
+910151274,910151274,GNT Road - New Erumaivettipalayam Road,tertiary,low_bridge,bridge_over_water,22,13.249503,80.154176,,yes,1,,
+911275608,911275608,Paper Mills Road,secondary,low_bridge,bridge_over_water,25,13.14655,80.20412,,yes,1,,
+911275612,911275612,,residential,low_bridge,bridge_over_water,35,13.147797,80.199624,,yes,1,,
+921637996,921637996,Keelkattalai Flyover,primary,low_bridge,bridge_over_water,690,12.94929,80.184827,,yes,1,,
+921637998,921637998,Keelkattalai Flyover,primary,low_bridge,bridge_over_water,681,12.949083,80.184278,,yes,1,,
+926497783,926497783,,residential,low_bridge,bridge_over_water,20,12.958292,80.188281,,yes,1,,
+932740707-x1,932740707,,residential,culvert,waterway_crossing,135,12.982463,80.218399,,,,,canal:drain path#103716694
+964595193-x1,964595193,,unclassified,culvert,waterway_crossing,755,12.98975,80.158832,,,,,stream#830029634
+964595198-x1,964595198,,track,culvert,waterway_crossing,112,12.997123,80.159328,,,,,stream#964595200
+964595229,964595229,New Cowl Bazaar Bridge,tertiary,low_bridge,bridge_over_water,174,12.995281,80.148666,,yes,1,,
+985620831-x1,985620831,,service,culvert,waterway_crossing,1014,12.992308,80.163939,,,,,drain#1541273810
+985620831-x2,985620831,,service,culvert,waterway_crossing,1014,12.994451,80.163918,,,,,drain#1061256247
+992165964,992165964,,residential,low_bridge,bridge_over_water,7,12.909506,80.091633,,yes,1,,
+993798042-x1,993798042,,residential,dip,waterway_crossing,41,12.995483,80.197095,,,,,drain#881880730
+995109142-x1,995109142,,residential,dip,waterway_crossing,50,13.032377,80.202508,,,,,canal:Maruthur Gopalan Ramachandran Nagar Canal#25460321
+995118269-x1,995118269,,residential,dip,waterway_crossing,262,13.075038,80.252116,,,,,drain#217696076
+995118273-x1,995118273,,service,dip,waterway_crossing,298,13.063222,80.246212,,,,,drain#28502295
+995134654-x1,995134654,,residential,dip,waterway_crossing,37,13.127181,80.20431,,,,,drain#1285837634
+995183040-x1,995183040,,residential,dip,waterway_crossing,61,13.080514,80.173973,,,,,drain#25380261
+1007652060-x1,1007652060,1st Main Road,residential,underpass,under_rail_bridge,245,12.99221,80.195693,,,,,railway#28620048
+1007652060-x2,1007652060,1st Main Road,residential,underpass,under_rail_bridge,245,12.99221,80.195693,,,,,railway#235921450
+1015894850-x1,1015894850,Velachery Main Road,secondary,dip,waterway_crossing,706,12.99482,80.217251,,,,,drain:Raj Bhavan Canal#102580561
+1029970431-x1,1029970431,Valluvar Kottam High Road,secondary,dip,waterway_crossing,100,13.063371,80.243452,,,,,drain#28502295
+1030689336-x1,1030689336,West Avenue Road,primary,underpass,under_rail_bridge,18,12.987839,80.251689,,,,,railway#59909721
+1030689336-x2,1030689336,West Avenue Road,primary,underpass,under_rail_bridge,18,12.987839,80.251689,,,,,railway#235920568
+1030833755,1030833755,,service,underpass,tunnel=yes;layer<0,22,12.985414,80.176868,yes,,-1,,
+1030833757,1030833757,,service,underpass,tunnel=yes;layer<0,21,12.985414,80.176727,yes,,-1,,
+1031541367,1031541367,,residential,low_bridge,bridge_over_water,165,12.989937,80.127665,,yes,1,,
+1031561521,1031561521,Otteri Bridge,primary,low_bridge,bridge_over_water,31,13.098006,80.251367,,yes,1,,
+1032617413,1032617413,SIDCO Industrial Estate South Phase Road,secondary,low_bridge,bridge_over_water,11,13.012987,80.207517,,yes,1,,
+1033108877-x1,1033108877,,tertiary,culvert,waterway_crossing,323,12.979735,80.194262,,,,,drain:Veerangal Canal#328358961
+1039584205,1039584205,,primary_link,low_bridge,bridge_over_water,57,13.074404,80.22241,,yes,1,,
+1039618818-x1,1039618818,Erukkancheri High Road,tertiary,underpass,under_rail_bridge,130,13.11068,80.265698,,,,,railway#53349202
+1039618818-x2,1039618818,Erukkancheri High Road,tertiary,underpass,under_rail_bridge,130,13.11068,80.265698,,,,,railway#23966133
+1039618818-x3,1039618818,Erukkancheri High Road,tertiary,underpass,under_rail_bridge,130,13.11068,80.265698,,,,,railway#23966135
+1039618818-x4,1039618818,Erukkancheri High Road,tertiary,underpass,under_rail_bridge,130,13.11068,80.265698,,,,,railway#97699175
+1039618818-x5,1039618818,Erukkancheri High Road,tertiary,underpass,under_rail_bridge,130,13.11068,80.265698,,,,,railway#845036460
+1039618821,1039618821,Grand Northern Trunk Road,trunk,low_bridge,bridge_over_water,47,13.123226,80.248649,,yes,1,,
+1040499037,1040499037,karumari amman koil back Street,residential,low_bridge,bridge_over_water,12,13.113638,80.093388,,yes,1,,
+1040499038,1040499038,,residential,low_bridge,bridge_over_water,20,13.113588,80.093801,,yes,1,,
+1040499039,1040499039,,residential,low_bridge,bridge_over_water,7,13.113591,80.094404,,yes,1,,
+1040499040,1040499040,,residential,low_bridge,bridge_over_water,10,13.113623,80.095138,,yes,1,,
+1040499041,1040499041,,residential,low_bridge,bridge_over_water,10,13.113665,80.095562,,yes,1,,
+1040730362,1040730362,Outer Ring Road,motorway,low_bridge,bridge_over_water,35,13.02189,80.093108,,yes,1,,
+1040730366-x1,1040730366,Outer Ring Road,motorway,dip,waterway_crossing,818,13.002924,80.089753,,,1,,drain#535357166
+1040730367-x1,1040730367,Outer Ring Road,motorway,dip,waterway_crossing,342,13.003525,80.089589,,,1,,drain#535357166
+1040730367-x2,1040730367,Outer Ring Road,motorway,culvert,waterway_crossing,342,13.005303,80.090273,,,1,,stream#836333667
+1040730368-x1,1040730368,Outer Ring Road,motorway,culvert,waterway_crossing,674,13.006937,80.091285,,,1,,stream:Chembarampakkam water for irrigation#836333668
+1040797598,1040797598,New Avadi Road,secondary,low_bridge,bridge_over_water,15,13.086536,80.23455,,yes,1,,
+1040797599,1040797599,Thirumangalam Road,tertiary,low_bridge,bridge_over_water,13,13.098005,80.201661,,yes,1,,
+1060258266,1060258266,,tertiary,low_bridge,bridge_over_water,10,13.203405,80.281586,,yes,1,,
+1063525619-x1,1063525619,,living_street,culvert,waterway_crossing,46,13.122419,80.250089,,,,,drain:Vyasarpadi Canal#1202708882
+1066919072,1066919072,,tertiary,low_bridge,bridge_over_water,25,12.875558,80.207763,,yes,1,,
+1066919074,1066919074,,tertiary,low_bridge,bridge_over_water,25,12.875517,80.2077,,yes,1,,
+1067182697,1067182697,Nookampalayam Link Road,tertiary,low_bridge,bridge_over_water,33,12.879599,80.210282,,yes,1,,
+1067182699,1067182699,Nookampalayam Link Road,tertiary,low_bridge,bridge_over_water,33,12.879655,80.210277,,yes,1,,
+1067192431,1067192431,Ottiambakkam Road,tertiary,low_bridge,bridge_over_water,27,12.895012,80.183071,,yes,1,,
+1067192432,1067192432,Ottiambakkam Road,tertiary,low_bridge,bridge_over_water,33,12.89514,80.182933,,yes,1,,
+1067477695-x1,1067477695,6th main road,tertiary,dip,waterway_crossing,129,13.147983,80.198283,,,,,drain#911275609
+1068239141,1068239141,,primary,low_bridge,bridge_over_water,33,13.212691,80.085736,,yes,1,,
+1068239142,1068239142,,primary,low_bridge,bridge_over_water,33,13.212707,80.086053,,yes,1,,
+1069540604-x1,1069540604,,residential,culvert,waterway_crossing,135,13.117302,80.260557,,,,,drain:Vyasarpadi Canal#1202708876
+1069590779,1069590779,,residential,low_bridge,bridge_over_water,6,13.127622,80.22872,,yes,1,,
+1071222011,1071222011,Kodambakkam – Sriperumbudur Road,primary,low_bridge,bridge_over_water,31,12.995351,80.081063,,yes,,,
+1071222012,1071222012,Kodambakkam – Sriperumbudur Road,primary,low_bridge,bridge_over_water,5,12.994655,80.084082,,yes,1,,
+1072485851,1072485851,,residential,underpass,tunnel=yes;layer<0,72,13.138001,80.185113,yes,,-1,,
+1074081716,1074081716,,tertiary,low_bridge,bridge_over_water,23,13.105641,80.265454,,yes,1,,
+1074457383,1074457383,,service,low_bridge,bridge_over_water,7,13.248938,80.331258,,yes,1,,
+1074791865-x1,1074791865,ORR Service Road,primary,dip,waterway_crossing,5123,13.003444,80.089458,,,,,drain#535357166
+1074791865-x2,1074791865,ORR Service Road,primary,culvert,waterway_crossing,5123,13.005413,80.090196,,,,,stream#836333667
+1074791865-x3,1074791865,ORR Service Road,primary,culvert,waterway_crossing,5123,13.007403,80.09099,,,,,stream:Chembarampakkam water for irrigation#836333668
+1074791866,1074791866,ORR Service Road,primary,low_bridge,bridge_over_water,35,13.021857,80.093008,,yes,1,,
+1074833584-x1,1074833584,Outer Ring Road,motorway,culvert,waterway_crossing,675,13.007349,80.091061,,,1,,stream:Chembarampakkam water for irrigation#836333668
+1074833619,1074833619,ORR Service Road,primary,low_bridge,bridge_over_water,89,12.977057,80.089551,,yes,1,,
+1074833620,1074833620,Outer Ring Road,motorway,low_bridge,bridge_over_water,89,12.97696,80.089649,,yes,1,,
+1074833633-x1,1074833633,Outer Ring Road,motorway,culvert,waterway_crossing,298,12.966607,80.089884,,,1,,ditch#1201589647
+1074833635-x1,1074833635,,primary_link,dip,waterway_crossing,32,12.96656,80.089645,,,,,ditch#1191351265
+1074843755,1074843755,Outer Ring Road,motorway,low_bridge,bridge_over_water,350,12.940677,80.083742,,yes,1,,
+1074843758-x1,1074843758,,primary_link,dip,waterway_crossing,40,12.940491,80.083396,,,,,drain#535357174
+1074843764-x1,1074843764,ORR Service Road,primary,dip,waterway_crossing,2239,12.940373,80.084185,,,,,drain#535357171
+1074994236,1074994236,Outer Ring Road,motorway,low_bridge,bridge_over_water,351,12.940442,80.084032,,yes,1,,
+1074994237-x1,1074994237,ORR Service Road,primary,dip,waterway_crossing,2181,12.940472,80.083552,,,,,drain#535357171
+1074994239-x1,1074994239,ORR Service Road,primary,culvert,waterway_crossing,3021,12.966561,80.089663,,,,,ditch#1191351266
+1074994244-x1,1074994244,,primary_link,dip,waterway_crossing,42,12.94036,80.084215,,,,,drain#535357171
+1074994254-x1,1074994254,ORR Service Road,primary,culvert,waterway_crossing,3002,12.966414,80.090471,,,,,ditch#1201589652
+1074994328-x1,1074994328,Outer Ring Road,motorway,culvert,waterway_crossing,300,12.966304,80.090247,,,1,,ditch#1201589650
+1074994329-x1,1074994329,,primary_link,culvert,waterway_crossing,58,12.966387,80.090544,,,,,ditch#1201589653
+1074994330-x1,1074994330,,primary_link,culvert,waterway_crossing,28,12.966393,80.090468,,,,,ditch#1201589652
+1074994350-x1,1074994350,ORR Service Road,primary,culvert,waterway_crossing,5204,13.006844,80.091382,,,,,stream:Chembarampakkam water for irrigation#836333668
+1074994350-x2,1074994350,ORR Service Road,primary,culvert,waterway_crossing,5204,13.004831,80.090597,,,,,stream#836333667
+1074994350-x3,1074994350,ORR Service Road,primary,dip,waterway_crossing,5204,13.003011,80.089907,,,,,drain#535357166
+1074994351,1074994351,Outer Ring Road,motorway,low_bridge,bridge_over_water,89,12.975801,80.090039,,yes,1,,
+1074994355,1074994355,ORR Service Road,primary,low_bridge,bridge_over_water,89,12.975715,80.09013,,yes,1,,
+1075006684-x1,1075006684,Outer Ring Road,motorway,culvert,waterway_crossing,189,13.0045,80.090342,,,1,,stream#836333667
+1075006699,1075006699,ORR Service Road,primary,low_bridge,bridge_over_water,32,13.021765,80.093652,,yes,1,,
+1075006701,1075006701,Outer Ring Road,motorway,low_bridge,bridge_over_water,33,13.021725,80.093553,,yes,1,,
+1075043289,1075043289,ORR Service Road,primary,low_bridge,bridge_over_water,33,12.921967,80.076837,,yes,1,,
+1075043291,1075043291,ORR Service Road,primary,low_bridge,bridge_over_water,26,12.92123,80.077211,,yes,1,,
+1075043293,1075043293,Outer Ring Road,motorway,low_bridge,bridge_over_water,35,12.921856,80.076904,,yes,1,,
+1075043300,1075043300,Outer Ring Road,motorway,low_bridge,bridge_over_water,26,12.92126,80.077111,,yes,1,,
+1075043365,1075043365,ORR Service Road,primary,low_bridge,bridge_over_water,67,12.886862,80.075665,,yes,1,,
+1075043367,1075043367,,primary,low_bridge,bridge_over_water,71,12.887176,80.076463,,yes,1,,
+1075043369,1075043369,Outer Ring Road,motorway,low_bridge,bridge_over_water,67,12.887093,80.076394,,yes,1,,
+1075043371,1075043371,Outer Ring Road,motorway,low_bridge,bridge_over_water,68,12.886954,80.075693,,yes,1,,
+1075635923,1075635923,Outer Ring Road,motorway,low_bridge,bridge_over_water,45,13.208879,80.165248,,yes,1,,
+1075635924,1075635924,Outer Ring Road,motorway,low_bridge,bridge_over_water,44,13.209123,80.164983,,yes,1,,
+1075635926,1075635926,ORR Service Road,primary,low_bridge,bridge_over_water,47,13.208603,80.165158,,yes,1,,
+1075635927,1075635927,ORR Service Road,primary,low_bridge,bridge_over_water,48,13.20931,80.165011,,yes,1,,
+1075635976,1075635976,New Attanthangal Bridge,residential,low_bridge,bridge_over_water,24,13.203717,80.169418,,yes,1,,
+1075657800,1075657800,ORR Service Road,primary,low_bridge,bridge_over_water,46,13.168939,80.067635,,yes,1,,
+1075657802,1075657802,ORR Service Road,primary,low_bridge,bridge_over_water,30,13.168805,80.068207,,yes,1,,
+1075657804,1075657804,Outer Ring Road,motorway,low_bridge,bridge_over_water,30,13.168805,80.068089,,yes,1,,
+1075657806,1075657806,Outer Ring Road,motorway,low_bridge,bridge_over_water,47,13.169003,80.067793,,yes,1,,
+1075672695,1075672695,Outer Ring Road,motorway,low_bridge,bridge_over_water,22,13.144684,80.053304,,yes,1,,
+1075672697,1075672697,ORR Service Road,primary,low_bridge,bridge_over_water,22,13.144752,80.0532,,yes,1,,
+1075672699,1075672699,Outer Ring Road,motorway,low_bridge,bridge_over_water,21,13.144529,80.053647,,yes,1,,
+1075672701,1075672701,ORR Service Road,primary,low_bridge,bridge_over_water,22,13.144526,80.053756,,yes,1,,
+1075752721-x1,1075752721,Outer Ring Road,motorway,culvert,waterway_crossing,400,13.112873,80.051978,,,,,canal#1075752745
+1075752723-x1,1075752723,ORR Service Road,primary,culvert,waterway_crossing,1546,13.112868,80.05189,,,,,canal#1075752745
+1075752725-x1,1075752725,Outer Ring Road,motorway,culvert,waterway_crossing,392,13.111814,80.05241,,,,,canal#1075752746
+1075752727-x1,1075752727,ORR Service Road,primary,culvert,waterway_crossing,541,13.111822,80.05252,,,,,canal#1075752746
+1075752792,1075752792,Outer Ring Road,motorway,low_bridge,bridge_over_water,120,13.099198,80.052357,,yes,1,,
+1075752793,1075752793,Outer Ring Road,motorway,low_bridge,bridge_over_water,121,13.100177,80.052072,,yes,1,,
+1075752794,1075752794,,primary,low_bridge,bridge_over_water,121,13.099191,80.052461,,yes,1,,
+1075752795,1075752795,ORR Service Road,primary,low_bridge,bridge_over_water,121,13.100186,80.051977,,yes,1,,
+1076294840-x1,1076294840,Grand Northern Trunk Road,primary,culvert,waterway_crossing,918,13.130765,80.214119,,,,,drain#1205852872
+1079228847,1079228847,New Amullaivoyal Bridge,tertiary,low_bridge,bridge_over_water,230,13.18059,80.254458,,yes,1,,
+1079228858,1079228858,Old Amullaivoyal Bridge,unclassified,low_bridge,bridge_over_water,20,13.180896,80.254572,,yes,1,,
+1080320422,1080320422,Inner Ring Road (Southern Sector),primary,none,tunnel=building_passage,281,12.977489,80.205077,building_passage,,,,
+1080320423,1080320423,Inner Ring Road (Southern Sector),primary,none,tunnel=building_passage,279,12.977385,80.20501,building_passage,,,,
+1080608340,1080608340,Bharathi Salai,tertiary,low_bridge,bridge_over_water,22,13.057757,80.280506,,yes,1,,
+1080608342,1080608342,Bharathi Salai,tertiary,low_bridge,bridge_over_water,23,13.057729,80.280307,,yes,1,,
+1080757461-x1,1080757461,Anna Salai (Mount Road),primary,underpass,under_rail_bridge,55,13.072044,80.274623,,,,,railway#240340228
+1080757461-x2,1080757461,Anna Salai (Mount Road),primary,underpass,under_rail_bridge,55,13.072044,80.274623,,,,,railway#549727267
+1081073904-x1,1081073904,,service,underpass,under_rail_bridge,93,13.070716,80.276164,,,,,railway#240340228
+1081073904-x2,1081073904,,service,underpass,under_rail_bridge,93,13.070716,80.276164,,,,,railway#549727267
+1081264276,1081264276,Madhavaram - Red Hills Road,primary,low_bridge,bridge_over_water,13,13.130536,80.240926,,yes,1,,
+1081264277,1081264277,Madhavaram - Red Hills Road,primary,low_bridge,bridge_over_water,13,13.130474,80.241044,,yes,1,,
+1082485666-x1,1082485666,1st Main Road,secondary,dip,waterway_crossing,307,13.030762,80.230653,,,,,drain:Mambalam Drain#214162275
+1087677761-x1,1087677761,4th cross street,residential,dip,waterway_crossing,90,13.129218,80.201675,,,,,drain#1285837636
+1087677764-x1,1087677764,Murugan koil street,tertiary,dip,waterway_crossing,402,13.125526,80.197915,,,,,drain#1290286350
+1087677764-x2,1087677764,Murugan koil street,tertiary,dip,waterway_crossing,402,13.125492,80.19965,,,,,drain#1285452581
+1087677764-x3,1087677764,Murugan koil street,tertiary,dip,waterway_crossing,402,13.125456,80.201542,,,,,drain#1285837635
+1087811260-x1,1087811260,,residential,culvert,waterway_crossing,76,13.143092,80.199058,,,,,drain#1089517862
+1087811269-x1,1087811269,,residential,dip,waterway_crossing,45,13.12571,80.200019,,,,,drain#1285452584
+1087811271-x1,1087811271,,residential,dip,waterway_crossing,32,13.124973,80.197161,,,,,drain#1290286349
+1087811273-x1,1087811273,,residential,dip,waterway_crossing,30,13.127716,80.199187,,,,,drain#1288582910
+1087811428-x1,1087811428,,residential,dip,waterway_crossing,67,13.125128,80.19772,,,,,drain#1290248752
+1088474520-x1,1088474520,,residential,dip,waterway_crossing,245,13.128764,80.202334,,,,,drain#1286550656
+1088474523-x1,1088474523,,residential,dip,waterway_crossing,322,13.12915,80.20242,,,,,drain#1286550656
+1089517856-x1,1089517856,,residential,dip,waterway_crossing,73,13.126819,80.202873,,,,,drain#1089517854
+1090398948-x1,1090398948,,service,culvert,waterway_crossing,75,12.989667,80.23564,,,,,drain#1458961209
+1091003575-x1,1091003575,Puthu Farrance Salai,tertiary,dip,waterway_crossing,37,13.099519,80.254247,,,1,,drain:Otteri Nullah#27708880
+1094419430-x1,1094419430,,tertiary,underpass,under_rail_bridge,153,13.107372,80.241998,,,,,railway#1257313446
+1094419430-x2,1094419430,,tertiary,underpass,under_rail_bridge,153,13.108202,80.241963,,,,,railway#1257313449
+1094419430-x3,1094419430,,tertiary,underpass,under_rail_bridge,153,13.108202,80.241963,,,,,railway#1257313451
+1094419430-x4,1094419430,,tertiary,underpass,under_rail_bridge,153,13.108202,80.241963,,,,,railway#1257313452
+1094419432-x1,1094419432,,tertiary,underpass,under_rail_bridge,169,13.107316,80.242125,,,,,railway#1257313446
+1094419432-x2,1094419432,,tertiary,underpass,under_rail_bridge,169,13.107316,80.242125,,,,,railway#1257313449
+1094419432-x3,1094419432,,tertiary,underpass,under_rail_bridge,169,13.107316,80.242125,,,,,railway#1257313451
+1094419432-x4,1094419432,,tertiary,underpass,under_rail_bridge,169,13.107316,80.242125,,,,,railway#1257313452
+1099974489-x1,1099974489,Mayor Ramanathan Road (Spur Tank Road),secondary,dip,waterway_crossing,725,13.070932,80.247295,,,,,drain#217696076
+1100579891,1100579891,road in Mugalivakkom,residential,low_bridge,bridge_over_water,6,13.013904,80.160067,,yes,1,,
+1100579893,1100579893,,residential,low_bridge,bridge_over_water,44,13.013407,80.166643,,yes,1,,
+1104358320,1104358320,,secondary,low_bridge,bridge_over_water,40,13.127567,80.266017,,yes,1,,
+1105443961-x1,1105443961,New Avadi Road,secondary,dip,waterway_crossing,371,13.087852,80.234427,,,,,drain#217926518
+1111024206,1111024206,,residential,underpass,tunnel=yes;layer<0,36,13.108754,80.254356,yes,,-1,,
+1112642975,1112642975,Varadharajapuram - Mudichur Road,tertiary,low_bridge,bridge_over_water,40,12.920499,80.069633,,yes,1,,
+1112997172-x1,1112997172,Sir Thyagaraya Road,secondary,culvert,waterway_crossing,325,13.039537,80.245772,,,,,canal:Mambalam Canal#1272450539
+1116254847,1116254847,Powder Mills Road,tertiary,low_bridge,bridge_over_water,17,13.099474,80.267824,,yes,1,,
+1116254850,1116254850,Pulianthope Nedunchalai,secondary,low_bridge,bridge_over_water,9,13.098497,80.26685,,yes,1,,
+1120500723,1120500723,,service,underpass,layer<0,20,12.897255,80.222028,,,-1,,
+1123838316,1123838316,Choolaimedu Bridge,tertiary,low_bridge,bridge_over_water,92,13.068668,80.231751,,yes,1,,
+1123838332,1123838332,,service,low_bridge,bridge_over_water,6,13.021757,80.179565,,yes,1,,
+1123856572-x1,1123856572,,unclassified,culvert,waterway_crossing,346,13.008781,80.081036,,,,,stream#706896507
+1123856588,1123856588,,unclassified,low_bridge,bridge_over_water,26,13.218275,80.156223,,yes,1,,
+1123865310,1123865310,North Sea Gate,service,low_bridge,bridge_over_water,7,13.080019,80.287953,,yes,1,,
+1124055508-x1,1124055508,Sardar Patel Road,primary,underpass,under_rail_bridge,22,13.00677,80.247828,,,,,railway#549727236
+1124074235-x1,1124074235,,tertiary,culvert,waterway_crossing,594,13.24506,80.153836,,,,,stream#637279655
+1124139259,1124139259,Avadi Poonamallee High Road,primary,low_bridge,bridge_over_water,6,13.064341,80.112403,,yes,1,,
+1124139261,1124139261,Mount - Poonamallee - Avadi Road,primary,low_bridge,bridge_over_water,6,13.064285,80.112494,,yes,1,,
+1124378418,1124378418,Greams Lane,residential,low_bridge,bridge_over_water,7,13.061951,80.253813,,yes,1,,
+1124755397,1124755397,,residential,low_bridge,bridge_over_water,13,12.893208,80.202417,,yes,1,,
+1124755399,1124755399,,residential,low_bridge,bridge_over_water,6,12.893507,80.201239,,yes,1,,
+1124755401,1124755401,,residential,low_bridge,bridge_over_water,6,12.891403,80.193346,,yes,1,,
+1124755403,1124755403,,residential,low_bridge,bridge_over_water,16,12.893914,80.20014,,yes,1,,
+1124755405,1124755405,,residential,low_bridge,bridge_over_water,9,12.893631,80.200849,,yes,1,,
+1124755407,1124755407,,residential,low_bridge,bridge_over_water,9,12.892982,80.204201,,yes,1,,
+1124788043,1124788043,Semmozhi Salai,primary,low_bridge,bridge_over_water,23,12.903441,80.213133,,yes,1,,
+1124788044,1124788044,Semmozhi Salai,primary,low_bridge,bridge_over_water,20,12.903446,80.212914,,yes,1,,
+1124977708,1124977708,,service,low_bridge,bridge_over_water,13,13.006437,80.247955,,yes,1,,
+1125364123-x1,1125364123,Water Canal Road,secondary,dip,waterway_crossing,476,13.123466,80.196458,,,,,drain#1324096389
+1125364124-x1,1125364124,Water canal road,secondary,dip,waterway_crossing,573,13.128371,80.193737,,,,,drain#1288635133
+1125541201,1125541201,,residential,low_bridge,bridge_over_water,56,13.067088,80.173609,,yes,1,,
+1133623038,1133623038,,residential,underpass,layer<0,35,12.936838,80.206228,,,-1,,
+1133865066-x1,1133865066,Kodambakkam – Sriperumbudur Road,primary,culvert,waterway_crossing,1707,12.993985,80.068963,,,,,drain#696533214
+1133865066-x2,1133865066,Kodambakkam – Sriperumbudur Road,primary,dip,waterway_crossing,1707,12.993985,80.068963,,,,,ditch#828408233
+1134436222-x1,1134436222,Mundakanniamman Koil Street,residential,underpass,under_rail_bridge,15,13.039357,80.269332,,,,,railway#549727229
+1134436222-x2,1134436222,Mundakanniamman Koil Street,residential,underpass,under_rail_bridge,15,13.039357,80.269332,,,,,railway#549727259
+1136697139,1136697139,,tertiary,low_bridge,bridge_over_water,36,13.220088,80.101284,,yes,1,,
+1137559584,1137559584,Sivasankaran Street,living_street,low_bridge,bridge_over_water,12,13.122576,80.245634,,yes,1,,
+1141066160-x1,1141066160,,residential,dip,waterway_crossing,189,13.148764,80.195653,,,,,drain#1323146587
+1147394816,1147394816,Ponniamman Koil Street,tertiary,low_bridge,bridge_over_water,10,12.979899,80.197427,,yes,1,,
+1147874037,1147874037,Guruvoyal Road,tertiary,low_bridge,bridge_over_water,41,13.214978,80.063492,,yes,1,,
+1148723083-x1,1148723083,CIT Nagar 1st Main Road,secondary,dip,waterway_crossing,138,13.030187,80.230786,,,,,drain:Mambalam Drain#214162275
+1149790009-x1,1149790009,Konnur High Road,primary,culvert,waterway_crossing,48,13.097162,80.247348,,,,,drain:Egankipuram Canal#1202685098
+1149806148-x1,1149806148,,living_street,dip,waterway_crossing,57,13.093485,80.261024,,,,,drain#30981164
+1149816082,1149816082,Pilkington Road,tertiary,low_bridge,bridge_over_water,13,13.100756,80.240085,,yes,1,,
+1150358673-x1,1150358673,Water canal road,secondary,dip,waterway_crossing,575,13.123426,80.196597,,,,,drain#1324096389
+1164110289,1164110289,South Sea Gate,service,low_bridge,bridge_over_water,5,13.078954,80.287605,,yes,1,,
+1164368277,1164368277,,residential,low_bridge,bridge_over_water,8,13.13101,80.235789,,yes,1,,
+1164993815,1164993815,,service,low_bridge,bridge_over_water,6,12.993354,80.237164,,yes,1,,
+1166308208,1166308208,Airport Service Road,service,low_bridge,bridge_over_water,7,12.986137,80.153136,,yes,1,,
+1166308210,1166308210,,service,low_bridge,bridge_over_water,7,12.981623,80.157579,,yes,1,,
+1175017477,1175017477,Medical College Bridge,service,low_bridge,bridge_over_water,85,13.079588,80.275184,,yes,2,,
+1177893274,1177893274,St. Andrews Bridge,secondary,low_bridge,bridge_over_water,65,13.076326,80.266194,,yes,1,,
+1177893275,1177893275,St. Andrews Bridge,secondary,low_bridge,bridge_over_water,69,13.076354,80.265619,,yes,1,,
+1185985029,1185985029,Kamaraj High Road,tertiary,low_bridge,bridge_over_water,5,12.90891,80.092212,,yes,1,,
+1185985045-x1,1185985045,,secondary,culvert,waterway_crossing,40,12.908641,80.092475,,,,,drain#1185985043
+1187413789,1187413789,Ambedkar Kalloori Salai,secondary,low_bridge,bridge_over_water,32,13.10664,80.260689,,yes,1,,
+1187413791,1187413791,Ambedkar Kalloori Salai,secondary,low_bridge,bridge_over_water,32,13.10636,80.260786,,yes,1,,
+1187413794,1187413794,Stephensons Salai,secondary,low_bridge,bridge_over_water,42,13.103887,80.25778,,yes,1,,
+1187413796,1187413796,Stephensons Salai,secondary,low_bridge,bridge_over_water,40,13.103795,80.257388,,yes,1,,
+1187413799,1187413799,,residential,low_bridge,bridge_over_water,12,13.092936,80.21388,,yes,1,,
+1187413801,1187413801,,residential,low_bridge,bridge_over_water,6,13.092647,80.21143,,yes,1,,
+1187413803,1187413803,Anna Nagar 3rd Avenue,secondary,low_bridge,bridge_over_water,6,13.094007,80.218316,,yes,1,,
+1187413805,1187413805,Anna Nagar 3rd Avenue,secondary,low_bridge,bridge_over_water,6,13.093926,80.218428,,yes,1,,
+1187413807,1187413807,Anna Nagar East 2nd Main Road,residential,low_bridge,bridge_over_water,6,13.093844,80.220633,,yes,1,,
+1187413809,1187413809,,residential,low_bridge,bridge_over_water,19,13.092906,80.249621,,yes,1,,
+1187413811,1187413811,Medavakkam Tank Road,secondary,low_bridge,bridge_over_water,60,13.086215,80.244871,,yes,1,,
+1187413813,1187413813,,residential,low_bridge,bridge_over_water,11,13.105703,80.26662,,yes,1,,
+1188056512,1188056512,,tertiary,underpass,tunnel=yes;layer<0,52,13.113431,80.185436,yes,,-1,,
+1188068710,1188068710,,track,low_bridge,bridge_over_water,6,12.995452,80.217596,,yes,1,,
+1188069312,1188069312,,residential,low_bridge,bridge_over_water,4,12.975979,80.207507,,yes,1,,
+1188069314,1188069314,,residential,low_bridge,bridge_over_water,4,12.9759,80.207547,,yes,1,,
+1188081292,1188081292,DRA Tuxedo Elite Path,residential,none,tunnel=building_passage,26,12.975463,80.208962,building_passage,,,,
+1188081295,1188081295,,residential,low_bridge,bridge_over_water,7,12.975632,80.207974,,yes,1,,
+1188238535-x1,1188238535,,service,culvert,waterway_crossing,188,12.981733,80.21769,,,,,canal:drain path#103716694
+1188575630,1188575630,,residential,low_bridge,bridge_over_water,6,13.103233,80.225416,,yes,1,,
+1188575634,1188575634,,residential,low_bridge,bridge_over_water,6,13.102584,80.22975,,yes,1,,
+1188575638,1188575638,,residential,low_bridge,bridge_over_water,6,13.102012,80.233228,,yes,1,,
+1188612345,1188612345,,service,low_bridge,bridge_over_water,4,13.077217,80.285762,,yes,1,,
+1188796483,1188796483,,residential,none,tunnel=building_passage,18,13.063958,80.258313,building_passage,,,,
+1188874040,1188874040,,service,underpass,tunnel=yes;layer<0,21,13.082019,80.274459,yes,,-1,,
+1188900721-x1,1188900721,Lake View Road,residential,culvert,waterway_crossing,409,12.986569,80.218072,,,,,canal:drain path#103716694
+1188908561,1188908561,,service,low_bridge,bridge_over_water,8,13.021141,80.26323,,yes,1,,
+1189078694,1189078694,,living_street,low_bridge,bridge_over_water,13,13.062103,80.217892,,yes,1,,
+1189082939,1189082939,,service,underpass,layer<0,46,13.131731,80.164435,,,-1,,
+1189337853,1189337853,,service,underpass,tunnel=yes;layer<0,6,12.947947,80.209451,yes,,-1,,
+1189351617,1189351617,,residential,low_bridge,bridge_over_water,8,13.130851,80.214713,,yes,1,,
+1189351619,1189351619,,residential,low_bridge,bridge_over_water,13,13.130886,80.215209,,yes,1,,
+1189351620,1189351620,,residential,low_bridge,bridge_over_water,26,13.130871,80.215445,,yes,1,,
+1189351621,1189351621,,residential,low_bridge,bridge_over_water,34,13.130865,80.215887,,yes,1,,
+1189351624,1189351624,,residential,low_bridge,bridge_over_water,25,13.130794,80.216626,,yes,1,,
+1189351626,1189351626,,residential,low_bridge,bridge_over_water,13,13.130656,80.217151,,yes,1,,
+1189351628,1189351628,,residential,low_bridge,bridge_over_water,15,13.130436,80.217636,,yes,1,,
+1189351630,1189351630,,residential,low_bridge,bridge_over_water,18,13.130354,80.218193,,yes,1,,
+1189351631,1189351631,,residential,low_bridge,bridge_over_water,44,13.130339,80.218642,,yes,1,,
+1189351633,1189351633,,residential,low_bridge,bridge_over_water,22,13.130354,80.218844,,yes,1,,
+1189351635,1189351635,,residential,low_bridge,bridge_over_water,34,13.130326,80.2199,,yes,1,,
+1189553105-x1,1189553105,,residential,culvert,waterway_crossing,55,13.140657,80.202413,,,,,drain#1089517862
+1189556162-x1,1189556162,,service,culvert,waterway_crossing,174,13.022345,80.181754,,,,,drain#122063612
+1189624217-x1,1189624217,,residential,underpass,under_rail_bridge,61,12.9917,80.195234,,,,,railway#28620048
+1189624217-x2,1189624217,,residential,underpass,under_rail_bridge,61,12.9917,80.195234,,,,,railway#235921450
+1189625659-x1,1189625659,,residential,dip,waterway_crossing,99,13.123282,80.196949,,,,,drain#1283482447
+1189779747,1189779747,,residential,underpass,layer<0,161,12.930027,80.204561,,,-1,,
+1189779749,1189779749,,residential,underpass,layer<0,48,12.92979,80.204291,,,-1,,
+1190109193,1190109193,,service,low_bridge,bridge_over_water,6,13.024503,80.128103,,yes,1,,
+1190124905-x1,1190124905,,residential,dip,waterway_crossing,235,13.147353,80.197248,,,,,drain#1323146587
+1190200687-x1,1190200687,40 Feet Road,tertiary,dip,waterway_crossing,78,13.131742,80.199426,,,,,drain#1316676520
+1190424705,1190424705,,residential,underpass,tunnel=yes;layer<0,15,13.038849,80.231452,yes,,-1,,
+1190529046,1190529046,,residential,underpass,layer<0,201,12.896713,80.221229,,,-1,,
+1190569977-x1,1190569977,,service,dip,waterway_crossing,43,13.088753,80.230082,,,,,drain#217926518
+1190758535-x1,1190758535,,residential,dip,waterway_crossing,37,13.133429,80.19359,,,,,drain#1289269138
+1190761986-x1,1190761986,,residential,dip,waterway_crossing,56,13.001658,80.129396,,,,,drain#102658271
+1191352302,1191352302,,tertiary,low_bridge,bridge_over_water,37,13.22661,80.094509,,yes,1,,
+1191353036,1191353036,,service,underpass,layer<0,65,12.93548,80.252948,,,-1,,
+1191369639,1191369639,,service,low_bridge,bridge_over_water,6,12.961679,80.079917,,yes,1,,
+1191710712,1191710712,,service,underpass,layer<0,340,12.921729,80.125306,,,-1,,
+1191746705-x1,1191746705,,living_street,dip,waterway_crossing,144,13.093559,80.256805,,,,,drain#30981164
+1191966881,1191966881,,residential,low_bridge,bridge_over_water,6,13.129264,80.226212,,yes,1,,
+1192618285,1192618285,,service,underpass,tunnel=yes;layer<0,16,13.156429,80.29364,yes,,-1,,
+1193457684-x1,1193457684,,primary,dip,waterway_crossing,1003,13.098792,80.222307,,,,,drain#217926516
+1193525750,1193525750,,residential,low_bridge,bridge_over_water,7,13.074516,80.177944,,yes,1,,
+1193526973,1193526973,,residential,low_bridge,bridge_over_water,6,13.013644,80.160738,,yes,1,,
+1193526975,1193526975,,residential,low_bridge,bridge_over_water,7,13.013178,80.16498,,yes,1,,
+1193528405,1193528405,,service,low_bridge,bridge_over_water,6,13.015226,80.158185,,yes,1,,
+1193528532,1193528532,,residential,low_bridge,bridge_over_water,6,13.113675,80.094762,,yes,1,,
+1193691586-x1,1193691586,,residential,culvert,waterway_crossing,56,13.141913,80.199305,,,,,drain#1089517862
+1193691587-x1,1193691587,,residential,culvert,waterway_crossing,57,13.141892,80.198787,,,,,drain#1089517862
+1195947900-x1,1195947900,Kodambakkam – Sriperumbudur Road,primary,dip,waterway_crossing,971,13.017998,80.14135,,,,,drain#102657803
+1196002208,1196002208,,residential,low_bridge,bridge_over_water,9,13.100696,80.241456,,yes,1,,
+1199725930,1199725930,Kaniamman Koil Street,residential,low_bridge,bridge_over_water,8,12.994999,80.216841,,yes,1,,
+1200754795-x1,1200754795,,residential,dip,waterway_crossing,649,12.908804,80.178873,,,,,canal#1022416522
+1201659009,1201659009,,residential,low_bridge,bridge_over_water,7,13.003817,80.120279,,yes,1,,
+1201856651,1201856651,,residential,low_bridge,bridge_over_water,5,13.004048,80.121876,,yes,1,,
+1201901570,1201901570,Gandhi Street,residential,low_bridge,bridge_over_water,6,13.113254,80.100304,,yes,1,,
+1202024842-x1,1202024842,Cochrane Basin Road,secondary,underpass,under_rail_bridge,45,13.106873,80.272296,,,,,railway#23966129
+1202024842-x2,1202024842,Cochrane Basin Road,secondary,underpass,under_rail_bridge,45,13.106873,80.272296,,,,,railway#102545467
+1202024842-x3,1202024842,Cochrane Basin Road,secondary,underpass,under_rail_bridge,45,13.106873,80.272296,,,,,railway#102545481
+1202024842-x4,1202024842,Cochrane Basin Road,secondary,underpass,under_rail_bridge,45,13.106873,80.272296,,,,,railway#384610999
+1202685096,1202685096,Chandra Yogi Samadhi Road,residential,low_bridge,bridge_over_water,8,13.097067,80.247618,,yes,1,,
+1202685102,1202685102,,living_street,low_bridge,bridge_over_water,3,13.097692,80.250148,,yes,1,,
+1202708870,1202708870,Anna salai,residential,low_bridge,bridge_over_water,6,13.119391,80.254932,,yes,1,,
+1202708874,1202708874,,residential,low_bridge,bridge_over_water,6,13.117932,80.25945,,yes,1,,
+1202708878,1202708878,Anbalagan Street,residential,low_bridge,bridge_over_water,7,13.120376,80.254138,,yes,1,,
+1205396282-x1,1205396282,,residential,dip,waterway_crossing,184,13.008379,80.108408,,,,,drain#102658263
+1205687639-x1,1205687639,,residential,culvert,waterway_crossing,56,13.140735,80.202242,,,,,drain#1089517862
+1205691052-x1,1205691052,,primary,underpass,under_rail_bridge,250,12.985399,80.252073,,,,,railway#59909721
+1205691052-x2,1205691052,,primary,underpass,under_rail_bridge,250,12.985664,80.252008,,,,,railway#235920568
+1205852874,1205852874,Grand Northern Trunk Road,primary,low_bridge,bridge_over_water,6,13.130524,80.214047,,yes,1,,
+1206085531-x1,1206085531,New Avadi Road,secondary,dip,waterway_crossing,720,13.090206,80.228771,,,,,drain#217926518
+1207114998-x1,1207114998,,residential,dip,waterway_crossing,74,13.049001,80.125414,,,,,drain#102575799
+1207695461,1207695461,Kakkan Nagar Main Road,tertiary,low_bridge,bridge_over_water,28,12.988331,80.204814,,yes,1,,
+1209650603,1209650603,,service,underpass,layer<0,102,12.92329,80.111594,,,-1,,
+1209650604,1209650604,,service,underpass,layer<0,214,12.924289,80.111831,,,-1,,
+1210791250-x1,1210791250,Mount - Poonamallee - Avadi Road,primary,culvert,waterway_crossing,347,13.116351,80.102383,,,,,drain#1040499033
+1218701040,1218701040,,residential,low_bridge,bridge_over_water,24,13.060881,80.208056,,yes,1,,
+1218701044,1218701044,,residential,low_bridge,bridge_over_water,28,13.060771,80.208565,,yes,1,,
+1218714243,1218714243,,residential,low_bridge,bridge_over_water,22,13.060263,80.210455,,yes,1,,
+1218723878,1218723878,1st Avenue,tertiary,low_bridge,bridge_over_water,6,13.09247,80.223939,,yes,1,,
+1218723880,1218723880,1st Avenue,tertiary,low_bridge,bridge_over_water,6,13.092368,80.223967,,yes,1,,
+1218725122,1218725122,Otteri Bridge,primary,low_bridge,bridge_over_water,30,13.098135,80.251114,,yes,1,,
+1219517731,1219517731,,residential,low_bridge,bridge_over_water,9,13.145345,80.057015,,yes,1,,
+1219966438-x1,1219966438,,residential,culvert,waterway_crossing,30,13.136971,80.201494,,,,,drain#1089517861
+1220190571,1220190571,,service,low_bridge,bridge_over_water,6,12.973616,80.210559,,yes,1,,
+1220190574,1220190574,,service,low_bridge,bridge_over_water,7,12.973306,80.210892,,yes,1,,
+1222172519,1222172519,Mukuntha Street,residential,low_bridge,bridge_over_water,7,13.123134,80.242677,,yes,1,,
+1226652365,1226652365,Kavarai Street,residential,underpass,layer<0,101,12.998862,80.096818,,,-1,,
+1226689461,1226689461,Pachaiyappan Street,secondary,low_bridge,bridge_over_water,35,13.030986,80.197432,,yes,1,,
+1227271504-x1,1227271504,Kodambakkam – Sriperumbudur Road,primary,dip,waterway_crossing,1844,12.993428,80.068381,,,,,ditch#828408233
+1227271504-x2,1227271504,Kodambakkam – Sriperumbudur Road,primary,culvert,waterway_crossing,1844,12.993119,80.068133,,,,,drain#696533214
+1229593660-x1,1229593660,Labour Colony 2nd Street,residential,dip,waterway_crossing,235,13.015629,80.208447,,,,,stream#32742657
+1230510550-x1,1230510550,Kannagam Road,tertiary,culvert,waterway_crossing,373,12.989615,80.241599,,,,,canal#1459226732
+1231044784,1231044784,,residential,none,tunnel=building_passage,15,13.122488,80.094036,building_passage,,,,
+1231301453,1231301453,,residential,low_bridge,bridge_over_water,16,12.9791,80.201547,,yes,1,,
+1232608457-x1,1232608457,Anna Nagar - Pozhichalur Link Road,residential,culvert,waterway_crossing,153,12.980178,80.147232,,,,,drain#1147391891
+1232632859,1232632859,Mathiazhagan Street,residential,low_bridge,bridge_over_water,7,12.977608,80.193461,,yes,1,,
+1232686632-x1,1232686632,,tertiary,dip,waterway_crossing,154,13.147176,80.2036,,,,,drain#911275610
+1236014678,1236014678,,tertiary,low_bridge,bridge_over_water,28,13.067989,80.107824,,yes,1,,
+1236014679,1236014679,,tertiary,low_bridge,bridge_over_water,28,13.068045,80.108043,,yes,1,,
+1238801144,1238801144,,service,low_bridge,bridge_over_water,6,12.993159,80.236933,,yes,1,,
+1240094205,1240094205,Paper mills road,secondary,low_bridge,bridge_over_water,24,13.146781,80.204064,,yes,1,,
+1248734582,1248734582,,residential,low_bridge,bridge_over_water,20,13.024088,80.183056,,yes,1,,
+1248973261,1248973261,,residential,none,tunnel=building_passage,4,13.125274,80.287688,building_passage,,,,
+1249390033-x1,1249390033,,residential,underpass,under_rail_bridge,132,13.126113,80.273045,,,,,railway#1249390035
+1250692839,1250692839,,residential,low_bridge,bridge_over_water,6,13.1207,80.101095,,yes,1,,
+1250724232,1250724232,,residential,low_bridge,bridge_over_water,7,12.989527,80.202393,,yes,1,,
+1250737077,1250737077,,service,none,tunnel=building_passage,15,13.047235,80.142595,building_passage,,,,
+1251059196,1251059196,,residential,low_bridge,bridge_over_water,6,13.012736,80.165826,,yes,1,,
+1251480477,1251480477,,residential,low_bridge,bridge_over_water,13,13.036184,80.244589,,yes,1,,
+1251505661-x1,1251505661,,residential,culvert,waterway_crossing,60,13.139378,80.203333,,,,,drain#1089517861
+1251563029,1251563029,,secondary,low_bridge,bridge_over_water,24,13.026982,80.260496,,yes,1,,
+1251563030,1251563030,RA Puram 2nd Main Road,secondary,none,tunnel=building_passage,22,13.027053,80.260228,building_passage,,,,
+1251974975,1251974975,Madley subway,tertiary,underpass,tunnel=yes;layer<0,4,13.035389,80.226926,yes,,-1,,
+1252725012,1252725012,,unclassified,low_bridge,bridge_over_water,4,13.10858,80.160349,,yes,1,,
+1252760874,1252760874,,residential,underpass,layer<0,159,12.896293,80.221509,,,-1,,
+1253219839-x1,1253219839,,residential,dip,waterway_crossing,40,13.128028,80.197381,,,,,drain#1290286348
+1253221691-x1,1253221691,,residential,dip,waterway_crossing,28,13.125285,80.1974,,,,,drain#1290286349
+1253238526,1253238526,,residential,underpass,layer<0,23,13.010313,80.160315,,,-1,,
+1253584930-x1,1253584930,,residential,dip,waterway_crossing,38,13.131983,80.199845,,,,,drain#1089517860
+1253593994,1253593994,,residential,underpass,layer<0,94,12.897194,80.219767,,,-1,,
+1253847079,1253847079,,residential,low_bridge,bridge_over_water,7,13.114212,80.179558,,yes,1,,
+1253924939,1253924939,,residential,low_bridge,bridge_over_water,50,13.246328,80.154436,,yes,1,,
+1254284966,1254284966,,service,none,tunnel=building_passage,54,13.066571,80.195516,building_passage,,,,
+1254514728,1254514728,,service,none,tunnel=building_passage,19,13.04991,80.208536,building_passage,,,,
+1255146622-x1,1255146622,,residential,dip,waterway_crossing,62,13.048274,80.125918,,,,,drain#102575799
+1255150775-x1,1255150775,Chennai Bypass Expressway,trunk,culvert,waterway_crossing,566,13.00648,80.12726,,,,,drain#1255150780
+1255463506,1255463506,,residential,low_bridge,bridge_over_water,36,12.993679,80.091198,,yes,1,,
+1256755623,1256755623,,residential,low_bridge,bridge_over_water,8,13.026131,80.225648,,yes,1,,
+1256777187,1256777187,,service,none,tunnel=building_passage,30,13.105942,80.280136,building_passage,,,,
+1257038413,1257038413,,residential,none,tunnel=building_passage,17,13.116841,80.273591,building_passage,,,,
+1257648494,1257648494,,residential,low_bridge,bridge_over_water,11,13.099864,80.244674,,yes,1,,
+1261367097-x1,1261367097,3rd Street,residential,dip,waterway_crossing,107,13.097216,80.264413,,,,,drain#30981164
+1261397618,1261397618,Harris Bridge,secondary,low_bridge,bridge_over_water,70,13.068465,80.268623,,yes,1,,
+1265698822-x1,1265698822,,residential,underpass,under_rail_bridge,57,12.978707,80.242539,,,,,railway#235920568
+1265698822-x2,1265698822,,residential,underpass,under_rail_bridge,57,12.978597,80.242593,,,,,railway#59909721
+1266408541,1266408541,,residential,low_bridge,bridge_over_water,22,13.085168,80.242277,,yes,1,,
+1267104177-x1,1267104177,,tertiary,underpass,under_rail_bridge,32,12.994467,80.250124,,,,,railway#1201897667
+1267273644-x1,1267273644,,living_street,dip,waterway_crossing,44,12.991649,80.214556,,,,,drain:Raj Bhavan Canal#102580554
+1267273645-x1,1267273645,,living_street,dip,waterway_crossing,46,12.991969,80.214229,,,,,drain:Raj Bhavan Canal#102580554
+1267273646-x1,1267273646,,living_street,dip,waterway_crossing,44,12.991585,80.214096,,,,,drain:Raj Bhavan Canal#102580554
+1267273647-x1,1267273647,,living_street,dip,waterway_crossing,72,12.992167,80.214339,,,,,drain:Raj Bhavan Canal#102580554
+1267284682-x1,1267284682,Sakthi Vijayalkshmi Road,residential,culvert,waterway_crossing,140,12.985875,80.217245,,,,,canal:drain path#103716694
+1267284683-x1,1267284683,Sasi Nagar Road,residential,culvert,waterway_crossing,138,12.986174,80.217986,,,,,canal:drain path#103716694
+1267312991-x1,1267312991,,tertiary,dip,waterway_crossing,478,13.130632,80.21381,,,,,drain#1205852871
+1267319774,1267319774,,tertiary,underpass,layer<0,23,13.072492,80.241153,,,-1,,
+1267322204-x1,1267322204,,secondary,culvert,waterway_crossing,37,12.908746,80.092426,,,,,drain#1185985043
+1267715399,1267715399,,residential,low_bridge,bridge_over_water,11,13.085898,80.233282,,yes,1,,
+1267715402,1267715402,,residential,low_bridge,bridge_over_water,11,13.085013,80.239811,,yes,1,,
+1268086890-x1,1268086890,Dr Radhakrishnan Salai,primary,underpass,under_rail_bridge,120,13.043349,80.276111,,,,,railway#549727227
+1268086893-x1,1268086893,Dr Radhakrishnan Salai,primary,underpass,under_rail_bridge,123,13.043318,80.275512,,,,,railway#549727227
+1268086893-x2,1268086893,Dr Radhakrishnan Salai,primary,underpass,under_rail_bridge,123,13.043316,80.275552,,,,,railway#549727260
+1268935211,1268935211,,service,none,tunnel=building_passage,8,13.108459,80.248734,building_passage,,,,
+1269261311,1269261311,,residential,low_bridge,bridge_over_water,18,13.057614,80.226298,,yes,1,,
+1270797553,1270797553,VPK Street,residential,low_bridge,bridge_over_water,6,12.993535,80.214536,,yes,1,,
+1271353037-x1,1271353037,,residential,dip,waterway_crossing,40,12.86177,80.060208,,,,,stream#202471914
+1271366322-x1,1271366322,Sholavaram Bypass,trunk,culvert,waterway_crossing,1063,13.245187,80.15387,,,,,stream#637279655
+1271366324-x1,1271366324,Sholavaram Bypass,trunk,culvert,waterway_crossing,1053,13.244384,80.154445,,,,,stream#637279655
+1271974040,1271974040,,residential,low_bridge,bridge_over_water,6,13.110109,80.183234,,yes,1,,
+1272361034,1272361034,,service,none,tunnel=building_passage,3,13.070831,80.256649,building_passage,,,,
+1272651208,1272651208,,service,low_bridge,bridge_over_water,7,13.004523,80.123938,,yes,1,,
+1273062667,1273062667,,residential,low_bridge,bridge_over_water,7,13.005205,80.129302,,yes,1,,
+1273334384,1273334384,,residential,underpass,layer<0,62,12.930446,80.204198,,,-1,,
+1273592670-x1,1273592670,Vanavan Nagar 1st Street,residential,dip,waterway_crossing,41,13.135376,80.200738,,,,,drain#1089517860
+1274318304,1274318304,,residential,low_bridge,bridge_over_water,10,12.865752,80.054701,,yes,1,,
+1274372351,1274372351,,residential,underpass,tunnel=yes;layer<0,25,13.200803,80.1778,yes,,-1,,
+1274817384-x1,1274817384,,residential,dip,waterway_crossing,101,13.097431,80.266317,,,,,drain#30981164
+1279250351,1279250351,,residential,underpass,layer<0,59,12.873872,80.226069,,,-1,,
+1281252905,1281252905,,service,none,tunnel=building_passage,7,13.071401,80.273443,building_passage,,,,
+1281948732,1281948732,,residential,low_bridge,bridge_over_water,11,13.059399,80.226117,,yes,1,,
+1282455632-x1,1282455632,,tertiary,dip,waterway_crossing,34,13.124542,80.19612,,,,,drain#1283482447
+1284335430-x1,1284335430,,tertiary,culvert,waterway_crossing,1039,13.244498,80.154505,,,,,stream#637279655
+1284335431,1284335431,,tertiary,underpass,tunnel=yes;layer<0,42,13.241121,80.156179,yes,,-1,,
+1284526463,1284526463,,living_street,low_bridge,bridge_over_water,13,13.065566,80.216848,,yes,1,,
+1285178555-x1,1285178555,,residential,dip,waterway_crossing,55,13.123909,80.2006,,,,,drain#1287938300
+1285509876,1285509876,,service,none,tunnel=building_passage,21,12.993408,80.185246,building_passage,,,,
+1286215853,1286215853,Palliarasan street,residential,low_bridge,bridge_over_water,12,13.086803,80.231036,,yes,1,,
+1286215855,1286215855,VOC Nagar Main Road,residential,low_bridge,bridge_over_water,34,13.089688,80.226078,,yes,1,,
+1286510822,1286510822,,service,low_bridge,bridge_over_water,13,13.104703,80.269203,,yes,1,,
+1286532806,1286532806,,living_street,low_bridge,bridge_over_water,21,13.122168,80.248846,,yes,1,,
+1286649092,1286649092,,service,low_bridge,bridge_over_water,20,13.033089,80.202978,,yes,1,,
+1286650363,1286650363,Kulothungan Street,residential,underpass,layer<0,108,12.93305,80.139252,,,-1,,
+1286812567,1286812567,,service,none,tunnel=building_passage,3,13.101411,80.232228,building_passage,,,,
+1286812568,1286812568,,service,none,tunnel=building_passage,7,13.100962,80.23219,building_passage,,,,
+1286817172,1286817172,,service,none,tunnel=building_passage,3,12.979896,80.255048,building_passage,,,,
+1286817173,1286817173,Chepauk Railway Street,service,none,tunnel=building_passage,26,13.061611,80.282623,building_passage,,,,
+1286817175,1286817175,,service,none,tunnel=building_passage,15,13.010778,80.231572,building_passage,,,,
+1286834230,1286834230,Inner Ring Road (Southern Sector),primary,low_bridge,bridge_over_water,19,12.968082,80.217342,,yes,1,,
+1286834233,1286834233,Inner Ring Road (Southern Sector),primary,low_bridge,bridge_over_water,17,12.968078,80.217513,,yes,1,,
+1286834234,1286834234,Inner Ring Road (Southern Sector),primary,low_bridge,bridge_over_water,17,12.967498,80.217091,,yes,1,,
+1286834236,1286834236,Inner Ring Road (Southern Sector),primary,low_bridge,bridge_over_water,18,12.967484,80.217281,,yes,1,,
+1287340189,1287340189,,tertiary_link,underpass,tunnel=yes;layer<0,8,13.213931,80.271925,yes,,-1,,
+1287340191,1287340191,,tertiary_link,underpass,tunnel=yes;layer<0,8,13.213945,80.271838,yes,,-1,,
+1287340192,1287340192,,tertiary_link,underpass,tunnel=yes;layer<0,2,13.213933,80.271911,yes,,-1,,
+1288453453,1288453453,,service,underpass,tunnel=yes;layer<0,14,13.070256,80.2597,yes,,-1,,
+1288582929,1288582929,,secondary,low_bridge,bridge_over_water,27,13.13396,80.193223,,yes,1,,
+1288635096-x1,1288635096,Chennai Bypass,trunk,dip,waterway_crossing,108,13.147247,80.204021,,,,,drain#911275610
+1288635098,1288635098,Chennai Bypass,trunk,low_bridge,bridge_over_water,112,13.146501,80.202468,,yes,1,,
+1288635123,1288635123,,tertiary,low_bridge,bridge_over_water,41,13.119176,80.199889,,yes,1,,
+1288635126-x1,1288635126,,secondary,culvert,waterway_crossing,33,13.120375,80.199291,,,,,drain#1282455640
+1288869998,1288869998,,secondary,low_bridge,bridge_over_water,640,13.031715,80.230614,,yes,1,,
+1288905130,1288905130,,residential,low_bridge,bridge_over_water,9,13.249608,80.154325,,yes,1,,
+1289048154,1289048154,,residential,low_bridge,bridge_over_water,10,12.936533,80.151329,,yes,1,,
+1289048156,1289048156,,tertiary,low_bridge,bridge_over_water,9,12.9363,80.151766,,yes,1,,
+1289269135-x1,1289269135,,residential,dip,waterway_crossing,6,13.131467,80.200739,,,,,drain#1289269136
+1289269142,1289269142,,tertiary,low_bridge,bridge_over_water,104,13.143512,80.197612,,yes,1,,
+1289269144,1289269144,Chennai Bypass,trunk,low_bridge,bridge_over_water,120,13.142974,80.196833,,yes,1,,
+1289269146,1289269146,Chennai Bypass,trunk,low_bridge,bridge_over_water,77,13.14407,80.197754,,yes,1,,
+1289269148,1289269148,,tertiary,low_bridge,bridge_over_water,10,13.1441,80.197606,,yes,1,,
+1290286333-x1,1290286333,,residential,dip,waterway_crossing,27,13.125741,80.198801,,,,,drain#1285452582
+1290286343-x1,1290286343,,residential,dip,waterway_crossing,84,13.126471,80.198067,,,,,drain#1288582911
+1292070437-x1,1292070437,Perambur Barracks Salai,secondary,dip,waterway_crossing,97,13.09406,80.258894,,,,,drain#30981164
+1292795831-x1,1292795831,,residential,dip,waterway_crossing,138,13.128683,80.198783,,,,,drain#1288582911
+1292795831-x2,1292795831,,residential,dip,waterway_crossing,138,13.129256,80.198959,,,,,drain#1289814517
+1292795831-x3,1292795831,,residential,dip,waterway_crossing,138,13.129256,80.198959,,,,,drain#1290230927
+1296797439-x1,1296797439,,service,dip,waterway_crossing,22,13.078633,80.250092,,,,,drain#217696076
+1296798332-x1,1296798332,,service,dip,waterway_crossing,60,13.078592,80.251058,,,,,drain#217696076
+1296798333-x1,1296798333,,service,dip,waterway_crossing,16,13.078543,80.251567,,,,,drain#217696076
+1298047642-x1,1298047642,,residential,dip,waterway_crossing,51,13.130668,80.201101,,,,,drain#1285521229
+1298049630-x1,1298049630,,residential,dip,waterway_crossing,100,13.130367,80.201814,,,,,drain#1089712389
+1298049630-x2,1298049630,,residential,dip,waterway_crossing,100,13.13055,80.202361,,,,,drain#1460011776
+1298279175,1298279175,,residential,low_bridge,bridge_over_water,8,13.067105,80.226531,,yes,1,,
+1298336243,1298336243,,service,low_bridge,bridge_over_water,5,12.97489,80.208957,,yes,1,,
+1298341301,1298341301,,service,none,tunnel=building_passage,8,13.071108,80.272677,building_passage,,,,
+1298345125-x1,1298345125,,residential,culvert,waterway_crossing,369,13.05656,80.18683,,,,,drain:Virugambakkam Canal#1298345130
+1298345125-x2,1298345125,,residential,culvert,waterway_crossing,369,13.056701,80.187819,,,,,drain:Virugambakkam Canal#1298345134
+1299918374,1299918374,,residential,low_bridge,bridge_over_water,7,13.104993,80.245109,,yes,1,,
+1299918376,1299918376,,residential,low_bridge,bridge_over_water,6,13.105171,80.244108,,yes,1,,
+1300414273,1300414273,,tertiary,underpass,tunnel=yes;layer<0,100,13.118965,80.079561,yes,,-1,,
+1300520854,1300520854,,residential,low_bridge,bridge_over_water,12,13.024255,80.13513,,yes,1,,
+1300521443,1300521443,,residential,low_bridge,bridge_over_water,11,13.023875,80.137603,,yes,1,,
+1300900609-x1,1300900609,,service,dip,waterway_crossing,52,13.071927,80.249865,,,,,drain#217696076
+1300953988,1300953988,,tertiary,low_bridge,bridge_over_water,28,13.063311,80.160827,,yes,1,,
+1301427052,1301427052,,service,none,tunnel=building_passage,15,13.081255,80.262394,building_passage,,,,
+1301427054,1301427054,,service,none,tunnel=building_passage,15,13.081056,80.262293,building_passage,,,,
+1301447834,1301447834,,residential,none,tunnel=building_passage,2,12.855832,80.06709,building_passage,,,,
+1301509806,1301509806,,residential,low_bridge,bridge_over_water,10,12.91003,80.17437,,yes,1,,
+1301677850,1301677850,,residential,low_bridge,bridge_over_water,8,12.917644,80.060283,,yes,1,,
+1301947365,1301947365,,residential,low_bridge,bridge_over_water,7,13.022652,80.102189,,yes,1,,
+1301947369,1301947369,,residential,low_bridge,bridge_over_water,7,13.023248,80.103958,,yes,1,,
+1301947371,1301947371,,residential,low_bridge,bridge_over_water,7,13.024628,80.105556,,yes,1,,
+1301947373,1301947373,,residential,low_bridge,bridge_over_water,7,13.025093,80.106626,,yes,1,,
+1301947377,1301947377,,residential,low_bridge,bridge_over_water,6,13.026952,80.108671,,yes,1,,
+1301947380,1301947380,Shriram City Road,residential,low_bridge,bridge_over_water,7,13.028163,80.112052,,yes,1,,
+1302193154-x1,1302193154,Greams Road,tertiary,dip,waterway_crossing,257,13.062748,80.254312,,,,,stream#217688013
+1306967687-x1,1306967687,,residential,dip,waterway_crossing,38,13.12361,80.196598,,,,,drain#1283482447
+1308548124-x1,1308548124,,residential,culvert,waterway_crossing,23,13.140675,80.201327,,,,,drain#1089517862
+1309995240,1309995240,Pattravakkam Road,unclassified,low_bridge,bridge_over_water,5,13.111159,80.163559,,yes,1,,
+1309995242,1309995242,,service,low_bridge,bridge_over_water,7,13.114107,80.163837,,yes,1,,
+1309995244,1309995244,,unclassified,low_bridge,bridge_over_water,4,13.1085,80.163312,,yes,1,,
+1313429187,1313429187,,tertiary,underpass,tunnel=yes;layer<0,58,13.11296,80.185419,yes,,-1,,
+1313429188,1313429188,,tertiary,underpass,tunnel=yes;layer<0,109,13.113549,80.185435,yes,,-1,,
+1313502890,1313502890,Sai kudil street,residential,underpass,layer<0,77,12.970119,80.260874,,,-1,,
+1314571849,1314571849,,service,underpass,layer<0,54,13.07835,80.225835,,,-1,,
+1314571857,1314571857,,service,underpass,layer<0,55,13.078948,80.224363,,,-1,,
+1316912346-x1,1316912346,Jawaharlal Nehru Road (100 Feet Road),primary,culvert,waterway_crossing,598,13.120038,80.199339,,,,,drain#1283491480
+1319191206-x1,1319191206,,residential,dip,waterway_crossing,38,13.124822,80.195928,,,,,drain#1283482447
+1322073507,1322073507,,residential,underpass,tunnel=yes;layer<0,28,13.028216,80.225042,yes,,-1,,
+1322486954,1322486954,,unclassified,low_bridge,bridge_over_water,50,13.236321,80.061893,,yes,1,,
+1323145425-x1,1323145425,Wallace Garden 1st Street,residential,dip,waterway_crossing,139,13.062163,80.251572,,,,,drain#28502295
+1323743611,1323743611,,residential,low_bridge,bridge_over_water,9,13.170589,80.064285,,yes,1,,
+1324286431,1324286431,,residential,low_bridge,bridge_over_water,30,13.067606,80.223168,,yes,1,,
+1324385027,1324385027,St Thomas Mount Subway,primary,underpass,tunnel=yes;layer<0,18,12.994953,80.201215,yes,,-1,,
+1324835390,1324835390,St Thomas Mount Subway,primary,underpass,tunnel=yes;layer<0,13,12.996191,80.201019,yes,,-1,,
+1327197274-x1,1327197274,6th Main Road,residential,culvert,waterway_crossing,277,12.970593,80.218648,,,,,canal:drain path#1105956376
+1335893535-x1,1335893535,,residential,underpass,under_rail_bridge,18,12.988765,80.195417,,,,,railway#28620048
+1335893535-x2,1335893535,,residential,underpass,under_rail_bridge,18,12.988765,80.195417,,,,,railway#235921450
+1342091857-x1,1342091857,,service,underpass,under_rail_bridge,11,12.980913,80.247978,,,,,railway#59909721
+1363535455-x1,1363535455,,service,culvert,waterway_crossing,7,13.006177,80.248037,,,,,canal:Buckingham Kaalvaai#1492152599
+1364777366,1364777366,Kamarajar Salai,tertiary,low_bridge,bridge_over_water,18,13.130235,80.242119,,yes,1,,
+1369939663-x1,1369939663,,service,underpass,under_rail_bridge,122,12.980177,80.24719,,,,,railway#235920568
+1369939663-x2,1369939663,,service,underpass,under_rail_bridge,122,12.980091,80.247464,,,,,railway#59909721
+1374402396,1374402396,,service,low_bridge,bridge_over_water,16,12.948834,80.207995,,yes,1,,
+1376110141,1376110141,Water Works Road,secondary,low_bridge,bridge_over_water,10,13.012933,80.207398,,yes,1,,
+1377430324,1377430324,,tertiary,underpass,tunnel=yes;layer<0,9,12.923027,80.115358,yes,,-1,,
+1377430325,1377430325,,tertiary,underpass,tunnel=yes;layer<0,16,12.923153,80.115249,yes,,-1,,
+1377430326,1377430326,,tertiary,underpass,tunnel=yes;layer<0,9,12.92309,80.115303,yes,,-1,,
+1393747368,1393747368,,service,none,tunnel=building_passage,17,13.081361,80.277151,building_passage,,,,
+1395216456-x1,1395216456,Chennai Bypass,trunk,culvert,waterway_crossing,1034,13.138681,80.187267,,,,,drain:Underpass#386500119
+1395216461,1395216461,Pattaravakkam Bridge,trunk,low_bridge,bridge_over_water,128,13.115084,80.164004,,yes,1,,
+1408255863-x1,1408255863,,service,culvert,waterway_crossing,374,13.226609,80.301699,,,,,drain#1408255882
+1408255863-x2,1408255863,,service,culvert,waterway_crossing,374,13.226694,80.301439,,,,,drain#1408255902
+1408255887-x1,1408255887,,service,culvert,waterway_crossing,557,13.225779,80.30152,,,,,drain#1408255900
+1408255887-x2,1408255887,,service,culvert,waterway_crossing,557,13.225231,80.30143,,,,,drain#1408255905
+1408255887-x3,1408255887,,service,culvert,waterway_crossing,557,13.223864,80.300242,,,,,drain#1408255886
+1408255888-x1,1408255888,,service,culvert,waterway_crossing,124,13.224704,80.301365,,,,,drain#1408255884
+1408255908-x1,1408255908,,service,culvert,waterway_crossing,45,13.224464,80.300265,,,,,stream#1408255907
+1408255922,1408255922,,track,low_bridge,bridge_over_water,18,13.228794,80.305556,,yes,1,,
+1408255927-x1,1408255927,,service,culvert,waterway_crossing,323,13.227645,80.301801,,,,,drain#1408255896
+1408255931-x1,1408255931,,track,underpass,under_rail_bridge,529,13.226131,80.316838,,,,,railway#32554337
+1408255931-x2,1408255931,,track,underpass,under_rail_bridge,529,13.226131,80.316838,,,,,railway#33069864
+1408255931-x3,1408255931,,track,underpass,under_rail_bridge,529,13.226131,80.316838,,,,,railway#33069866
+1408255931-x4,1408255931,,track,underpass,under_rail_bridge,529,13.226131,80.316838,,,,,railway#549878794
+1408255931-x5,1408255931,,track,underpass,under_rail_bridge,529,13.226097,80.316782,,,,,railway#551747874
+1408260505,1408260505,Ennore Creek Bridge,secondary,low_bridge,bridge_over_water,822,13.231306,80.317817,,yes,1,,
+1411439768-x1,1411439768,,tertiary,dip,waterway_crossing,154,12.949338,80.185305,,,,,drain#102559098
+1418594539,1418594539,,residential,low_bridge,bridge_over_water,15,13.22307,80.280779,,yes,1,,
+1419957518-x1,1419957518,,service,culvert,waterway_crossing,23,12.948737,80.204045,,,,,drain#1419957522
+1419957520-x1,1419957520,,service,culvert,waterway_crossing,22,12.94874,80.204297,,,,,drain#1419957522
+1421490601,1421490601,,service,low_bridge,bridge_over_water,11,13.006419,80.24796,,yes,1,,
+1433295369-x1,1433295369,"5th Cross Street,TVS Nagar",residential,dip,waterway_crossing,183,13.122329,80.192776,,,,,drain#1324096389
+1447102029,1447102029,,service,none,tunnel=building_passage,14,13.143539,80.222369,building_passage,,,,
+1447118184,1447118184,,service,none,tunnel=building_passage,38,13.088736,80.174409,building_passage,,,,
+1447630916,1447630916,,service,none,tunnel=building_passage,33,12.993414,80.185153,building_passage,,,,
+1447928823-x1,1447928823,,service,culvert,waterway_crossing,106,12.969914,80.217931,,,,,canal:drain path#1105956376
+1449574168,1449574168,,service,none,tunnel=building_passage,25,13.101118,80.160182,building_passage,,,,
+1449968883,1449968883,,service,none,tunnel=building_passage,20,13.105682,80.25141,building_passage,,,,
+1450013272,1450013272,,service,none,tunnel=building_passage,19,12.894495,80.087902,building_passage,,,,
+1450023398,1450023398,,service,none,tunnel=building_passage,17,13.209067,80.171718,building_passage,,,,
+1450227426,1450227426,,service,none,tunnel=building_passage,26,13.140356,80.225355,building_passage,,,,
+1451909892,1451909892,,residential,low_bridge,bridge_over_water,80,13.06596,80.167071,,yes,1,,
+1453275282,1453275282,,service,none,tunnel=building_passage,25,13.041651,80.24917,building_passage,,,,
+1453896692-x1,1453896692,,residential,culvert,waterway_crossing,16,13.005034,80.104372,,,,,stream:Chembarampakkam water for irrigation#1453896697
+1457102504,1457102504,,residential,none,tunnel=building_passage,39,13.036491,80.2564,building_passage,,,,
+1457449788,1457449788,,service,none,tunnel=building_passage,16,13.058384,80.053084,building_passage,,,,
+1457669343-x1,1457669343,Gopalapuram Main Road,tertiary,culvert,waterway_crossing,57,13.11813,80.077557,,,,,drain#1190764125
+1459226730,1459226730,Road to IIT Madras Research Park Gate,service,low_bridge,bridge_over_water,10,12.989736,80.241539,,yes,1,,
+1459803524,1459803524,,service,low_bridge,bridge_over_water,7,13.108515,80.159632,,yes,1,,
+1474314466,1474314466,,residential,low_bridge,bridge_over_water,45,13.075206,80.190505,,yes,1,,
+1474611575-x1,1474611575,Dr MGR Main Road,secondary,underpass,under_rail_bridge,506,12.979062,80.24321,,,,,railway#59909721
+1474611575-x2,1474611575,Dr MGR Main Road,secondary,underpass,under_rail_bridge,506,12.979062,80.24321,,,,,railway#235920568
+1476370315-x1,1476370315,,secondary,underpass,under_rail_bridge,308,12.986542,80.251911,,,,,railway#235920568
+1476370315-x2,1476370315,,secondary,underpass,under_rail_bridge,308,12.9858,80.252042,,,,,railway#59909721
+1478522338,1478522338,,unclassified,underpass,layer<0,37,12.931844,80.140392,,,-1,,
+1478522340,1478522340,,unclassified,underpass,layer<0,79,12.929276,80.14084,,,-1,,
+1482111452-x1,1482111452,,residential,culvert,waterway_crossing,307,12.905799,80.184133,,,,,canal#1022416524
+1482759338,1482759338,,service,none,tunnel=building_passage,28,13.147522,80.216442,building_passage,,,,
+1503288585-x1,1503288585,Taramani Link Road,primary,underpass,under_rail_bridge,972,12.980913,80.247978,,,,,railway#235920568
+1503288585-x2,1503288585,Taramani Link Road,primary,underpass,under_rail_bridge,972,12.980908,80.248036,,,,,railway#59909721
+1503306943-x1,1503306943,,service,culvert,waterway_crossing,58,13.02476,80.177384,,,,,drain#122063612
+1503306945-x1,1503306945,,service,culvert,waterway_crossing,345,13.024882,80.176983,,,,,drain#122063612
+1511864192,1511864192,,tertiary,low_bridge,bridge_over_water,205,13.067794,80.174323,,yes,1,,
+1511864195,1511864195,,tertiary,low_bridge,bridge_over_water,200,13.06753,80.174716,,yes,1,,
+1512379420,1512379420,,service,none,tunnel=building_passage,26,13.092264,80.167595,building_passage,,,,
+1518365806-x1,1518365806,KM garden 6th street,residential,dip,waterway_crossing,132,13.093829,80.259687,,,1,,drain#30981164
+1520299887,1520299887,Pattaravakkam Bridge,trunk,low_bridge,bridge_over_water,134,13.1139,80.164124,,yes,1,,
+1525720608-x1,1525720608,,residential,dip,waterway_crossing,112,13.098143,80.247083,,,,,drain:Egankipuram Canal#346285803
+1533900472,1533900472,,residential,none,tunnel=building_passage,21,13.128032,80.228451,building_passage,,,,
+1533929750,1533929750,,service,none,tunnel=building_passage,27,12.898014,80.206614,building_passage,,,,
+1534190382,1534190382,,service,none,tunnel=building_passage,18,13.055894,80.211265,building_passage,,,,
+1534269606,1534269606,,residential,none,tunnel=building_passage,44,12.936742,80.236438,building_passage,,,,
+1536773259,1536773259,,service,none,tunnel=building_passage,17,13.011924,80.222458,building_passage,,,,
+1539048723,1539048723,,service,none,tunnel=building_passage,28,13.057667,80.132342,building_passage,,,,
+1540906815,1540906815,Radha Nagar Subway,residential,underpass,tunnel=yes;layer<0,163,12.95258,80.143214,yes,,-1,,
+1540906816,1540906816,Radha Nagar Subway,residential,underpass,tunnel=yes;layer<0,178,12.95262,80.141345,yes,,-1,,
+1540906817,1540906817,Radha Nagar subway,residential,underpass,tunnel=yes;layer<0,9,12.952802,80.141867,yes,,-1,,
+1543200661-x1,1543200661,,service,underpass,under_rail_bridge,109,13.078465,80.274065,,,,,railway#549727222
+1543200661-x2,1543200661,,service,underpass,under_rail_bridge,109,13.078465,80.274065,,,,,railway#549727268
+1545061826-x1,1545061826,,service,culvert,waterway_crossing,51,13.025826,80.176215,,,,,drain#122063612
+1545595655,1545595655,,residential,low_bridge,bridge_over_water,12,13.004391,80.118271,,yes,1,,
+1545831770,1545831770,Radha Nagar Subway,residential,underpass,tunnel=yes;layer<0,164,12.952587,80.143022,yes,,-1,,
+1545831771,1545831771,Radha Nagar subway,residential,underpass,tunnel=yes;layer<0,9,12.952796,80.141781,yes,,-1,,
+1545831772,1545831772,Radha Nagar Subway,residential,underpass,tunnel=yes;layer<0,176,12.952428,80.141215,yes,,-1,,
+1546205789,1546205789,,service,none,tunnel=building_passage,82,13.182495,80.309271,building_passage,,,,
+1546205794,1546205794,,service,none,tunnel=building_passage,37,13.183674,80.308787,building_passage,,,,
+1546250483,1546250483,,service,none,tunnel=building_passage,20,13.045583,80.257495,building_passage,,,,
+1546887799,1546887799,,service,none,tunnel=building_passage,32,13.047765,80.203776,building_passage,,,,
+1548790710,1548790710,,service,none,tunnel=building_passage,78,12.973543,80.09331,building_passage,,,,
+1549326614-x1,1549326614,Poonamallee - Kundrathur - Pallavaram Road,primary,culvert,waterway_crossing,1167,13.027486,80.111123,,,,,drain:Thanthi Channel#1301947378
+1549326615-x1,1549326615,Poonamallee - Kundrathur - Pallavaram Road,primary,culvert,waterway_crossing,1162,13.027521,80.111058,,,,,drain:Thanthi Channel#1301947378
+1551027866,1551027866,,residential,low_bridge,bridge_over_water,9,13.013037,80.168309,,yes,1,,
+1551552433,1551552433,,service,none,tunnel=building_passage,31,13.08004,80.210329,building_passage,,,,
+1552512061,1552512061,,residential,none,tunnel=building_passage,42,13.112249,80.249102,building_passage,,,,
+1553161087,1553161087,,residential,none,tunnel=building_passage,25,13.070858,80.231436,building_passage,,,,
+1553358880-x1,1553358880,,residential,dip,waterway_crossing,252,13.058077,80.187319,,,,,drain:Virugambakkam Canal#217802635
+1554195467,1554195467,,service,none,tunnel=building_passage,7,13.035271,80.247649,building_passage,,,,
+1554431382-x1,1554431382,,residential,underpass,under_rail_bridge,51,12.973403,80.229642,,,,,railway#25619829
+1554431382-x2,1554431382,,residential,underpass,under_rail_bridge,51,12.973403,80.229642,,,,,railway#551159595
+1554431384-x1,1554431384,,residential,underpass,under_rail_bridge,54,12.973536,80.229407,,,,,railway#25619829
+1554431384-x2,1554431384,,residential,underpass,under_rail_bridge,54,12.973536,80.229407,,,,,railway#551159595
+1556697617,1556697617,,service,none,tunnel=building_passage,10,13.036575,80.211747,building_passage,,,,
+1557270668,1557270668,,service,none,tunnel=building_passage,5,13.062243,80.211427,building_passage,,,,
+1558277804,1558277804,,residential,none,tunnel=building_passage,21,13.084318,80.176355,building_passage,,,,
+1561304730,1561304730,,service,none,tunnel=building_passage,11,13.086253,80.284312,building_passage,,,,
+1561498931-x1,1561498931,Greenways Road,tertiary,underpass,under_rail_bridge,125,13.022021,80.252873,,,,,railway#549727233
+1561498931-x2,1561498931,Greenways Road,tertiary,underpass,under_rail_bridge,125,13.022021,80.252873,,,,,railway#549727257
+1563697010,1563697010,,service,none,tunnel=building_passage,13,12.936446,80.125733,building_passage,,,,
+1563787858-x1,1563787858,New Avadi Road,secondary,dip,waterway_crossing,340,13.087742,80.234593,,,,,drain#217926518
+1563787862-x1,1563787862,New Avadi Road,secondary,dip,waterway_crossing,2221,13.090873,80.227948,,,,,drain#217926518
+1563979940,1563979940,,service,none,tunnel=building_passage,44,12.954578,80.139674,building_passage,,,,
+1564123747,1564123747,,service,none,tunnel=building_passage,18,12.979625,80.252247,building_passage,,,,

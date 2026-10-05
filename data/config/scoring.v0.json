@@ -1,0 +1,149 @@
+{
+  "model_version": "v0.0.1",
+  "horizons_min": [0, 30, 60, 120],
+
+  "states": {
+    "watch_min": 0.10,
+    "risky_min": 0.30,
+    "impassable_min": 0.50,
+    "provisional": true,
+    "note": "Default P(unusable) bands from PRD 11.1 and TRD 6.4, both tagged EST (tune). A segment closes at or above impassable_min (equality closes, biased to caution). Validate against labelled events in the shadow season."
+  },
+
+  "hysteresis": {
+    "reopen_below": 0.25,
+    "reopen_hold_s": 600,
+    "provisional": true,
+    "note": "PRD FR-R3 values, tagged EST. Reopen needs p below reopen_below, continuously for reopen_hold_s, with evidence younger than staleness.max_age_s. Validate flip rate and time to reopen in the shadow season."
+  },
+
+  "staleness": {
+    "max_age_s": 900,
+    "max_future_skew_s": 60,
+    "provisional": true,
+    "note": "max_age_s: PRD FR-R4 and TRD 6.4 call 5 and 15 min proposals; calibrate against real feed cadence. max_future_skew_s: clock-skew tolerance when rejecting future-dated inputs, a placeholder to align with the NTP policy."
+  },
+
+  "rain": {
+    "source_priority": ["gauge", "imd_nowcast", "nwp", "imerg"],
+    "max_age_s": 1800,
+    "blend_window_min": 60,
+    "forecast_match_tol_s": 1800,
+    "provisional": true,
+    "note": "source_priority follows TRD 5 (city gauges, IMD radar or nowcast, open NWP, IMERG); the SACHET rung is not modelled because no numeric semantics are defined, an active alert only gates the Unknown rule. max_age_s is the TRD 5 value of 30 min. blend_window_min (the observed window length) and forecast_match_tol_s (nearest-valid-time match) are placeholders, not fitted."
+  },
+
+  "logit": {
+    "k_trigger": 5.0,
+    "k_antecedent": 1.0,
+    "antecedent_ref_mm": 100.0,
+    "antecedent_max_age_s": 21600,
+    "delta_reference_class": "car",
+    "delta_per_ln_depth": 1.5,
+    "provisional": true,
+    "note": "Placeholders, not facts (TRD 6.2). k_trigger is sized so that full trigger rain on an underpass scores Impassable for every class while dry weather scores Clear. delta[c] is derived from the vehicle profile: delta_per_ln_depth * ln(unusable_cm[reference] / unusable_cm[c]), so editing a profile changes scores (FR-R7). The log-depth form and its slope are an assumption to fit. antecedent_max_age_s allows for the roughly 4 h IMERG latency."
+  },
+
+  "structures": {
+    "underpass": {
+      "base_logit": -3.5, "r_low": 10.0, "r_high": 40.0,
+      "provisional": true,
+      "note": "Placeholder prior and rain trigger in mm/h, biased toward caution. Expert elicitation with local control rooms, then fit on events (TRD 6.2). Not a fact."
+    },
+    "low_bridge": {
+      "base_logit": -3.8, "r_low": 15.0, "r_high": 50.0,
+      "provisional": true,
+      "note": "Placeholder prior and rain trigger in mm/h, biased toward caution. Fit on events in the shadow season. Not a fact."
+    },
+    "culvert": {
+      "base_logit": -4.0, "r_low": 15.0, "r_high": 50.0,
+      "provisional": true,
+      "note": "Placeholder prior and rain trigger in mm/h, biased toward caution. Fit on events in the shadow season. Not a fact."
+    },
+    "dip": {
+      "base_logit": -4.2, "r_low": 15.0, "r_high": 60.0,
+      "provisional": true,
+      "note": "Placeholder prior and rain trigger in mm/h, biased toward caution. Fit on events in the shadow season. Not a fact."
+    },
+    "none": {
+      "base_logit": -5.0, "r_low": 30.0, "r_high": 80.0,
+      "provisional": true,
+      "note": "Placeholder for an assessed segment without a mapped structure. Fit on events in the shadow season. Not a fact."
+    }
+  },
+
+  "vehicle_profiles": {
+    "pedestrian": {
+      "caution_cm": 10.0, "unusable_cm": 15.0,
+      "basis": "PRD 11.2: caution 10 cm, unusable 15 to 20 cm or velocity above 1 m/s. [U] industry practice.",
+      "provisional": true,
+      "note": "No Indian guidance found. The lower end of the 15 to 20 cm range is used (caution-biased). The velocity clause is not modelled at v0."
+    },
+    "two_wheeler": {
+      "caution_cm": 10.0, "unusable_cm": 15.0,
+      "basis": "PRD 11.2: caution 10 cm, unusable 15 to 20 cm. [U] needs local trials.",
+      "provisional": true,
+      "note": "No authoritative source found. The lower end of the 15 to 20 cm range is used (caution-biased). Replace after field trials and fleet stall data."
+    },
+    "auto_rickshaw": {
+      "caution_cm": 10.0, "unusable_cm": 20.0,
+      "basis": "PRD 11.2: caution 10 cm, unusable 20 cm. [U] low ground clearance.",
+      "provisional": true,
+      "note": "Unverified. Replace after field trials."
+    },
+    "car": {
+      "caution_cm": 15.0, "unusable_cm": 30.0,
+      "basis": "PRD 11.2 hatchback or sedan: caution 15 cm, unusable 30 cm. Partial [V]; some guidance says avoid above 10 cm.",
+      "provisional": true,
+      "note": "Conservative default. Also the reference class for delta. Replace after field trials."
+    },
+    "suv": {
+      "caution_cm": 25.0, "unusable_cm": 40.0,
+      "basis": "PRD 11.2: caution 25 cm, unusable 40 cm. [U]",
+      "provisional": true,
+      "note": "Unverified. Replace after field trials."
+    },
+    "ambulance": {
+      "caution_cm": 15.0, "unusable_cm": 20.0,
+      "basis": "PRD 11.2 standard ambulance: caution 15 cm, unusable 20 cm in flowing water. [V] Australian guidance.",
+      "provisional": true,
+      "note": "Australian guidance, not Indian. The 20 cm figure is stated for flowing water and is applied to all water here (caution-biased). Editable per vehicle for high-clearance units (FR-R7)."
+    },
+    "heavy": {
+      "caution_cm": 30.0, "unusable_cm": 50.0,
+      "basis": "PRD 11.2 bus, truck or fire appliance: caution 30 cm, unusable 50 cm. [V] Australian guidance.",
+      "provisional": true,
+      "note": "Australian guidance, not Indian. Replace after field trials."
+    }
+  },
+
+  "evidence": {
+    "tau_min": 20.0,
+    "horizon_tau_min": 60.0,
+    "report_min_trust": 0.5,
+    "corroboration_window_s": 900,
+    "corroboration_min_sources": 2,
+    "report_floor_p": 0.6,
+    "depth_unusable_floor_p": 0.9,
+    "depth_clear_cap_p": 0.2,
+    "probe_speed_ratio_below": 0.4,
+    "probe_min_contributors": 5,
+    "probe_logit": 1.0,
+    "provisional": true,
+    "note": "Rule values from TRD 6.3 and FR-R8 (tau 20 min tagged EST, probe rule called weak, v1 learns it). horizon_tau_min (how fast evidence fades at later horizons) and report_min_trust are placeholders of mine, not in the TRD: horizon_tau_min is longer than tau_min so closure evidence persists across horizons (caution-biased). The floor and cap rules pull p toward their target by weight w = exp(-age/tau) * exp(-horizon/horizon_tau). Corroborated reports skip the age term: their 15 min window is their age limit, and decaying inside it would end the closure after about 4 min. Fit in the shadow season."
+  },
+
+  "overrides": {
+    "reopen_cap_p": 0.2,
+    "provisional": true,
+    "note": "An authority reopen of a segment the model holds Impassable caps p at this value, so the state shows at most Watch (the product never says safe). The value mirrors the sensor cap in TRD 6.3. Placeholder."
+  },
+
+  "confidence": {
+    "high_max_age_s": 300,
+    "high_min_sources": 2,
+    "spread_penalty_mm_h": 10.0,
+    "provisional": true,
+    "note": "TRD 6.2 and FR-R6 name the drivers (freshness, source count, nowcast spread, coverage) but give no numbers. These cut-offs are placeholders. Calibrate against realised accuracy by confidence level."
+  }
+}

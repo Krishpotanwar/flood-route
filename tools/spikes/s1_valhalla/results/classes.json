@@ -1,0 +1,101 @@
+{
+ "memory_kb": {
+  "motor_scooter": {
+   "process": {
+    "Rss": 553112,
+    "Pss": 177151,
+    "Shared_Clean": 427832,
+    "Shared_Dirty": 0,
+    "Private_Clean": 2620,
+    "Private_Dirty": 122660
+   },
+   "tiles_tar": {
+    "Size": 433808,
+    "Rss": 363684,
+    "Pss": 36585,
+    "Shared_Clean": 362112,
+    "Private_Clean": 1572,
+    "Shared_Dirty": 0,
+    "Private_Dirty": 0
+   },
+   "traffic_tar": {
+    "Size": 38000,
+    "Rss": 36444,
+    "Pss": 9343,
+    "Shared_Clean": 36252,
+    "Private_Clean": 192,
+    "Shared_Dirty": 0,
+    "Private_Dirty": 0
+   }
+  },
+  "auto": {
+   "process": {
+    "Rss": 528312,
+    "Pss": 150922,
+    "Shared_Clean": 429640,
+    "Shared_Dirty": 0,
+    "Private_Clean": 12,
+    "Private_Dirty": 98660
+   },
+   "tiles_tar": {
+    "Size": 433808,
+    "Rss": 363840,
+    "Pss": 35348,
+    "Shared_Clean": 363840,
+    "Private_Clean": 0,
+    "Shared_Dirty": 0,
+    "Private_Dirty": 0
+   },
+   "traffic_tar": {
+    "Size": 38000,
+    "Rss": 36352,
+    "Pss": 9201,
+    "Shared_Clean": 36352,
+    "Private_Clean": 0,
+    "Shared_Dirty": 0,
+    "Private_Dirty": 0
+   }
+  },
+  "truck": {
+   "process": {
+    "Rss": 528388,
+    "Pss": 150489,
+    "Shared_Clean": 430224,
+    "Shared_Dirty": 0,
+    "Private_Clean": 0,
+    "Private_Dirty": 98164
+   },
+   "tiles_tar": {
+    "Size": 433808,
+    "Rss": 364352,
+    "Pss": 35423,
+    "Shared_Clean": 364352,
+    "Private_Clean": 0,
+    "Shared_Dirty": 0,
+    "Private_Dirty": 0
+   },
+   "traffic_tar": {
+    "Size": 38000,
+    "Rss": 36416,
+    "Pss": 9202,
+    "Shared_Clean": 36416,
+    "Private_Clean": 0,
+    "Shared_Dirty": 0,
+    "Private_Dirty": 0
+   }
+  }
+ },
+ "sum_rss_kb": 1609812,
+ "sum_pss_kb": 478562,
+ "tile_tar_file_kb": 108450,
+ "isolation": {
+  "pairs": 30,
+  "trials": 90,
+  "target_class_avoids": 90,
+  "other_classes_unchanged": 180,
+  "other_trials": 180,
+  "cross_costing_request_sees_overlay_of_the_instance": 30,
+  "cross_trials": 30,
+  "baselines_differ_between_classes": 18
+ }
+}

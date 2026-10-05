@@ -1,0 +1,63 @@
+<cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+<cap:identifier>IN-1791204453036017_17</cap:identifier>
+<cap:sender>West-Bengal-SDMA</cap:sender>
+<cap:sent>2026-10-05T18:30:08+05:30</cap:sent>
+<cap:status>Actual</cap:status>
+<cap:msgType>Update</cap:msgType>
+<cap:scope>Public</cap:scope>
+<cap:restriction/>
+<cap:addresses/>
+<cap:note/>
+<cap:references>CWC,IN-1791204453036017_5,2026-10-05T18:17:10+05:30</cap:references>
+<cap:incidents/>
+<cap:info>
+<cap:language>en-IN</cap:language>
+<cap:category>Met</cap:category>
+<cap:event>Flood</cap:event>
+<cap:urgency>Expected</cap:urgency>
+<cap:severity>Severe</cap:severity>
+<cap:certainty>Likely</cap:certainty>
+<cap:audience>1</cap:audience>
+<cap:effective>2026-10-05T18:00:00+05:30</cap:effective>
+<cap:onset>2026-10-05T18:30:08+05:30</cap:onset>
+<cap:expires>2026-10-07T08:00:00+05:30</cap:expires>
+<cap:headline>River Ganga at Farakka in Murshidabad district of West Bengal continues to flow in severe flood situation at 6:00 pm today.</cap:headline>
+<cap:description>River Ganga at Farakka in Murshidabad district of West Bengal continues to flow in severe flood situation at 6:00 pm today. At 6:00 pm, it was flowing at a level of 22.78 m with rising trend which is 0.53 m above its Danger Level of 22.25 m and 2.35 m below its previous HFL of 25.13 m (07/09/1998).</cap:description>
+<cap:instruction/>
+<cap:contact/>
+<cap:parameter>
+<cap:valueName>Polygon URL</cap:valueName>
+<cap:value>https://sachet.ndma.gov.in/cap_public_website/FetchPolygonXMLFile?identifier=1791204453036017</cap:value>
+</cap:parameter>
+<cap:area>
+<cap:areaDesc>Ganga, Farakka, Murshidabad, West Bengal</cap:areaDesc>
+<cap:altitude>24.8</cap:altitude>
+<cap:ceiling>87.92</cap:ceiling>
+</cap:area>
+</cap:info>
+<cap:info>
+<cap:language>BN</cap:language>
+<cap:category>Met</cap:category>
+<cap:event>Flood</cap:event>
+<cap:urgency>Expected</cap:urgency>
+<cap:severity>Severe</cap:severity>
+<cap:certainty>Likely</cap:certainty>
+<cap:audience>1</cap:audience>
+<cap:effective>2026-10-05T18:00:00+05:30</cap:effective>
+<cap:onset>2026-10-05T18:30:08+05:30</cap:onset>
+<cap:expires>2026-10-07T08:00:00+05:30</cap:expires>
+<cap:headline>পশ্চিমবঙ্গের মুর্শিদাবাদ জেলার ফারাক্কায় গঙ্গা নদী আজ সন্ধ্যা ৬টা থেকে তীব্র বন্যা পরিস্থিতির মধ্যে প্রবাহিত হচ্ছে।</cap:headline>
+<cap:description>River Ganga at Farakka in Murshidabad district of West Bengal continues to flow in severe flood situation at 6:00 pm today. At 6:00 pm, it was flowing at a level of 22.78 m with rising trend which is 0.53 m above its Danger Level of 22.25 m and 2.35 m below its previous HFL of 25.13 m (07/09/1998).</cap:description>
+<cap:instruction/>
+<cap:contact/>
+<cap:parameter>
+<cap:valueName>Polygon URL</cap:valueName>
+<cap:value>https://sachet.ndma.gov.in/cap_public_website/FetchPolygonXMLFile?identifier=1791204453036017</cap:value>
+</cap:parameter>
+<cap:area>
+<cap:areaDesc>Ganga, Farakka, Murshidabad, West Bengal</cap:areaDesc>
+<cap:altitude>24.8</cap:altitude>
+<cap:ceiling>87.92</cap:ceiling>
+</cap:area>
+</cap:info>
+</cap:alert>

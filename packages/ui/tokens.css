@@ -1,0 +1,400 @@
+/* FloodRoute design tokens. This file is the single source of truth: edit here, then run `pnpm check`.
+   Source: docs/research/06-design-direction.md section C (C.2 to C.6; motion C.8 and materials C.9 where they need tokens).
+   Decisions where that report is silent or ambiguous are listed in packages/ui/CHANGES.md.
+
+   Themes. No data-theme attribute: follow the OS (prefers-color-scheme, prefers-contrast).
+   <html data-theme="light|dark|hc|hc-dark|sunlight"> forces one. sunlight is the light high-contrast palette on solid materials.
+   Console density: <html data-density="high">. JS can read the active theme with getPropertyValue("--fr-theme").
+   Every theme block repeats every colour token on purpose. Blocks that carry the same --fr-theme must stay identical
+   (auto and forced copies); scripts/check-tokens.mjs fails if they drift, and measures every contrast and CVD claim. */
+
+/* ---- Scheme-independent tokens ---- */
+:root {
+  /* Type (C.4). Noto Sans first, one family for Latin and Indic. No webfont is loaded here. */
+  --fr-font-sans: "Noto Sans", system-ui, sans-serif;
+  --fr-font-mono: "JetBrains Mono", ui-monospace, monospace; /* IDs, coordinates, timestamps only */
+  --fr-text-xs: 0.8125rem; /* 13px, timestamps only */
+  --fr-text-sm: 0.875rem; /* 14px */
+  --fr-text-base: 1rem; /* 16px, body minimum */
+  --fr-text-lg: 1.125rem; /* 18px */
+  --fr-text-xl: 1.375rem; /* 22px */
+  --fr-text-2xl: 1.75rem; /* 28px */
+  --fr-text-3xl: 2.25rem; /* 36px */
+  --fr-text-body: var(--fr-text-base);
+  --fr-leading-body-latin: 1.5;
+  --fr-leading-body-indic: 1.65;
+  --fr-leading-body: var(--fr-leading-body-latin);
+  --fr-leading-heading: 1.2;
+  --fr-leading-chip: 1.2;
+  --fr-tracking-display: -0.02em; /* Latin display only. Body tracking is 0. Indic is always 0. */
+  --fr-tracking-body: 0em;
+
+  /* Spacing (C.5): 4px base, in rem so text-size settings scale the layout. */
+  --fr-space-1: 0.25rem;
+  --fr-space-2: 0.5rem;
+  --fr-space-3: 0.75rem;
+  --fr-space-4: 1rem;
+  --fr-space-6: 1.5rem;
+  --fr-space-8: 2rem;
+  --fr-space-12: 3rem;
+
+  /* Radius lock (C.5): 8 for controls, chips and inputs; 16 for sheets, banners and route cards; circles only for map markers. */
+  --fr-radius-control: 8px;
+  --fr-radius-sheet: 16px;
+  --fr-radius-marker: 50%;
+
+  /* Icons (C.6): Phosphor regular. */
+  --fr-icon-app: 1.5rem;
+  --fr-icon-console: 1.25rem;
+  --fr-icon: var(--fr-icon-app);
+
+  /* Map line encoding (C.3). Width in px; dash arrays in px for SVG and CSS samples (MapLibre line-dasharray is in line-width units).
+     Impassable also carries cross ticks along the line. Dotted needs stroke-linecap: round. */
+  --fr-line-safe: 4px;
+  --fr-line-watch: 5px;
+  --fr-line-risky: 6px;
+  --fr-line-impassable: 8px;
+  --fr-line-unknown: 3px;
+  --fr-dash-safe: none;
+  --fr-dash-watch: 14 7;
+  --fr-dash-risky: 6 5;
+  --fr-dash-impassable: none;
+  --fr-dash-unknown: 0 6;
+
+  /* Focus ring geometry. The colour is themed (--fr-focus). */
+  --fr-focus-width: 2px;
+  --fr-focus-offset: 2px;
+
+  /* Motion (C.8). Operate mode: feedback, sheet physics, camera, one highlight. No loops. */
+  --fr-dur-press: 120ms; /* 100 to 160 */
+  --fr-dur-fade: 150ms;
+  --fr-dur-camera: 400ms;
+  --fr-dur-highlight: 600ms;
+  --fr-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --fr-press-scale: 0.97;
+}
+
+/* Indic scripts: taller leading, +6% body size, tracking 0 (C.4). */
+:is(:lang(hi), :lang(mr), :lang(kn), :lang(ta), :lang(te), :lang(ml), :lang(bn), :lang(gu), :lang(pa), :lang(or)) {
+  --fr-text-body: calc(var(--fr-text-base) * 1.06);
+  --fr-leading-body: var(--fr-leading-body-indic);
+  --fr-leading-heading: 1.4;
+  --fr-leading-chip: 1.35;
+  --fr-tracking-display: 0em;
+}
+
+/* Console density (C.4, C.5, C.6): leading 1.4 Latin and 1.5 Indic, radius 8 only, 20px icons. */
+:root[data-density="high"] {
+  --fr-leading-body-latin: 1.4;
+  --fr-leading-body-indic: 1.5;
+  --fr-radius-sheet: var(--fr-radius-control);
+  --fr-icon: var(--fr-icon-console);
+}
+
+/* ---- Light (default) ---- */
+:root {
+  --fr-theme: light;
+  color-scheme: light;
+  --fr-canvas: #F3F6F8;
+  --fr-surface: #FBFCFD;
+  --fr-surface-elevated: #FBFCFD; /* light elevation is the shadow, not a tone */
+  --fr-ink: #0F1B26;
+  --fr-ink-2: #3E4F5E;
+  --fr-accent: #1B4DB1;
+  --fr-safe: #0E7490;
+  --fr-watch: #F5CB45; /* never carries text, never a bare line on canvas: always cased */
+  --fr-risky: #C2410C;
+  --fr-impassable: #3D0A1C;
+  --fr-unknown: #5B6B79;
+  --fr-safe-tint: #D9F0F5;
+  --fr-safe-ink: #063E4D;
+  --fr-watch-tint: #FBEBB8;
+  --fr-watch-ink: #4A3300;
+  --fr-risky-tint: #FCE3D6;
+  --fr-risky-ink: #7A2306;
+  --fr-impassable-tint: #F6DCE3;
+  --fr-impassable-ink: #3D0A1C;
+  --fr-unknown-tint: #E1E9EF;
+  --fr-unknown-ink: #2D363F;
+  --fr-casing: var(--fr-ink);
+  --fr-casing-width: 1.5px;
+  --fr-focus: var(--fr-accent);
+  --fr-edge-width: 0px; /* border on chips, banners and panels: 0 here, 2px in high contrast and forced colors, where tints and shadows are removed */
+  --fr-sheet-bg: rgb(251 252 253 / 0.88);
+  --fr-sheet-blur: blur(16px) saturate(140%);
+  --fr-sheet-edge: 1px solid rgb(15 27 38 / 0.12);
+  --fr-shadow: 0 8px 24px -8px rgb(15 27 38 / 0.28);
+}
+
+/* ---- Dark: follows the OS ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --fr-theme: dark;
+    color-scheme: dark;
+    --fr-canvas: #0B141C;
+    --fr-surface: #121E28;
+    --fr-surface-elevated: #1A2935;
+    --fr-ink: #E8EEF2;
+    --fr-ink-2: #A9BAC7;
+    --fr-accent: #8DB6FF;
+    --fr-safe: #5CCFE6;
+    --fr-watch: #F5D060;
+    --fr-risky: #FF7A3D;
+    --fr-impassable: #D6336C;
+    --fr-unknown: #8FA1B0;
+    --fr-safe-tint: #00343E;
+    --fr-safe-ink: #BCE5EF;
+    --fr-watch-tint: #382C07;
+    --fr-watch-ink: #E7DBBB;
+    --fr-risky-tint: #452416;
+    --fr-risky-ink: #F7D4C5;
+    --fr-impassable-tint: #44212A;
+    --fr-impassable-ink: #F7D0D8;
+    --fr-unknown-tint: #252F37;
+    --fr-unknown-ink: #D2DEE9;
+    --fr-casing: var(--fr-ink);
+    --fr-casing-width: 1.5px;
+    --fr-focus: var(--fr-accent);
+    --fr-edge-width: 0px;
+    --fr-sheet-bg: rgb(18 30 40 / 0.88);
+    --fr-sheet-blur: blur(16px) saturate(140%);
+    --fr-sheet-edge: 1px solid rgb(232 238 242 / 0.14);
+    --fr-shadow: none; /* dark mode uses tonal layers */
+  }
+}
+
+/* ---- High contrast, light: follows the OS ---- */
+@media (prefers-contrast: more) {
+  :root:not([data-theme]) {
+    --fr-theme: hc;
+    color-scheme: light;
+    --fr-canvas: #FBFCFD;
+    --fr-surface: #FBFCFD;
+    --fr-surface-elevated: #FBFCFD;
+    --fr-ink: #0F1B26;
+    --fr-ink-2: #3E4F5E;
+    --fr-accent: #1B4DB1;
+    --fr-safe: #00596F;
+    --fr-watch: #F5CB45;
+    --fr-risky: #8F2A00;
+    --fr-impassable: #3D0A1C;
+    --fr-unknown: #485765;
+    --fr-safe-tint: var(--fr-canvas);
+    --fr-safe-ink: var(--fr-safe);
+    --fr-watch-tint: var(--fr-canvas);
+    --fr-watch-ink: #5C4100;
+    --fr-risky-tint: var(--fr-canvas);
+    --fr-risky-ink: var(--fr-risky);
+    --fr-impassable-tint: var(--fr-canvas);
+    --fr-impassable-ink: var(--fr-impassable);
+    --fr-unknown-tint: var(--fr-canvas);
+    --fr-unknown-ink: var(--fr-unknown);
+    --fr-casing: var(--fr-ink);
+    --fr-casing-width: 2px;
+    --fr-focus: var(--fr-accent);
+    --fr-edge-width: 2px;
+    --fr-sheet-bg: var(--fr-surface);
+    --fr-sheet-blur: none;
+    --fr-sheet-edge: 2px solid var(--fr-ink);
+    --fr-shadow: none;
+  }
+}
+
+/* ---- High contrast, dark: follows the OS ---- */
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --fr-theme: hc-dark;
+    color-scheme: dark;
+    --fr-canvas: #05090D;
+    --fr-surface: #05090D;
+    --fr-surface-elevated: #05090D;
+    --fr-ink: #E8EEF2;
+    --fr-ink-2: #A9BAC7;
+    --fr-accent: #8DB6FF;
+    --fr-safe: #7FE3F5;
+    --fr-watch: #FFE066;
+    --fr-risky: #FF9466;
+    --fr-impassable: #FF7AA5;
+    --fr-unknown: #8FA1B0;
+    --fr-safe-tint: var(--fr-canvas);
+    --fr-safe-ink: var(--fr-safe);
+    --fr-watch-tint: var(--fr-canvas);
+    --fr-watch-ink: var(--fr-watch);
+    --fr-risky-tint: var(--fr-canvas);
+    --fr-risky-ink: var(--fr-risky);
+    --fr-impassable-tint: var(--fr-canvas);
+    --fr-impassable-ink: var(--fr-impassable);
+    --fr-unknown-tint: var(--fr-canvas);
+    --fr-unknown-ink: var(--fr-unknown);
+    --fr-casing: var(--fr-ink);
+    --fr-casing-width: 2px;
+    --fr-focus: var(--fr-accent);
+    --fr-edge-width: 2px;
+    --fr-sheet-bg: var(--fr-surface);
+    --fr-sheet-blur: none;
+    --fr-sheet-edge: 2px solid var(--fr-ink);
+    --fr-shadow: none;
+  }
+}
+
+/* ---- Forced by attribute (same values as the auto blocks above; light is the base :root, so it needs no block) ---- */
+:root[data-theme="dark"] {
+  --fr-theme: dark;
+  color-scheme: dark;
+  --fr-canvas: #0B141C;
+  --fr-surface: #121E28;
+  --fr-surface-elevated: #1A2935;
+  --fr-ink: #E8EEF2;
+  --fr-ink-2: #A9BAC7;
+  --fr-accent: #8DB6FF;
+  --fr-safe: #5CCFE6;
+  --fr-watch: #F5D060;
+  --fr-risky: #FF7A3D;
+  --fr-impassable: #D6336C;
+  --fr-unknown: #8FA1B0;
+  --fr-safe-tint: #00343E;
+  --fr-safe-ink: #BCE5EF;
+  --fr-watch-tint: #382C07;
+  --fr-watch-ink: #E7DBBB;
+  --fr-risky-tint: #452416;
+  --fr-risky-ink: #F7D4C5;
+  --fr-impassable-tint: #44212A;
+  --fr-impassable-ink: #F7D0D8;
+  --fr-unknown-tint: #252F37;
+  --fr-unknown-ink: #D2DEE9;
+  --fr-casing: var(--fr-ink);
+  --fr-casing-width: 1.5px;
+  --fr-focus: var(--fr-accent);
+  --fr-edge-width: 0px;
+  --fr-sheet-bg: rgb(18 30 40 / 0.88);
+  --fr-sheet-blur: blur(16px) saturate(140%);
+  --fr-sheet-edge: 1px solid rgb(232 238 242 / 0.14);
+  --fr-shadow: none;
+}
+
+:root[data-theme="hc"],
+:root[data-theme="sunlight"] {
+  --fr-theme: hc;
+  color-scheme: light;
+  --fr-canvas: #FBFCFD;
+  --fr-surface: #FBFCFD;
+  --fr-surface-elevated: #FBFCFD;
+  --fr-ink: #0F1B26;
+  --fr-ink-2: #3E4F5E;
+  --fr-accent: #1B4DB1;
+  --fr-safe: #00596F;
+  --fr-watch: #F5CB45;
+  --fr-risky: #8F2A00;
+  --fr-impassable: #3D0A1C;
+  --fr-unknown: #485765;
+  --fr-safe-tint: var(--fr-canvas);
+  --fr-safe-ink: var(--fr-safe);
+  --fr-watch-tint: var(--fr-canvas);
+  --fr-watch-ink: #5C4100;
+  --fr-risky-tint: var(--fr-canvas);
+  --fr-risky-ink: var(--fr-risky);
+  --fr-impassable-tint: var(--fr-canvas);
+  --fr-impassable-ink: var(--fr-impassable);
+  --fr-unknown-tint: var(--fr-canvas);
+  --fr-unknown-ink: var(--fr-unknown);
+  --fr-casing: var(--fr-ink);
+  --fr-casing-width: 2px;
+  --fr-focus: var(--fr-accent);
+  --fr-edge-width: 2px;
+  --fr-sheet-bg: var(--fr-surface);
+  --fr-sheet-blur: none;
+  --fr-sheet-edge: 2px solid var(--fr-ink);
+  --fr-shadow: none;
+}
+
+:root[data-theme="hc-dark"] {
+  --fr-theme: hc-dark;
+  color-scheme: dark;
+  --fr-canvas: #05090D;
+  --fr-surface: #05090D;
+  --fr-surface-elevated: #05090D;
+  --fr-ink: #E8EEF2;
+  --fr-ink-2: #A9BAC7;
+  --fr-accent: #8DB6FF;
+  --fr-safe: #7FE3F5;
+  --fr-watch: #FFE066;
+  --fr-risky: #FF9466;
+  --fr-impassable: #FF7AA5;
+  --fr-unknown: #8FA1B0;
+  --fr-safe-tint: var(--fr-canvas);
+  --fr-safe-ink: var(--fr-safe);
+  --fr-watch-tint: var(--fr-canvas);
+  --fr-watch-ink: var(--fr-watch);
+  --fr-risky-tint: var(--fr-canvas);
+  --fr-risky-ink: var(--fr-risky);
+  --fr-impassable-tint: var(--fr-canvas);
+  --fr-impassable-ink: var(--fr-impassable);
+  --fr-unknown-tint: var(--fr-canvas);
+  --fr-unknown-ink: var(--fr-unknown);
+  --fr-casing: var(--fr-ink);
+  --fr-casing-width: 2px;
+  --fr-focus: var(--fr-accent);
+  --fr-edge-width: 2px;
+  --fr-sheet-bg: var(--fr-surface);
+  --fr-sheet-blur: none;
+  --fr-sheet-edge: 2px solid var(--fr-ink);
+  --fr-shadow: none;
+}
+
+/* ---- Forced colors (C.2): defer to system colours. Icons, labels and line styles carry every level.
+   A map canvas ignores forced-colors, so JS should read --fr-theme (forced) and draw the monochrome style.
+   Chromium paints a Canvas backplate behind text here: never put text on a LinkText or CanvasText fill (Canvas-coloured text
+   vanishes). Use ButtonFace with ButtonText and a border for primary and selected controls. ---- */
+@media (forced-colors: active) {
+  :root:not([data-theme]),
+  :root[data-theme] {
+    --fr-theme: forced;
+    --fr-canvas: Canvas;
+    --fr-surface: Canvas;
+    --fr-surface-elevated: Canvas;
+    --fr-ink: CanvasText;
+    --fr-ink-2: CanvasText;
+    --fr-accent: LinkText;
+    --fr-safe: CanvasText;
+    --fr-watch: CanvasText;
+    --fr-risky: CanvasText;
+    --fr-impassable: CanvasText;
+    --fr-unknown: CanvasText;
+    --fr-safe-tint: Canvas;
+    --fr-safe-ink: CanvasText;
+    --fr-watch-tint: Canvas;
+    --fr-watch-ink: CanvasText;
+    --fr-risky-tint: Canvas;
+    --fr-risky-ink: CanvasText;
+    --fr-impassable-tint: Canvas;
+    --fr-impassable-ink: CanvasText;
+    --fr-unknown-tint: Canvas;
+    --fr-unknown-ink: CanvasText;
+    --fr-casing: CanvasText;
+    --fr-casing-width: 2px;
+    --fr-focus: Highlight;
+    --fr-edge-width: 2px;
+    --fr-sheet-bg: Canvas;
+    --fr-sheet-blur: none;
+    --fr-sheet-edge: 2px solid CanvasText;
+    --fr-shadow: none;
+  }
+}
+
+/* ---- Reduced transparency (C.9): solid sheet. Sunlight, high contrast and forced colors are already solid. ---- */
+@media (prefers-reduced-transparency: reduce) {
+  :root:not([data-theme]),
+  :root[data-theme] {
+    --fr-sheet-bg: var(--fr-surface);
+    --fr-sheet-blur: none;
+  }
+}
+
+/* ---- Reduced motion (C.8): 150ms cross-fade, camera jump-cut, no press scale. State changes stay visible. ---- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --fr-dur-camera: 0ms;
+    --fr-dur-highlight: 150ms;
+    --fr-press-scale: 1;
+  }
+}

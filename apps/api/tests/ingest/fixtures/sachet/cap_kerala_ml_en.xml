@@ -1,0 +1,71 @@
+<cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+<cap:identifier>IN-1791201232335006_6</cap:identifier>
+<cap:sender>Kerala-SDMA</cap:sender>
+<cap:sent>2026-10-05T17:29:59+05:30</cap:sent>
+<cap:status>Actual</cap:status>
+<cap:msgType>Update</cap:msgType>
+<cap:scope>Public</cap:scope>
+<cap:restriction/>
+<cap:addresses/>
+<cap:note/>
+<cap:references>IMD-Thiruvananthapuram,IN-1791201232335006_64,2026-10-05T17:23:31+05:30</cap:references>
+<cap:incidents/>
+<cap:info>
+<cap:language>ML</cap:language>
+<cap:category>Met</cap:category>
+<cap:event>Moderate Thunderstorms with surface wind</cap:event>
+<cap:urgency>Expected</cap:urgency>
+<cap:severity>Severe</cap:severity>
+<cap:certainty>Likely</cap:certainty>
+<cap:audience>1</cap:audience>
+<cap:effective>2026-10-05T17:00:00+05:30</cap:effective>
+<cap:onset>2026-10-05T17:29:59+05:30</cap:onset>
+<cap:expires>2026-10-05T20:00:00+05:30</cap:expires>
+<cap:headline>കേരളത്തിലെ തൃശ്ശൂർ ജില്ലയിൽ ഒറ്റപ്പെട്ടയിടങ്ങളിൽ ഇടിമിന്നലോട് കൂടിയ ഇടത്തരം മഴയ്ക്കും മണിക്കൂറിൽ 50 കിലോമീറ്റർ വരെ വേഗതയിൽ ശക്തമായ കാറ്റിനും സാധ്യത. 05.10.2026; 05.00 pm; IMD -KSDMA</cap:headline>
+<cap:description/>
+<cap:instruction>Please follow SDMA guidelines.</cap:instruction>
+<cap:contact/>
+<cap:parameter>
+<cap:valueName>Polygon URL</cap:valueName>
+<cap:value>https://sachet.ndma.gov.in/cap_public_website/FetchPolygonXMLFile?identifier=1791201232335006</cap:value>
+</cap:parameter>
+<cap:area>
+<cap:areaDesc>Thrissur district of Kerala</cap:areaDesc>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>566</cap:value>
+</cap:geocode>
+<cap:altitude>0</cap:altitude>
+<cap:ceiling>0</cap:ceiling>
+</cap:area>
+</cap:info>
+<cap:info>
+<cap:language>en-IN</cap:language>
+<cap:category>Met</cap:category>
+<cap:event>Moderate Thunderstorms with surface wind</cap:event>
+<cap:urgency>Expected</cap:urgency>
+<cap:severity>Severe</cap:severity>
+<cap:certainty>Likely</cap:certainty>
+<cap:audience>1</cap:audience>
+<cap:effective>2026-10-05T17:00:00+05:30</cap:effective>
+<cap:onset>2026-10-05T17:29:59+05:30</cap:onset>
+<cap:expires>2026-10-05T20:00:00+05:30</cap:expires>
+<cap:headline>Moderate Thunderstorm with Moderate rainfall (5-15mm/ hour) and wind speed likely to be 50 Kmph (in Gusts) at one or two places in Thirssur  district.</cap:headline>
+<cap:description/>
+<cap:instruction>Please follow SDMA guidelines.</cap:instruction>
+<cap:contact/>
+<cap:parameter>
+<cap:valueName>Polygon URL</cap:valueName>
+<cap:value>https://sachet.ndma.gov.in/cap_public_website/FetchPolygonXMLFile?identifier=1791201232335006</cap:value>
+</cap:parameter>
+<cap:area>
+<cap:areaDesc>Thrissur district of Kerala</cap:areaDesc>
+<cap:geocode>
+<cap:valueName>LGD District Code</cap:valueName>
+<cap:value>566</cap:value>
+</cap:geocode>
+<cap:altitude>0</cap:altitude>
+<cap:ceiling>0</cap:ceiling>
+</cap:area>
+</cap:info>
+</cap:alert>
