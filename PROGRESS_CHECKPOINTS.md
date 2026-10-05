@@ -125,4 +125,17 @@ This document tracks local execution, verification, fixes, and ongoing progress 
     - `POST /v1/overrides`: 201 Created with two-operator closure override, verified across audit log and immediate transition to `impassable` across all vehicle classes and horizons.
     - `GET /v1/feed/closures.geojson`: 200 OK delivering RFC 7946 GeoJSON FeatureCollection with live segment geometry and impassability properties.
 
+### Checkpoint 11: Backtesting Harness & Model Calibration Evaluation
+- **Status**: Completed
+- **Actions & Findings**:
+  - Implemented `apps/api/floodroute/score/backtest.py`:
+    - Contingency table calculation: Probability of Detection (POD / Hit Rate), False Alarm Ratio (FAR), Critical Success Index (CSI / Threat Score), and overall accuracy. Guarded against division by zero.
+    - Probabilistic calibration metrics: Brier score ($\frac{1}{N}\sum (p_i - o_i)^2$) and Mean Absolute Error (MAE) for inundation depth.
+    - Ground-truth evaluation against `observed_event` table (PRD FR-R9, TRD 15).
+    - Breakdowns by forecast horizon (0, 30, 60, 120 min), vehicle class, label tier (`high`, `medium`, `low`), and source kind (`traffic_police`, `control_room`, `news`, `crowd`, `sensor`).
+    - Seeded benchmark historical flood events from documented Bengaluru storms (September 2022 and May 2025 across Bellandur ORR, Silk Board, Windsor Manor, K.R. Circle, Domlur).
+  - Integrated `backtest` subcommand into `python -m floodroute.score backtest`.
+  - Added 6 thorough tests in `apps/api/tests/score/test_score_backtest.py`.
+  - Reached 618 passing tests (100% pass rate in 33s) with 0 ruff lint errors.
+
 ---
