@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from floodroute.api.routes import feed, health, overrides, reports, risk, route
 
@@ -32,6 +36,16 @@ def create_app() -> FastAPI:
     app.include_router(reports.router)
     app.include_router(overrides.router)
     app.include_router(feed.router)
+
+    # Static assets and Situation Board Console
+    static_dir = Path(__file__).parent / "static"
+    if static_dir.exists():
+        app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+        @app.get("/", include_in_schema=False)
+        @app.get("/console", include_in_schema=False)
+        def get_console() -> FileResponse:
+            return FileResponse(static_dir / "console.html")
 
     return app
 

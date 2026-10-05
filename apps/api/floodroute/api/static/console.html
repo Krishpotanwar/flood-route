@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>FloodRoute Control Room Console</title>
+  <link rel="stylesheet" href="/static/tokens.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--fr-canvas);
+      color: var(--fr-ink);
+      font-family: var(--fr-font-sans);
+      font-size: var(--fr-text-base);
+      line-height: var(--fr-leading-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .num { font-variant-numeric: tabular-nums; }
+    .mono { font-family: var(--fr-font-mono); font-size: var(--fr-text-sm); }
+
+    /* Top Strip */
+    .top-strip {
+      background: var(--fr-surface);
+      border-bottom: 1px solid color-mix(in srgb, var(--fr-ink-2) 20%, transparent);
+      padding: var(--fr-space-2) var(--fr-space-4);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--fr-space-3);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--fr-space-2);
+      font-weight: 700;
+      font-size: var(--fr-text-lg);
+      letter-spacing: var(--fr-tracking-display);
+      color: var(--fr-accent);
+    }
+    .feed-health-strip {
+      display: flex;
+      align-items: center;
+      gap: var(--fr-space-4);
+      font-size: var(--fr-text-sm);
+    }
+    .health-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--fr-space-1);
+      padding: 2px var(--fr-space-2);
+      border-radius: var(--fr-radius-control);
+      font-weight: 500;
+      background: var(--fr-unknown-tint);
+      color: var(--fr-unknown-ink);
+    }
+    .health-pill.ok {
+      background: var(--fr-safe-tint);
+      color: var(--fr-safe-ink);
+    }
+    .health-pill.warn {
+      background: var(--fr-watch-tint);
+      color: var(--fr-watch-ink);
+    }
+
+    /* Layout */
+    .app-container {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      flex: 1;
+      height: calc(100vh - 54px);
+    }
+    @media (max-width: 900px) {
+      .app-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+
+    /* Sidebar / Situation Board */
+    .sidebar {
+      background: var(--fr-surface);
+      border-right: 1px solid color-mix(in srgb, var(--fr-ink-2) 20%, transparent);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: var(--fr-space-4);
+      gap: var(--fr-space-4);
+    }
+
+    /* Filter Controls */
+    .filter-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--fr-space-2);
+      background: var(--fr-canvas);
+      padding: var(--fr-space-3);
+      border-radius: var(--fr-radius-control);
+    }
+    .filter-title {
+      font-size: var(--fr-text-xs);
+      font-weight: 600;
+      color: var(--fr-ink-2);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--fr-space-1);
+    }
+    .btn-toggle {
+      background: var(--fr-surface);
+      border: 1px solid color-mix(in srgb, var(--fr-ink-2) 30%, transparent);
+      color: var(--fr-ink);
+      padding: var(--fr-space-1) var(--fr-space-2);
+      border-radius: var(--fr-radius-control);
+      font-size: var(--fr-text-xs);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-toggle.active {
+      background: var(--fr-accent);
+      color: #fff;
+      border-color: var(--fr-accent);
+    }
+
+    /* Metric Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--fr-space-2);
+    }
+    .stat-card {
+      background: var(--fr-canvas);
+      padding: var(--fr-space-3);
+      border-radius: var(--fr-radius-control);
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-val {
+      font-size: var(--fr-text-2xl);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .stat-label {
+      font-size: var(--fr-text-xs);
+      color: var(--fr-ink-2);
+      margin-top: 4px;
+    }
+
+    /* Incident List */
+    .incidents-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: var(--fr-space-2);
+    }
+    .incident-item {
+      background: var(--fr-canvas);
+      padding: var(--fr-space-3);
+      border-radius: var(--fr-radius-control);
+      border-left: 4px solid var(--fr-unknown);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .incident-item:hover {
+      background: color-mix(in srgb, var(--fr-surface-elevated) 80%, var(--fr-canvas));
+    }
+    .incident-item.impassable {
+      border-left-color: var(--fr-impassable);
+    }
+    .incident-item.risky {
+      border-left-color: var(--fr-risky);
+    }
+    .incident-item.watch {
+      border-left-color: var(--fr-watch);
+    }
+
+    .incident-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    /* Risk Chips */
+    .risk-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px var(--fr-space-2);
+      border-radius: var(--fr-radius-control);
+      font-size: var(--fr-text-xs);
+      font-weight: 600;
+    }
+    .risk-chip.clear {
+      background: var(--fr-safe-tint);
+      color: var(--fr-safe-ink);
+    }
+    .risk-chip.watch {
+      background: var(--fr-watch-tint);
+      color: var(--fr-watch-ink);
+    }
+    .risk-chip.risky {
+      background: var(--fr-risky-tint);
+      color: var(--fr-risky-ink);
+    }
+    .risk-chip.impassable {
+      background: var(--fr-impassable-tint);
+      color: var(--fr-impassable-ink);
+    }
+    .risk-chip.unknown {
+      background: var(--fr-unknown-tint);
+      color: var(--fr-unknown-ink);
+    }
+
+    /* Map Stage */
+    .map-stage {
+      position: relative;
+      height: 100%;
+      width: 100%;
+    }
+    #map {
+      height: 100%;
+      width: 100%;
+      background: #e5e9ec;
+    }
+
+    /* Action Buttons */
+    .action-panel {
+      display: flex;
+      gap: var(--fr-space-2);
+    }
+    .btn-action {
+      flex: 1;
+      padding: var(--fr-space-2);
+      border-radius: var(--fr-radius-control);
+      border: none;
+      font-weight: 600;
+      font-size: var(--fr-text-xs);
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--fr-accent);
+      color: #fff;
+    }
+    .btn-danger {
+      background: var(--fr-risky);
+      color: #fff;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 27, 38, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-content {
+      background: var(--fr-surface);
+      border-radius: var(--fr-radius-sheet);
+      padding: var(--fr-space-6);
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 8px 24px -8px rgba(15, 27, 38, 0.28);
+    }
+    .modal-header {
+      font-size: var(--fr-text-lg);
+      font-weight: 700;
+      margin-bottom: var(--fr-space-4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: var(--fr-space-3);
+    }
+    .form-label {
+      font-size: var(--fr-text-xs);
+      font-weight: 600;
+      color: var(--fr-ink-2);
+    }
+    .form-input {
+      padding: var(--fr-space-2);
+      border: 1px solid color-mix(in srgb, var(--fr-ink-2) 30%, transparent);
+      border-radius: var(--fr-radius-control);
+      background: var(--fr-canvas);
+      color: var(--fr-ink);
+      font-size: var(--fr-text-sm);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Strip -->
+  <header class="top-strip">
+    <div class="brand">
+      <svg width="24" height="24" viewBox="0 0 256 256" fill="currentColor">
+        <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200Zm-40-72a40,40,0,1,1-40-40A40,40,0,0,1,176,128Z"/>
+      </svg>
+      <span>FloodRoute Console</span>
+    </div>
+
+    <div class="feed-health-strip">
+      <span class="health-pill ok" id="health-db">DB: Connected</span>
+      <span class="health-pill ok" id="health-sachet">SACHET: Active</span>
+      <span class="health-pill ok" id="health-metno">MET Norway: Active</span>
+      <span class="health-pill" id="health-model">Model: v0.0.1</span>
+    </div>
+
+    <div class="theme-switcher">
+      <select class="form-input" id="theme-select" onchange="document.documentElement.setAttribute('data-theme', this.value)">
+        <option value="">Auto Theme</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="hc">High Contrast</option>
+        <option value="sunlight">Sunlight</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Main View -->
+  <div class="app-container">
+    <!-- Situation Board Sidebar -->
+    <aside class="sidebar">
+      <div class="filter-panel">
+        <span class="filter-title">Vehicle Class Profile</span>
+        <div class="button-group">
+          <button class="btn-toggle active" data-vclass="car">Car</button>
+          <button class="btn-toggle" data-vclass="two_wheeler">Two-Wheeler</button>
+          <button class="btn-toggle" data-vclass="ambulance">Ambulance</button>
+          <button class="btn-toggle" data-vclass="heavy">Heavy</button>
+        </div>
+      </div>
+
+      <div class="filter-panel">
+        <span class="filter-title">Forecast Lead Time</span>
+        <div class="button-group">
+          <button class="btn-toggle active" data-h="0">Now (0m)</button>
+          <button class="btn-toggle" data-h="30">+30m</button>
+          <button class="btn-toggle" data-h="60">+60m</button>
+          <button class="btn-toggle" data-h="120">+120m</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-val num" id="stat-monitored">5,383</span>
+          <span class="stat-label">Monitored Segments</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val num" id="stat-closures" style="color: var(--fr-impassable);">0</span>
+          <span class="stat-label">Active Closures</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val num" id="stat-risky" style="color: var(--fr-risky);">0</span>
+          <span class="stat-label">Risky Segments</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val num" id="stat-reports">0</span>
+          <span class="stat-label">Citizen Reports</span>
+        </div>
+      </div>
+
+      <div class="action-panel">
+        <button class="btn-action btn-danger" onclick="openOverrideModal()">+ Manual Road Closure</button>
+        <button class="btn-action btn-primary" onclick="openReportModal()">+ Citizen Flood Report</button>
+      </div>
+
+      <div class="incidents-container">
+        <span class="filter-title">Monitored Corridor Incidents</span>
+        <div id="incidents-list">
+          <p style="font-size: var(--fr-text-sm); color: var(--fr-ink-2); padding: 8px 0;">Loading candidate incidents...</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Map Stage -->
+    <main class="map-stage">
+      <div id="map"></div>
+    </main>
+  </div>
+
+  <!-- Manual Closure Override Modal -->
+  <div class="modal-overlay" id="override-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Operator Road Closure Override</span>
+        <button onclick="closeOverrideModal()" style="border:none;background:none;font-size:20px;cursor:pointer;">&times;</button>
+      </div>
+      <form id="override-form" onsubmit="submitOverride(event)">
+        <div class="form-group">
+          <label class="form-label">Segment ID</label>
+          <input class="form-input num" type="number" id="ov-segment-id" required placeholder="e.g. 2201617750100158755">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Action</label>
+          <select class="form-input" id="ov-action">
+            <option value="close">Close Road (Impassable)</option>
+            <option value="force_watch">Force Watch</option>
+            <option value="reopen">Reopen Road</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Reason</label>
+          <input class="form-input" type="text" id="ov-reason" required placeholder="Observed 50cm waterlogging at culvert">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Operator ID (Initiator)</label>
+          <input class="form-input" type="text" id="ov-op1" required value="traffic_police_hq">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Second Operator ID (Two-person verification)</label>
+          <input class="form-input" type="text" id="ov-op2" required value="flood_control_officer_2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Duration (Hours)</label>
+          <input class="form-input num" type="number" id="ov-hours" value="3" min="1" max="24">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+          <button type="button" class="btn-action" onclick="closeOverrideModal()">Cancel</button>
+          <button type="submit" class="btn-action btn-danger">Confirm Closure Override</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Citizen Report Modal -->
+  <div class="modal-overlay" id="report-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Citizen Flood Report Simulation</span>
+        <button onclick="closeReportModal()" style="border:none;background:none;font-size:20px;cursor:pointer;">&times;</button>
+      </div>
+      <form id="report-form" onsubmit="submitReport(event)">
+        <div class="form-group">
+          <label class="form-label">Latitude</label>
+          <input class="form-input num" type="number" step="0.0001" id="rep-lat" required value="12.9475">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Longitude</label>
+          <input class="form-input num" type="number" step="0.0001" id="rep-lon" required value="77.6194">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Water Depth Class</label>
+          <select class="form-input" id="rep-depth">
+            <option value="ankle">Ankle Deep (approx 15 cm)</option>
+            <option value="knee" selected>Knee Deep (approx 35 cm)</option>
+            <option value="vehicle_deep">Vehicle Deep (approx 60 cm)</option>
+            <option value="wet">Surface Water (approx 5 cm)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Reporter Pseudonym</label>
+          <input class="form-input" type="text" id="rep-id" value="citizen_app_user_882">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+          <button type="button" class="btn-action" onclick="closeReportModal()">Cancel</button>
+          <button type="submit" class="btn-action btn-primary">Submit Crowd Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let activeVClass = 'car';
+    let activeHorizon = 0;
+    let map = null;
+    let closureLayer = null;
+
+    // Init Map
+    function initMap() {
+      map = L.map('map').setView([12.9716, 77.5946], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      closureLayer = L.geoJSON(null, {
+        style: function(feature) {
+          const state = feature.properties.state;
+          if (state === 'impassable') {
+            return { color: '#3D0A1C', weight: 8, opacity: 0.9 };
+          } else if (state === 'risky') {
+            return { color: '#C2410C', weight: 6, dashArray: '6, 5', opacity: 0.9 };
+          } else {
+            return { color: '#F5CB45', weight: 5, dashArray: '14, 7', opacity: 0.8 };
+          }
+        },
+        onEachFeature: function(feature, layer) {
+          const p = feature.properties;
+          layer.bindPopup(`
+            <strong>Segment ID:</strong> ${p.segment_id}<br/>
+            <strong>Status:</strong> ${p.state.toUpperCase()}<br/>
+            <strong>Road Class:</strong> ${p.road_class || 'N/A'}<br/>
+            <strong>P(Unusable):</strong> ${(p.p_unusable * 100).toFixed(1)}%<br/>
+            <strong>Depth:</strong> ${p.depth_p50_cm || 'N/A'} cm
+          `);
+        }
+      }).addTo(map);
+    }
+
+    async function loadHealth() {
+      try {
+        const res = await fetch('/v1/health');
+        if (!res.ok) return;
+        const data = await res.json();
+        document.getElementById('health-db').textContent = `DB: ${data.database}`;
+        document.getElementById('health-model').textContent = `Model: ${data.model_version}`;
+        if (data.sources && data.sources.sachet) {
+          document.getElementById('health-sachet').textContent = `SACHET: lag ${data.sources.sachet.lag_s}s`;
+        }
+        if (data.sources && data.sources.metno) {
+          document.getElementById('health-metno').textContent = `MET Norway: lag ${data.sources.metno.lag_s}s`;
+        }
+      } catch (e) {
+        console.error('Failed to load health:', e);
+      }
+    }
+
+    async function loadFeed() {
+      try {
+        const res = await fetch(`/v1/feed/closures.geojson?vclass=${activeVClass}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        closureLayer.clearLayers();
+        closureLayer.addData(data);
+
+        const count = data.features ? data.features.length : 0;
+        document.getElementById('stat-closures').textContent = count;
+      } catch (e) {
+        console.error('Failed to load closures feed:', e);
+      }
+    }
+
+    async function loadIncidents() {
+      try {
+        // Query central Bengaluru
+        const res = await fetch(`/v1/risk?vclass=${activeVClass}&h=${activeHorizon}&bbox=77.55,12.90,77.68,13.02`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        const listEl = document.getElementById('incidents-list');
+        listEl.innerHTML = '';
+
+        let riskyCount = 0;
+        const items = data.segments || [];
+
+        // Sort: impassable first, then risky, then watch, then unknown
+        const order = { 'impassable': 0, 'risky': 1, 'watch': 2, 'unknown': 3, 'clear': 4 };
+        items.sort((a, b) => (order[a.state] || 99) - (order[b.state] || 99));
+
+        items.slice(0, 20).forEach(seg => {
+          if (seg.state === 'risky') riskyCount++;
+          const el = document.createElement('div');
+          el.className = `incident-item ${seg.state || 'unknown'}`;
+          el.innerHTML = `
+            <div class="incident-header">
+              <span class="mono">${seg.segment_id}</span>
+              <span class="risk-chip ${seg.state || 'unknown'}">${seg.state ? seg.state.toUpperCase() : 'UNKNOWN'}</span>
+            </div>
+            <div style="font-size: var(--fr-text-xs); color: var(--fr-ink-2);">
+              P(unusable): <span class="num">${((seg.p_unusable || 0) * 100).toFixed(1)}%</span> |
+              Depth: <span class="num">${seg.depth_p50_cm || 5}cm</span>
+            </div>
+          `;
+          el.onclick = () => {
+            document.getElementById('ov-segment-id').value = seg.segment_id;
+            openOverrideModal();
+          };
+          listEl.appendChild(el);
+        });
+
+        document.getElementById('stat-risky').textContent = riskyCount;
+      } catch (e) {
+        console.error('Failed to load incidents:', e);
+      }
+    }
+
+    // Modal controls
+    function openOverrideModal() {
+      document.getElementById('override-modal').classList.add('open');
+    }
+    function closeOverrideModal() {
+      document.getElementById('override-modal').classList.remove('open');
+    }
+    function openReportModal() {
+      document.getElementById('report-modal').classList.add('open');
+    }
+    function closeReportModal() {
+      document.getElementById('report-modal').classList.remove('open');
+    }
+
+    async function submitOverride(e) {
+      e.preventDefault();
+      const segId = parseInt(document.getElementById('ov-segment-id').value, 10);
+      const action = document.getElementById('ov-action').value;
+      const reason = document.getElementById('ov-reason').value;
+      const op1 = document.getElementById('ov-op1').value;
+      const op2 = document.getElementById('ov-op2').value;
+      const hours = parseInt(document.getElementById('ov-hours').value, 10);
+
+      const exp = new Date(Date.now() + hours * 3600 * 1000).toISOString();
+
+      try {
+        const res = await fetch('/v1/overrides', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tenant_id: 1,
+            segment_id: segId,
+            action: action,
+            reason: reason,
+            operator_id: op1,
+            second_operator_id: op2,
+            expires_at: exp
+          })
+        });
+
+        if (res.ok) {
+          alert('Road closure override recorded successfully!');
+          closeOverrideModal();
+          loadFeed();
+          loadIncidents();
+        } else {
+          const err = await res.json();
+          alert('Error recording override: ' + JSON.stringify(err));
+        }
+      } catch (e) {
+        alert('Network error: ' + e);
+      }
+    }
+
+    async function submitReport(e) {
+      e.preventDefault();
+      const lat = parseFloat(document.getElementById('rep-lat').value);
+      const lon = parseFloat(document.getElementById('rep-lon').value);
+      const depth = document.getElementById('rep-depth').value;
+      const repId = document.getElementById('rep-id').value;
+
+      try {
+        const res = await fetch('/v1/reports', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            lat: lat,
+            lon: lon,
+            depth_class: depth,
+            reporter_id: repId
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          alert(`Report submitted! Map-matched to segment: ${data.segment_id}`);
+          closeReportModal();
+          const rCount = parseInt(document.getElementById('stat-reports').textContent, 10) || 0;
+          document.getElementById('stat-reports').textContent = rCount + 1;
+          loadIncidents();
+        } else {
+          const err = await res.json();
+          alert('Error submitting report: ' + JSON.stringify(err));
+        }
+      } catch (e) {
+        alert('Network error: ' + e);
+      }
+    }
+
+    // Toggle button handlers
+    document.querySelectorAll('[data-vclass]').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('[data-vclass]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeVClass = btn.dataset.vclass;
+        loadFeed();
+        loadIncidents();
+      };
+    });
+
+    document.querySelectorAll('[data-h]').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('[data-h]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeHorizon = parseInt(btn.dataset.h, 10);
+        loadIncidents();
+      };
+    });
+
+    // Boot
+    window.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      loadHealth();
+      loadFeed();
+      loadIncidents();
+      setInterval(loadHealth, 30000);
+      setInterval(loadFeed, 30000);
+    });
+  </script>
+</body>
+</html>

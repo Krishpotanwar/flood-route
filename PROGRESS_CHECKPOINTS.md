@@ -138,4 +138,20 @@ This document tracks local execution, verification, fixes, and ongoing progress 
   - Added 6 thorough tests in `apps/api/tests/score/test_score_backtest.py`.
   - Reached 618 passing tests (100% pass rate in 33s) with 0 ruff lint errors.
 
+### Checkpoint 12: Control Room Situation Board Console & Static Asset Serving
+- **Status**: Completed
+- **Actions & Findings**:
+  - Implemented `apps/api/floodroute/api/static/console.html` and static asset serving:
+    - Operator Situation Board: live top strip with real-time health pings, database connectivity, and data staleness indicators.
+    - Interactive controls: vehicle class selector (`car`, `two_wheeler`, `ambulance`, `heavy`), forecast horizon scrubber (Now, +30m, +60m, +120m), and theme selector (`light`, `dark`, `hc`, `sunlight`).
+    - Key metrics dashboard: Monitored segments count, active road closures, risky segments count, and citizen reports counter.
+    - Incident list: sorted priority queue of monitored road segments with risk chips, probability of unusability, and depth estimates.
+    - Interactive Leaflet / OpenStreetMap map: live rendering of Bengaluru road corridors and real-time GeoJSON closure feeds from `/v1/feed/closures.geojson`.
+    - Operator closure modal: human road closure override with mandatory two-operator verification calling `POST /v1/overrides`.
+    - Citizen flood report modal: simulation tool submitting crowd waterlogging observations directly to `POST /v1/reports`.
+    - Strict compliance with `DESIGN.md` tokens, zero em-dashes in UI copy, and safety invariant (never uses "safe" label).
+  - Mounted `/static` directory in `main.py` and routed `GET /` and `GET /console` to serve the interactive Console.
+  - Added unit test in `apps/api/tests/api/test_api_console.py`.
+  - Reached 619 passing tests (100% pass rate in 33.8s) with 0 ruff lint errors.
+
 ---
