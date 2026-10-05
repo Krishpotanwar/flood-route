@@ -83,6 +83,12 @@ class FakeConn:
             keys = set(params[1])
             return Cur((a[-1].obj["rss_key"],) for a in self.alerts.values()
                        if a[-1].obj["rss_key"] in keys)
+        if s == norm(sachet.NO_AREA_SQL):
+            n = sum(1 for a in self.alerts.values()
+                    if a[6] is not None and a[6] > params[0] and a[7] is None
+                    and a[-1].obj["cap"]["status"] == "Actual"
+                    and a[-1].obj["cap"]["msgType"] in ("Alert", "Update"))
+            return Cur([(n,)])
         if s == norm(metno.POINTS_SQL):
             return Cur(self.zones)
         if s.startswith("insert into official_alert"):
@@ -151,6 +157,11 @@ def sachet_routes(rss: bytes | None = None, polygons: dict | None = None) -> dic
         routes[polygon_url(guid)] = fixture(name)
     routes.update(polygons or {})
     return routes
+
+
+def rss_one(guid: str, pub: str = "Mon, 05 Oct 2026 19:00:00 GMT") -> bytes:
+    return (f"<rss version='2.0'><channel><item><guid isPermaLink='false'>{guid}</guid>"
+            f"<pubDate>{pub}</pubDate></item></channel></rss>").encode()
 
 
 def cap_xml(*, infos=None, identifier="IN-1_1", sender="Test-SDMA", sent="2026-10-05T18:00:00+05:30",

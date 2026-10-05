@@ -144,7 +144,8 @@ def test_swapped_polygon_is_not_accepted():
 
 
 @pytest.mark.parametrize("text", [
-    "", "1,2", "12.9,77.5 12.9,77.6", "a,b c,d e,f", "12.9,77.5,3 12.9,77.6 13,77.6",
+    "", "1,2", "12.9,77.5 12.9,77.6", "12.9,77.5 13.0,77.6 13.1,77.7 12.9,77.5",
+    "12.9,77.5 12.9,77.5 12.9,77.5 12.9,77.5", "a,b c,d e,f", "12.9,77.5,3 12.9,77.6 13,77.6",
     "nan,77.5 12.9,77.6 13,77.6", "12.9,inf 12.9,77.6 13,77.6",
 ])
 def test_bad_rings_are_refused(text):
@@ -359,7 +360,8 @@ def test_ingest_stores_every_real_alert_and_is_idempotent():
     conn, http = FakeConn(), FakeHttp(sachet_routes())
     out = run_ingest(conn, http, max_new=50)
     assert set(conn.alerts) == {r["ident"] for r in REAL.values()}
-    assert out.summary == {"items": 8, "new": 8, "stored": 8, "refused": 0, "bad_rss_items": 0}
+    assert out.summary == {"items": 8, "new": 8, "stored": 8, "refused": 0,
+                           "stored_without_area": 6, "bad_rss_items": 0}  # 2 polygon fixtures
     snapshot, first_calls = dict(conn.alerts), len(http.calls)
     assert first_calls == 1 + 8 + 8  # feed, every CAP, every polygon URL
 
@@ -407,6 +409,16 @@ def test_per_run_budget_takes_the_newest_first_and_says_it_is_catching_up():
     assert out.summary["stored"] == 3 and "catching up, 5 new item(s)" in out.warn
     assert set(conn.alerts) == {
         "IN-1791229078945019_19", "IN-1791229518905009_9", "IN-1791227005191008_8"}
+
+
+def test_active_alerts_without_an_area_stay_in_the_health_note_on_quiet_runs():
+    conn, http = FakeConn(), FakeHttp(sachet_routes())
+    first = run_ingest(conn, http, max_new=50)
+    assert "3 active alert(s) have no area" in first.warn  # Karnataka, Andhra, West Bengal
+    quiet = run_ingest(conn, http, max_new=50)
+    assert quiet.summary["new"] == 0 and "3 active alert(s) have no area" in quiet.warn
+    later = sachet.ingest(conn, http, now=utc("2026-10-07T03:00:00+00:00"), max_new=50)
+    assert later.warn is None  # every alert has expired, nothing left to complain about
 
 
 def test_lag_is_the_age_of_the_newest_item():
@@ -478,8 +490,8 @@ def test_polygon_endpoint_that_starts_refusing_is_asked_once_per_run():
     conn, http = FakeConn(), FakeHttp(routes)
     out = run_ingest(conn, http, max_new=50)
     assert sum("FetchPolygon" in u for u in http.calls) == 1
-    assert out.summary["stored"] == 8
-    assert "8 alert(s) stored with a missing or partial area" in out.warn
+    assert out.summary["stored"] == 8 and out.summary["stored_without_area"] == 8
+    assert "5 active alert(s) have no area" in out.warn  # 3 of the 8 had already expired
     assert all(a[7] is None for a in conn.alerts.values())
     errors = [a[-1].obj["area_error"] for a in conn.alerts.values()]
     assert sum("HTTP 403" in e and "skipped" not in e for e in errors) == 1

@@ -52,6 +52,83 @@ def classify(seg, edges, fwd):
     return "inside_longer_edge", own
 
 
+def mid_along(coords):
+    """Point halfway along the polyline (by length), not the middle vertex."""
+    segs_ = [vh.haversine_m(a, b) for a, b in zip(coords, coords[1:])]
+    half, acc = sum(segs_) / 2, 0.0
+    for (a, b), d in zip(zip(coords, coords[1:]), segs_):
+        if acc + d >= half and d > 0:
+            f = (half - acc) / d
+            return (a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f)
+        acc += d
+    return coords[0]
+
+
+def locate_map(c, seg, extra=None):
+    """M2: /locate at the segment midpoint, keep edges of the segment's way and read their OSM node ids.
+    Returns {"fwd": edge id or None, "rev": edge id or None, "same_way_other_nodes": [..]}."""
+    lon, lat = mid_along(seg["coords"])
+    body = {"locations": [vh.loc(lon, lat)], "costing": "auto", "verbose": True, **(extra or {})}
+    st, js, _ = c.post("locate", body)
+    res = {"fwd": None, "rev": None, "other": []}
+    if st != 200:
+        return res
+    for e in js[0].get("edges", []):
+        if e["edge_info"]["way_id"] != seg["way"]:
+            continue
+        ids = e["edge_info"].get("osm_node_ids") or []
+        if len(ids) < 2:
+            res["other"].append(e["edge_id"]["value"])
+            continue
+        # edge_info is shared by the two directed edges and lists nodes in storage order; edge.forward says
+        # whether this directed edge runs along it or against it
+        first, last = (ids[0], ids[-1]) if e["edge"]["forward"] else (ids[-1], ids[0])
+        if (first, last) == (seg["a"], seg["b"]):
+            res["fwd"] = e["edge_id"]["value"]
+        elif (first, last) == (seg["b"], seg["a"]):
+            res["rev"] = e["edge_id"]["value"]
+        else:
+            res["other"].append(e["edge_id"]["value"])
+    return res
+
+
+def cover_map(c, seg):
+    """M3 (needs a graph built with keep_all_osm_node_ids): locate at every vertex of the segment, keep the
+    directed edges of its way, and compare their OSM node lists with the segment's node list.
+    Returns {"fwd": (cls, [edge ids]), "rev": (cls, [edge ids])} with cls in exact | edge_longer | split | partial | none."""
+    S = seg["nodes"]
+    found = {}
+    for lon, lat in seg["coords"]:
+        st, js, _ = c.post("locate", {"locations": [vh.loc(lon, lat)], "costing": "auto", "verbose": True})
+        if st != 200:
+            continue
+        for e in js[0].get("edges", []):
+            if e["edge_info"]["way_id"] != seg["way"]:
+                continue
+            ids = e["edge_info"].get("osm_node_ids") or []
+            found[e["edge_id"]["value"]] = ids if e["edge"]["forward"] else ids[::-1]
+    out = {}
+    for d, seq in (("fwd", S), ("rev", S[::-1])):
+        pairs = set(zip(seq, seq[1:]))
+        hits, covered = [], set()
+        for eid, ids in found.items():
+            ov = pairs & set(zip(ids, ids[1:]))
+            if ov:
+                hits.append((eid, ids, ov))
+                covered |= ov
+        if not hits:
+            out[d] = ("none", [])
+        elif any(ids == seq for _, ids, _ in hits):
+            out[d] = ("exact", [eid for eid, ids, _ in hits if ids == seq])
+        elif any(len(ov) == len(pairs) for _, _, ov in hits):
+            out[d] = ("edge_longer", [eid for eid, _, ov in hits if len(ov) == len(pairs)])
+        elif covered == pairs:
+            out[d] = ("split", [eid for eid, _, _ in hits])
+        else:
+            out[d] = ("partial", [eid for eid, _, _ in hits])
+    return out
+
+
 def map_all(c, items, tag):
     res, ms = [], []
     for i, seg in enumerate(items):
@@ -96,6 +173,33 @@ def main():
         out["v1"] = {"summary": summarize(m1), "timing": timing}
         print(json.dumps(out["v1"]["summary"]["fwd"]), json.dumps(out["v1"]["summary"]["rev"]))
 
+        # M2: locate at the midpoint
+        t0 = time.perf_counter()
+        loc_res = [locate_map(c1, sg) for sg in segs]
+        ms_loc = (time.perf_counter() - t0) * 1000 / len(segs)
+        both = {"fwd_exact_trace": 0, "fwd_exact_locate": 0, "fwd_exact_either": 0, "fwd_exact_neither": 0,
+                "rev_exact_trace": 0, "rev_exact_locate": 0, "rev_exact_either": 0, "rev_exact_neither": 0,
+                "locate_ids_equal_trace_ids_when_both_exact": 0, "both_exact": 0}
+        short = {"n": 0, "trace_exact": 0, "locate_exact": 0}
+        for r, lr, sg in zip(m1, loc_res, segs):
+            for d in ("fwd", "rev"):
+                t_ok = r[d]["cls"] == "exact"
+                l_ok = lr[d] is not None
+                both[f"{d}_exact_trace"] += t_ok
+                both[f"{d}_exact_locate"] += l_ok
+                both[f"{d}_exact_either"] += t_ok or l_ok
+                both[f"{d}_exact_neither"] += not (t_ok or l_ok)
+                if t_ok and l_ok:
+                    both["both_exact"] += 1
+                    both["locate_ids_equal_trace_ids_when_both_exact"] += r[d]["edges"][0] == lr[d]
+            if sg["len_m"] < 15:
+                short["n"] += 1
+                short["trace_exact"] += r["fwd"]["cls"] == "exact"
+                short["locate_exact"] += lr["fwd"] is not None
+        out["locate_vs_trace_v1"] = {**both, "locate_ms_per_segment": round(ms_loc, 2), "short_segments_under_15m_fwd": short}
+        print("locate vs trace", json.dumps(out["locate_vs_trace_v1"]), flush=True)
+        json.dump(loc_res, open(WORK / "map_v1_locate.json", "w"))
+
         # failure mode: mapping while the edge is closed in the overlay
         tt = vh.TrafficTar(t1)
         ex = [r for r in m1 if r["fwd"]["cls"] == "exact"][:100]
@@ -113,6 +217,21 @@ def main():
         tt.close()
         print("map while closed", res, flush=True)
     json.dump(m1, open(WORK / "map_v1.json", "w"))
+
+    # ---- M3: graph built with keep_all_osm_node_ids ------------------------------------------------------
+    GA = WORK / "blr_alln"
+    ta = GA / "traffic_map.tar"
+    shutil.copyfile(GA / "traffic.tar", ta)
+    with vh.Service(GA, 8504, GA / "valhalla_tiles.tar", ta, concurrency=2, name="mapall") as sa:
+        ca = vh.Client(8504)
+        t0 = time.perf_counter()
+        cov = [cover_map(ca, sg) for sg in segs]
+        ms_cov = (time.perf_counter() - t0) * 1000 / len(segs)
+    tot = {"fwd": collections.Counter(c_["fwd"][0] for c_ in cov), "rev": collections.Counter(c_["rev"][0] for c_ in cov)}
+    out["cover_all_node_ids"] = {"ms_per_segment": round(ms_cov, 1), "fwd": dict(tot["fwd"]), "rev": dict(tot["rev"]),
+                                 "tile_mb_end_nodes_only": round((WORK / "blr" / "valhalla_tiles.tar").stat().st_size / 2**20, 1),
+                                 "tile_mb_all_nodes": round((GA / "valhalla_tiles.tar").stat().st_size / 2**20, 1)}
+    print("cover (all node ids)", json.dumps(out["cover_all_node_ids"]), flush=True)
 
     # ---- rebuild from a newer (perturbed) extract ------------------------------------------------------
     t2 = G2 / "traffic_map.tar"

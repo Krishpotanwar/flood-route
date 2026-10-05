@@ -139,7 +139,7 @@ const chip = (l) => `${l} chip text`;
 const RANGES = [ // report gives min and max across the four levels, not per pair
   { theme: 'light', label: 'chip text, 4 risk chips', ids: SOLIDS.map(chip), claim: [8.3, 12.9] },
   { theme: 'dark', label: 'chip text, 4 risk chips', ids: SOLIDS.map(chip), claim: [9.3, 10.6], derived: true }, // report names no dark chip colours
-  { theme: 'hc', label: 'HC solids on canvas', ids: ['safe on canvas', 'watch-ink on canvas', 'risky on canvas', 'impassable on canvas'], claim: [7.9, 16.7] },
+  { theme: 'hc', label: 'HC solids on canvas', ids: ['safe on canvas', 'watch-ink on canvas', 'risky on canvas', 'impassable on canvas'], claim: [7.9, 16.7], alt: '#FFFFFF' }, // alt: the background the report's figures actually reproduce on
   { theme: 'hc-dark', label: 'HC dark solids on canvas', ids: ['safe on canvas', 'watch-ink on canvas', 'risky on canvas', 'impassable on canvas'], claim: [8.2, 15.3] },
 ];
 const CVD_CLAIM = { light: { 'safe-impassable': 43, 'watch-risky': 37, 'risky-impassable': 57 } }; // minimum across normal, deuter, protan, tritan
@@ -165,7 +165,8 @@ for (const r of RANGES) {
   if (r.derived) {
     if (lo < r.claim[0] || hi > r.claim[1]) differs.push(`${r.theme.padEnd(8)} ${r.label.padEnd(22)} claimed ${r.claim[0]} to ${r.claim[1]}:1, measured ${lo.toFixed(2)} to ${hi.toFixed(2)}:1 (outside the range; colours are derived, report names none)`);
   } else if (Math.abs(lo - r.claim[0]) > 0.2 || Math.abs(hi - r.claim[1]) > 0.2) {
-    differs.push(`${r.theme.padEnd(8)} ${r.label.padEnd(22)} claimed ${r.claim[0]} to ${r.claim[1]}:1, measured ${lo.toFixed(2)} to ${hi.toFixed(2)}:1`);
+    const alt = r.alt && r.ids.map((id) => contrast(hex(r.theme, PAIRS.find((p) => p.id === id).fg), r.alt));
+    differs.push(`${r.theme.padEnd(8)} ${r.label.padEnd(22)} claimed ${r.claim[0]} to ${r.claim[1]}:1, measured ${lo.toFixed(2)} to ${hi.toFixed(2)}:1${alt ? `; on ${r.alt} it is ${Math.min(...alt).toFixed(2)} to ${Math.max(...alt).toFixed(2)}, so the report used pure white, which its own C.2 rule forbids` : ''}`);
   }
 }
 
@@ -175,8 +176,8 @@ const cell = (t, p) => {
   return `${m.toFixed(2)}${c !== undefined ? ` [${c}]` : ''}${mark}`.padEnd(15);
 };
 console.log('WCAG 2.x contrast, measured [report claim]. ! fails threshold, ~ documented exception (casing carries it), * differs from claim by > 0.2');
-console.log(`${'pair'.padEnd(27)}${'need'.padEnd(6)}${THEMES.map((t) => t.padEnd(15)).join('')}`);
-for (const p of PAIRS) console.log(`${p.id.padEnd(27)}${String(NEED[p.role]).padEnd(6)}${THEMES.map((t) => cell(t, p)).join('')}`);
+console.log(`${'pair'.padEnd(29)}${'need'.padEnd(6)}${THEMES.map((t) => t.padEnd(15)).join('')}`);
+for (const p of PAIRS) console.log(`${p.id.padEnd(29)}${String(NEED[p.role]).padEnd(6)}${THEMES.map((t) => cell(t, p)).join('')}`);
 console.log('Ranges claimed by the report (min to max across the four levels):');
 for (const r of RANGES) { const v = r.ids.map((id) => ratio[r.theme][id]); console.log(`  ${r.theme.padEnd(8)} ${r.label.padEnd(26)} claimed ${r.claim[0]} to ${r.claim[1]}, measured ${Math.min(...v).toFixed(2)} to ${Math.max(...v).toFixed(2)}${r.derived ? ' (derived colours)' : ''}`); }
 

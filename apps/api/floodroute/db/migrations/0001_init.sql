@@ -96,6 +96,9 @@ create table evidence (
   constraint evidence_expires_after_ts check (expires > ts)
 );
 create index on evidence (segment_id, ts desc);
+-- Age-based retention deletes (FR-M3). Cheapest while the table is empty: migrate.py cannot build
+-- indexes concurrently, so adding this to a large live table later would block writes.
+create index on evidence (ts);
 
 -- ---------------------------------------------------------------- outputs
 

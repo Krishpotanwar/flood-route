@@ -4,7 +4,7 @@
 
 od_pairs.json        [[lon1, lat1, lon2, lat2], ...] road nodes, great-circle distance roughly log-uniform
                      in 1..30 km (acceptance probability (1 km / d)^2 on uniformly drawn pairs)
-segments_sample.json [{way, a, b, hw, oneway, bridge, tunnel, coords, len_m}, ...]
+segments_sample.json [{way, a, b, nodes, hw, oneway, bridge, tunnel, coords, len_m}, ...]
                      segment = maximal run of a way between two junction nodes (node shared by >=2
                      ways, or a way end). a and b are OSM node ids.
 """
@@ -59,7 +59,7 @@ def main():
             sub = pts[i: j + 1]
             ln = sum(vh.haversine_m(sub[k][1:], sub[k + 1][1:]) for k in range(len(sub) - 1))
             segs.append({"way": wid, "a": sub[0][0], "b": sub[-1][0], "hw": hw, "oneway": ow,
-                         "bridge": br, "tunnel": tu, "len_m": round(ln, 1),
+                         "bridge": br, "tunnel": tu, "len_m": round(ln, 1), "nodes": [r for r, _, _ in sub],
                          "coords": [(round(lo, 7), round(la, 7)) for _, lo, la in sub]})
     print(len(segs), "segments")
 

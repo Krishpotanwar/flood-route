@@ -102,13 +102,14 @@ class TrafficTar:
 
 # --- config ---------------------------------------------------------------------------------
 def make_config(tile_dir, tile_extract="", traffic_extract="", admin="", port=8002, concurrency=4,
-                keep_osm_node_ids=True, verbose=False, **service_limits):
+                keep_osm_node_ids=True, keep_all_osm_node_ids=False, verbose=False, **service_limits):
     Path(tile_dir).mkdir(parents=True, exist_ok=True)
     cfg = valhalla.get_config(tile_extract="", tile_dir=tile_dir, verbose=verbose)
     m = cfg["mjolnir"]
     m.update(tile_extract=str(tile_extract), traffic_extract=str(traffic_extract), admin=str(admin),
              timezone="", landmarks="", transit_dir="", transit_feeds_dir="",
-             keep_osm_node_ids=keep_osm_node_ids, concurrency=concurrency)
+             keep_osm_node_ids=keep_osm_node_ids, keep_all_osm_node_ids=keep_all_osm_node_ids,
+             concurrency=concurrency)
     cfg["additional_data"]["elevation"] = ""
     cfg["httpd"]["service"]["listen"] = f"tcp://*:{port}"
     for k in ("loki", "thor", "odin", "meili"):  # unique ipc sockets so several services can coexist

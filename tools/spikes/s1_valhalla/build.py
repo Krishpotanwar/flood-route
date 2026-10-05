@@ -42,6 +42,7 @@ def main():
     ap.add_argument("--build-admins", action="store_true")
     ap.add_argument("--bbox", default="")
     ap.add_argument("--no-node-ids", action="store_true")
+    ap.add_argument("--all-node-ids", action="store_true", help="keep_all_osm_node_ids: every shape node, not only edge ends")
     ap.add_argument("--jobs", type=int, default=4)
     a = ap.parse_args()
 
@@ -53,7 +54,8 @@ def main():
     # the config points at tile_dir for the build and at the extract afterwards
     cfg_path = vh.write_config(
         vh.make_config(tiles, admin=admin if (a.admin or a.build_admins) else "",
-                       keep_osm_node_ids=not a.no_node_ids, concurrency=a.jobs), root / "build.json.cfg")
+                       keep_osm_node_ids=not a.no_node_ids, keep_all_osm_node_ids=a.all_node_ids,
+                       concurrency=a.jobs), root / "build.json.cfg")
     bin_ = vh.BIN
     if a.build_admins:
         run("admins", [bin_ / "valhalla_build_admins", "-c", cfg_path, a.pbf], root / "admins.log", steps)
@@ -67,7 +69,8 @@ def main():
         cmd += ["--bbox", a.bbox]
     run("extract+traffic_skeleton", cmd, root / "extract.log", steps)
     out = {"name": a.name, "pbf": a.pbf, "pbf_mb": round(os.path.getsize(a.pbf) / 2**20),
-           "keep_osm_node_ids": not a.no_node_ids, "bbox": a.bbox, "steps": steps,
+           "keep_osm_node_ids": not a.no_node_ids, "keep_all_osm_node_ids": a.all_node_ids, "bbox": a.bbox,
+           "steps": steps,
            "tiles_dir_mb": round(sum(f.stat().st_size for f in tiles.rglob("*.gph")) / 2**20),
            "tar_mb": round((root / "valhalla_tiles.tar").stat().st_size / 2**20),
            "traffic_tar_mb": round((root / "traffic.tar").stat().st_size / 2**20, 1)}

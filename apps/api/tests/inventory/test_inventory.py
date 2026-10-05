@@ -7,7 +7,7 @@ import pytest
 from floodroute.inventory import CITIES
 from floodroute.inventory.geocode import Geocoder, confidence, simplify
 from floodroute.inventory.hotspots import build, validate
-from floodroute.inventory.match import dist_m, match, tokens
+from floodroute.inventory.match import dist_m, match, prepare, tokens
 
 BLR = CITIES["bengaluru"]
 
@@ -34,22 +34,52 @@ def test_match_name_distance_and_failure_modes():
     kr = cand("1", "K R Circle Underpass", [(77.5864, 12.9761), (77.5866, 12.9761)])
     anon = cand("2", "", [(77.6000, 12.9500), (77.6002, 12.9500)])
     anand = cand("3", "Anand Rao Circle Underpass", [(77.5800, 12.9800), (77.5802, 12.9800)])
-    cands = [kr, anon, anand]
+    passage = cand("4", "Hebbal Passage", [(77.5900, 13.0500), (77.5902, 13.0500)], structure="none")
+    cands, common = prepare([kr, anon, anand, passage])
+    assert len(cands) == 3  # building passages are never matched
+
+    def run(name, lat, lon, conf):
+        return match({"name": name, "lat": lat, "lon": lon, "geocode_confidence": conf}, cands, common)
+
     # name and distance agree: clean match
-    m = match({"name": "KR Circle underpass", "lat": 12.9763, "lon": 77.5865, "geocode_confidence": "high"}, cands)
+    m = run("KR Circle underpass", 12.9763, 77.5865, "high")
     assert (m["match_type"], m["osm_way_id"], m["needs_review"]) == ("name+distance", 1, False)
-    # no name, unnamed candidate 60 m away: distance only, and always reviewed
-    m = match({"name": "Some Layout", "lat": 12.9505, "lon": 77.6001, "geocode_confidence": "medium"}, cands)
+    # no name, unnamed candidate 55 m away: distance only if the point is trusted enough, and always reviewed
+    m = run("Some Layout", 12.9505, 77.6001, "medium")
     assert (m["match_type"], m["osm_way_id"], m["needs_review"]) == ("distance", 2, True)
-    # a low-confidence point never earns a distance-only match
-    assert match({"name": "Some Layout", "lat": 12.9505, "lon": 77.6001, "geocode_confidence": "low"}, cands)["match_type"] == "none"
-    # name matches but the point is about 1.1 km away, and also with no coordinates at all: name only, reviewed
-    far = match({"name": "Anand Rao Circle", "lat": 12.9900, "lon": 77.5800, "geocode_confidence": "high"}, cands)
-    assert (far["match_type"], far["osm_way_id"], far["needs_review"]) == ("name", 3, True)
-    nocoord = match({"name": "Anand Rao Circle", "lat": "", "lon": "", "geocode_confidence": "none"}, cands)
+    assert run("Some Layout", 12.9505, 77.6001, "high")["match_type"] == "none"  # high allows 50 m only
+    assert run("Some Layout", 12.9505, 77.6001, "low")["match_type"] == "none"  # low never earns distance
+    # name matches but the point is 553 m away: name only, reviewed; 1.1 km away: too far to trust
+    far = run("Anand Rao Circle", 12.9850, 77.5800, "high")
+    assert (far["match_type"], far["osm_way_id"], far["dist_m"], far["needs_review"]) == ("name", 3, 553, True)
+    assert run("Anand Rao Circle", 12.9900, 77.5800, "high")["match_type"] == "none"
+    nocoord = run("Anand Rao Circle", "", "", "none")
     assert (nocoord["match_type"], nocoord["osm_way_id"], nocoord["dist_m"]) == ("name", 3, None)
     # nothing near, nothing named alike
-    assert match({"name": "Hebbal", "lat": 13.05, "lon": 77.60, "geocode_confidence": "high"}, cands)["match_type"] == "none"
+    assert run("Hebbal", 13.05, 77.60, "high")["match_type"] == "none"
+
+
+def test_match_name_only_respects_the_structure_named():
+    bridge = cand("5", "Kodigehalli Road Bridge", [(77.59, 13.06), (77.5902, 13.06)], structure="low_bridge")
+    under = cand("6", "Kodigehalli Underpass", [(77.60, 13.07), (77.6002, 13.07)])
+    cands, common = prepare([bridge, under])
+    h = {"name": "Kodigehalli railway underpass", "lat": "", "lon": "", "geocode_confidence": "none"}
+    assert match(h, cands, common)["osm_way_id"] == 6  # says underpass: the bridge on the same-named road is ignored
+    assert match({**h, "name": "Kodigehalli bridge"}, cands, common)["osm_way_id"] == 5
+    assert match({**h, "name": "Kodigehalli railway underpass"}, [c for c in cands if c["osm_way_id"] == 5],
+                 common)["match_type"] == "none"
+    road = cand("7", "Kodigehalli Main Road", [(77.59, 13.06), (77.5902, 13.06)], structure="low_bridge")
+    only_road, common = prepare([road])  # shares the locality name but does not name a structure
+    assert match({**h, "name": "Kodigehalli"}, only_road, common)["match_type"] == "none"
+
+
+def test_match_ignores_names_common_to_many_candidates():
+    ring = [cand(f"{i}", "Outer Ring Road Underpass", [(77.60 + i * 1e-3, 12.95), (77.6005 + i * 1e-3, 12.95)])
+            for i in range(31)]
+    cands, common = prepare(ring)
+    assert {"outer", "ring"} <= common
+    far = {"name": "Outer Ring Road and Gangamma Gudi Circle underpass", "lat": "", "lon": "", "geocode_confidence": "none"}
+    assert match(far, cands, common)["match_type"] == "none"  # only 'outer ring' overlaps, which names every ring-road way
 
 
 def res(name, rank, bbox, lat=12.97, lon=77.59):

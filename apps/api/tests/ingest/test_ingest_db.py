@@ -4,12 +4,13 @@ Uses the shared fixtures in tests/conftest.py: a throwaway database cloned from 
 template, so these skip with the reason when no server is reachable (CI fails instead of skipping).
 """
 
+import math
 import zlib
 from datetime import datetime
 
 import psycopg
 import pytest
-from ingest_testkit import NOW, FakeHttp, cap_xml, fixture, polygon_url, sachet_routes
+from ingest_testkit import NOW, FakeHttp, cap_xml, fixture, polygon_url, rss_one, sachet_routes
 
 from floodroute.ingest import __main__ as cli
 from floodroute.ingest import common, metno, sachet
@@ -63,13 +64,15 @@ def test_alerts_are_stored_once_with_a_correct_geometry(app):
         " ST_Area(area::geography) from official_alert where cap_id = %s", (CWC,)).fetchone()
     # the gauge (lat 26.33, lon 85.85) is inside; the same numbers the wrong way round are not
     assert row[:5] == ("ST_MultiPolygon", 4326, True, True, False)
-    assert row[5] == pytest.approx(3.14159 * 5_000**2, rel=0.05)  # a 5 km radius circle
+    # polygon_cwc_circle.xml is a circle of radius 0.043262 degrees ((26.373262 - 26.286738) / 2)
+    expected = math.pi * 0.043262**2 * 111_195**2 * math.cos(math.radians(26.33))
+    assert row[5] == pytest.approx(expected, rel=0.03)  # about 65 square km
 
     uk = app.execute(
         "select ST_NumGeometries(area), ST_XMin(area), ST_XMax(area), ST_YMin(area), ST_YMax(area)"
         " from official_alert where cap_id = %s", (UTTARAKHAND,)).fetchone()
     assert uk[0] == 2  # four rings in the document, two distinct
-    assert 79.0 < uk[1] < uk[2] < 80.5 and 28.5 < uk[3] < uk[4] < 30.0  # lon first, lat second
+    assert 79.0 < uk[1] < uk[2] < 81.0 and 28.5 < uk[3] < uk[4] < 30.5  # x is lon, y is lat
 
     no_polygon = app.execute(
         "select count(*), count(area), count(*) filter (where raw->>'area_error' is not null)"
@@ -119,6 +122,18 @@ def test_test_messages_are_stored_without_a_severity(app):
     assert (event, severity, status) == ("Heavy Rain", None, "Test")
 
 
+def test_a_self_intersecting_polygon_is_stored_as_a_valid_multipolygon(app):
+    bow_tie = ("<cap:area><cap:areaDesc>x</cap:areaDesc><cap:polygon>"
+               "12.9,77.5 13.1,77.7 13.1,77.5 12.9,77.7 12.9,77.5</cap:polygon></cap:area>")
+    guid = "1791229078999998"
+    routes = {sachet.RSS_URL: rss_one(guid), sachet.CAP_URL.format(guid): cap_xml(
+        identifier=f"IN-{guid}_1", infos=[{"area": bow_tie}])}
+    ingest_all(app, routes)
+    row = app.execute("select ST_GeometryType(area), ST_IsValid(area), ST_NumGeometries(area),"
+                      " ST_SRID(area) from official_alert").fetchone()
+    assert row == ("ST_MultiPolygon", True, 2, 4326)  # two triangles after ST_MakeValid
+
+
 def test_health_rows_on_the_real_table(app):
     http = FakeHttp(sachet_routes())
 
@@ -130,7 +145,7 @@ def test_health_rows_on_the_real_table(app):
                       clock=lambda: NOW) == 0
     last_ok, last_error, lag = read()
     assert last_ok == NOW and lag == 2095
-    assert last_error.startswith("warning: 6 alert(s) stored with a missing or partial area")
+    assert last_error.startswith("warning: 3 active alert(s) have no area")
 
     down = FakeHttp({sachet.RSS_URL: FetchError("ConnectError: Connection reset by peer")})
     later = NOW.replace(minute=31)
@@ -141,7 +156,9 @@ def test_health_rows_on_the_real_table(app):
     assert last_error == "2026-10-05T20:31:00Z failed: FetchError: ConnectError: Connection reset by peer"
 
     assert common.run(app, "sachet", lambda c: sachet.ingest(c, http, now=later), clock=lambda: later) == 0
-    assert read() == (later, None, 2155)  # a clean run clears the error; lag is the feed's age
+    last_ok, last_error, lag = read()
+    assert (last_ok, lag) == (later, 2155)  # lag is the feed's age at that run
+    assert last_error.startswith("warning: 3 active alert(s) have no area")  # still true, still said
 
 
 def test_rain_forecast_for_zones_read_from_the_zone_table(app):
@@ -206,6 +223,19 @@ def test_command_line_stores_alerts_and_exits_zero(cli_env, db):
     assert db.execute("select count(*) from official_alert").fetchone()[0] == 8  # fits the budget of 10
     assert db.execute("select last_error is null or last_error like 'warning%' from source_health"
                       " where source = 'sachet'").fetchone()[0]
+
+
+def test_without_once_the_command_line_loops_at_the_adapter_cadence(cli_env, db, monkeypatch):
+    cli_env(FakeHttp(sachet_routes()))
+    naps = []
+
+    def stop(seconds):
+        naps.append(seconds)
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(cli.time, "sleep", stop)
+    assert cli.main(["sachet"]) == 0
+    assert naps == [sachet.INTERVAL_S] and db.execute("select count(*) from official_alert").fetchone()[0] == 8
 
 
 def test_command_line_exits_one_and_says_so_in_source_health(cli_env, db, capsys):

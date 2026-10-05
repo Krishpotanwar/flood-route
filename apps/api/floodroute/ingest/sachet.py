@@ -1,49 +1,56 @@
-"""SACHET (NDMA, built by C-DOT) CAP 1.2 alerts into official_alert, keyed by CAP identifier.
+""""""SACHET (NDMA, built by C-DOT) CAP 1.2 alerts into official_alert, keyed by CAP identifier.
 
 Observed on 2026-10-05 (docs/research/01 section 3 had these as unverified):
   * Feed https://sachet.ndma.gov.in/cap_public_website/rss/rss_india.xml: RSS 2.0, 99 items newest
-    first (about 10 h, 54 of them lightning alerts from one state), 81 KB. The only licence text is
-    the channel element <copyright>public domain</copyright>; NDMA commercial terms are still unconfirmed.
-    The channel pubDate is stale (15 Sep), so freshness is taken from the items.
+    first (about 10 h, 54 of them from Andhra Pradesh SDMA), 81 KB. The only licence text is the channel
+    element <copyright>public domain</copyright>; NDMA's commercial terms are still unconfirmed. The
+    channel pubDate is stale (15 Sep), so freshness is taken from the items.
   * State feeds rss_<state>.xml exist for karnataka, kerala, maharashtra, uttarakhand (lowercase, 10
     items each). Multi-word names did not resolve (tamilnadu, tamil_nadu, tamil-nadu, andhra_pradesh,
-    andhra-pradesh, west-bengal all 404). The national feed is a superset of them inside its window, so
-    only the national feed is polled.
+    andhra-pradesh, andhrapradesh, west-bengal all 404). The national feed is a superset of them inside
+    its window, so only the national feed is polled.
   * An item links to .../FetchXMLFile?identifier=<guid>: a CAP 1.2 alert of 2 to 4 KB with one <info>
-    per language (en-IN plus HI, KN, ML, MR, TL for Telugu, BN). It has no inline <polygon>. Each <info>
-    carries the parameter "Polygon URL" (.../FetchPolygonXMLFile?identifier=<guid>), a non-CAP <alert>
-    holding one <polygon> per district as "lat,lon lat,lon ..." (726 B to 204 KB, one ring of 4641
-    points; rings repeat). Both documents are fetched. Inline <polygon> and <circle> are parsed too.
+    per language (en-IN plus HI, KN, ML, MR, TL for Telugu, BN, in any order). LGD district codes come
+    as geocodes (not for CWC). There is no inline <polygon>: each <info> carries the parameter "Polygon
+    URL" (.../FetchPolygonXMLFile?identifier=<guid>), a non-CAP <alert> holding one <polygon> per
+    district as "lat,lon lat,lon ..." (725 B to 204 KB, one ring of 4641 points, rings can repeat).
+    Both documents are fetched. Inline <polygon> and <circle> are parsed as well. For CWC the CAP
+    <altitude>,<ceiling> look like the gauge's lat,lon (26.33, 85.85 is the centre of its polygon); unused.
+  * After its first three answers the polygon endpoint returned HTTP 403 to every request from this
+    sandbox for 40+ minutes (11 of 11), while the feed and the CAP files stayed 200 and a changed
+    User-Agent or Referer did not help. Cause unknown (rate rule or access rule): ask NDMA or C-DOT.
   * A guid can be reissued with a new pubDate and a new CAP identifier (the Update references the old
     one), so an item counts as already ingested only if guid AND pubDate match (raw.rss_key).
 
 What is stored. cap_id, sender, event, severity, certainty, onset, expires and area come from the alert;
-raw keeps the verbatim CAP text (cap_xml), every <info> in every language (raw.cap.infos), references,
-msgType, status and the RSS fields. Across <info> blocks the row takes the first English event, the
-worst severity, the most certain certainty, the earliest onset (falling back to effective, then sent) and
-the latest expires. Rows are not superseded: readers must honour raw.cap.msgType and raw.cap.references.
-status other than Actual (Test, Exercise, Draft, System) is stored with severity NULL so it can never
-escalate anything. A row whose expires is NULL states no expiry. Alert text is untrusted: escape it on
-output.
+raw keeps the verbatim CAP text (cap_xml), every <info> in every language (raw.cap.infos, with the
+geocodes), references, msgType, status and the RSS fields. Across <info> blocks the row takes the first
+English event, the worst severity, the most certain certainty, the earliest onset (falling back to
+effective, then sent) and the latest expires. Rows are not superseded: readers must honour
+raw.cap.msgType and raw.cap.references. A status other than Actual (Test, Exercise, Draft, System) is
+stored with severity NULL so it can never escalate anything. A row whose expires is NULL states no
+expiry. Alert text is untrusted: escape it on output.
 
 Untrusted input: bodies are size capped before parsing; non UTF-8, NUL bytes and any DOCTYPE are
 refused before the parser sees them (so no entity can expand), and the TreeBuilder hook refuses DOCTYPE
 again. The standard library parser is enough, no defusedxml. URLs are built here or checked against
 the one SACHET host and path, never followed blindly. Every coordinate must be finite and inside the
-India box (this is what catches swapped lat,lon). Enumerations, timestamps (must carry an offset) and
-counts are validated; an alert valid for more than 31 days is refused.
+India box (this is what catches swapped lat,lon). Enumerations, timestamps (they must carry an offset)
+and counts are validated; an alert valid for more than 31 days is refused.
 
-Outcomes per item: stored; rejected (hostile or malformed content, counted, the run continues and last_error
+Outcomes per item: stored; refused (hostile or malformed content: counted, the run continues, last_error
 carries a warning); or a fetch failure after retries, which fails the run (items already stored stay).
 A run in which at least SYSTEMIC_REJECTS items were refused and none stored also fails: that is a
-format change or an attack, not a single bad item.
+format change or an attack, not one bad item. A polygon that cannot be had never loses the alert: the
+row is stored with area NULL and raw.area_error, and the warning counts active alerts without an area.
+Once the polygon endpoint answers with an error status it is not asked again in the same run.
 
-ponytail: a rejected item has no memory, so it is fetched again each run until it leaves the feed
+ponytail: a refused item has no memory, so it is fetched again each run until it leaves the feed
 (about 10 h); add a reject table if that noise matters. The seen check scans raw->>'rss_key' limited by
-onset; add a column and index when official_alert is large. An alert whose polygon could not be fetched is
-not retried (area stays NULL, raw.area_error says why, raw.cap.infos keeps the LGD district codes);
-add a polygon-only repair pass if polygons turn out to matter more than the district codes. Circles
-become 32 sided polygons on a sphere approximated per latitude, good for footprints, not for geodesy.
+onset; add a column and index when official_alert is large. A polygon that failed is not retried
+(area stays NULL; raw.cap keeps the LGD district codes); add a polygon-only repair pass if polygons
+turn out to matter more than the district codes. Circles become 32 sided polygons approximated per
+latitude: good for footprints, not for geodesy.
 """
 
 from __future__ import annotations
@@ -195,6 +202,19 @@ def _dt(value: str | None, field: str, required: bool = False) -> datetime | Non
     return out.astimezone(UTC)
 
 
+def _closed(ring: Ring) -> Ring:
+    """Close the ring if needed and refuse one that is a point or a line (no extent at all)."""
+    if ring and ring[0] != ring[-1]:
+        ring.append(ring[0])
+    if len(ring) < 4:
+        raise Rejected("ring has fewer than 3 distinct points")
+    x0, y0 = ring[0]
+    dx, dy = next(((x - x0, y - y0) for x, y in ring if (x, y) != (x0, y0)), (0.0, 0.0))
+    if all(abs(dx * (y - y0) - dy * (x - x0)) < 1e-12 for x, y in ring):
+        raise Rejected("ring has no area (all points on one line)")
+    return ring  # self-intersections are left to ST_MakeValid
+
+
 def ring_from_text(text: str) -> Ring:
     """'lat,lon lat,lon ...' as CAP and SACHET write it, to a closed ring of (lon, lat)."""
     ring: Ring = []
@@ -209,11 +229,7 @@ def ring_from_text(text: str) -> Ring:
         ring.append((lon, lat))
         if len(ring) > MAX_POINTS:
             raise Rejected("ring too long")
-    if ring and ring[0] != ring[-1]:
-        ring.append(ring[0])
-    if len(ring) < 4:
-        raise Rejected("ring has fewer than 3 distinct points")
-    return ring
+    return _closed(ring)
 
 
 def ring_from_circle(text: str) -> Ring:
@@ -407,6 +423,11 @@ on conflict (cap_id) do update set
   certainty = excluded.certainty, onset = excluded.onset, expires = excluded.expires,
   area = excluded.area, raw = excluded.raw
 """
+NO_AREA_SQL = """
+select count(*) from official_alert
+where expires > %s and area is null
+  and raw->'cap'->>'status' = 'Actual' and raw->'cap'->>'msgType' in ('Alert', 'Update')
+"""
 SEEN_SQL = """
 select raw->>'rss_key' from official_alert
 where (onset is null or onset > %s) and raw->>'rss_key' = any(%s)
@@ -489,14 +510,16 @@ def ingest(conn, http, *, now: datetime | None = None, max_new: int = MAX_NEW_PE
     notes = []
     if refused:
         notes.append(f"{len(refused)} item(s) refused: " + "; ".join(refused[:3]))
-    if no_area:
-        notes.append(f"{no_area} alert(s) stored with a missing or partial area")
+    active_without_area = conn.execute(NO_AREA_SQL, (now,)).fetchone()[0]
+    if active_without_area:  # stable across quiet runs: it is about the table, not this run
+        notes.append(f"{active_without_area} active alert(s) have no area (raw.area_error says why; "
+                     "raw.cap keeps the LGD district codes)")
     if len(todo) > max_new:
         notes.append(f"catching up, {len(todo) - max_new} new item(s) wait for the next run")
     lag = max(0, int((now - items[0].pub).total_seconds()))
     summary = {
         "items": len(items), "new": len(todo), "stored": stored, "refused": len(refused),
-        "bad_rss_items": bad,
+        "stored_without_area": no_area, "bad_rss_items": bad,
     }
     return Outcome(summary, lag, "; ".join(notes) or None)
 

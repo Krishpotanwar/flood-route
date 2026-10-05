@@ -1,0 +1,713 @@
+hotspot_row,name,list_kind,lat,lon,geocode_confidence,match_type,candidate_id,osm_way_id,way_name,structure,dist_m,name_score,n_in_radius,needs_review
+1,Nanada gokula,swd_vulnerable_severe,13.043611,77.628056,medium,none,,,,,,,2,True
+2,HRBR Lyt.,swd_vulnerable_severe,13.018889,77.634722,high,none,,,,,,,0,True
+3,HBR Lyt.,swd_vulnerable_severe,13.039167,77.638056,high,none,,,,,,,0,True
+4,Veerannapalya,swd_vulnerable_severe,13.041111,77.612222,high,name+distance,376649539,376649539,Veerannapalya Flyover,low_bridge,139,1.0,2,False
+5,Broadway road junction,swd_vulnerable_severe,12.986389,77.604167,high,distance,400482304-x1,400482304,Hazrat Kambal Posh Road,dip,41,0.0,1,True
+6,Armstrong road junction in Shivajinagr,swd_vulnerable_moderate,12.986389,77.610278,medium,none,,,,,,,5,True
+7,MV garden & Murphy market,swd_vulnerable_moderate,12.978333,77.627222,high,distance,132907549,132907549,,low_bridge,16,0.0,1,True
+8,Jougupalya in Ulsoor,swd_vulnerable_moderate,12.971667,77.633333,medium,none,,,,,,,3,True
+9,Cambridge layout (Near Jogupalya),swd_vulnerable_moderate,12.970833,77.633611,high,distance,1091048730,1091048730,,low_bridge,20,0.0,2,True
+10,Nandhini hotel backside on 100 feet road indiranagar,swd_vulnerable_moderate,12.961111,77.643056,high,distance,28451872,28451872,Domlur Flyover Ramp,low_bridge,6,0.0,3,True
+11,Kalyananagar,swd_vulnerable_moderate,13.008889,77.636944,high,none,,,,,,,0,True
+12,BDA Layout in ward ni 113 Konena Agrahara,swd_vulnerable_moderate,12.860833,77.657778,low,none,,,,,,,3,True
+13,Railway parallel road Sadanadanagar,swd_vulnerable_moderate,12.994722,77.658889,high,none,,,,,,,1,True
+14,Jala Dharshani Layout in ward no.18 of Hebbal constituency.,swd_vulnerable_moderate,13.024722,77.582500,high,none,,,,,,,0,True
+15,Vasanthappa block in ward no.20 of Hebbal constituency.,swd_vulnerable_moderate,13.025556,77.572222,low,none,,,,,,,3,True
+16,A Block in ward no.20 of Hebbal constituency.,swd_vulnerable_moderate,13.033333,77.590278,high,none,,,,,,,0,True
+17,Sun Rise colony in ward no.22 of Hebbal constituency.,swd_vulnerable_moderate,13.035556,77.597222,high,none,,,,,,,0,True
+18,Upstreams of Devi nagar (junction of Ring road and railway track) in ward no.18 of Hebbal constituency.,swd_vulnerable_moderate,13.046667,77.570833,medium,distance,379327145-x1,379327145,Outer Ring Road,culvert,45,0.0,3,True
+19,Near Shani mahathma temple beside Hebbal Fly over in ward no.21 of Hebbal constituency.,swd_vulnerable_moderate,13.042500,77.591389,medium,none,,,,,,,0,True
+20,Low Laying areas of Chamundi nagar in ward no.33 of Hebbal constituency,swd_vulnerable_moderate,13.033333,77.600278,high,none,,,,,,,6,True
+21,"Rajajinagar Industrial Area ,1st Cross Rd Ward No 108",swd_vulnerable_severe,12.984117,77.546064,high,none,,,,,,,13,True
+22,Cheluvadipalya Near by GoodShed Road Ward No 138,swd_vulnerable_severe,12.965317,77.566525,medium,none,,,,,,,3,True
+23,Near by 2nd Cross Ring Road Ward No 77,swd_vulnerable_severe,12.997669,77.573108,medium,none,,,,,,,9,True
+24,Binnymill Road Ward No 120 near belimath,swd_vulnerable_severe,12.976597,77.567347,high,none,,,,,,,0,True
+25,K P Agrahara 7th Cross Road Ward No 121,swd_vulnerable_severe,12.972619,77.562883,high,none,,,,,,,0,True
+26,Near Mantri Mall bridge in ward no-94,swd_vulnerable_moderate,12.991328,77.570564,high,none,,,,,,,9,True
+27,Gopalpura area drain v-108 in ward no 121,swd_vulnerable_moderate,12.975217,77.560417,medium,distance,1096875164,1096875164,,underpass,67,0.0,1,True
+28,Sandeep bar in ward no-75,swd_vulnerable_moderate,13.003567,77.529047,high,distance,141778397,141778397,,low_bridge,5,0.0,1,True
+29,Kemegowda bridge in ward no 74/75,swd_vulnerable_moderate,13.004117,77.529492,high,distance,141914028,141914028,,low_bridge,5,0.0,1,True
+30,17th and 19th main in kamalanagar in ward-75,swd_vulnerable_moderate,13.004175,77.529317,high,distance,141914028,141914028,,low_bridge,9,0.0,1,True
+31,40-vent bridge in ward no-75,swd_vulnerable_moderate,13.004406,77.529094,high,distance,141914028,141914028,,low_bridge,43,0.0,1,True
+32,near ward office 43 ( circular road) drain v-205,swd_vulnerable_moderate,13.009511,77.535528,medium,distance,142263556,142263556,1st Main Road,low_bridge,47,0.0,1,True
+33,down stream of laggere bridge (sakamma badavane)in ward no 43,swd_vulnerable_moderate,13.010953,77.528064,high,distance,249194979,249194979,Outer Ring Road,low_bridge,21,0.0,2,True
+34,junction of v-200 & v-202 in ward no. -43/75.,swd_vulnerable_moderate,13.005864,77.530042,medium,distance,1113522070,1113522070,,low_bridge,30,0.0,1,True
+35,"Guttahalli Circle, Malleshwaram.",swd_vulnerable_moderate,12.997414,77.578042,high,name,388813863,388813863,Malleshwaram Underpass,underpass,705,1.0,2,True
+36,"Gandi Statue, Vokkalipuram.",swd_vulnerable_moderate,12.983450,77.565525,medium,none,,,,,,,6,True
+37,Gopalpuram inward No-98.,swd_vulnerable_moderate,12.975217,77.560417,medium,distance,1096875164,1096875164,,underpass,67,0.0,1,True
+38,"Link Road, Malleshwaram.",swd_vulnerable_moderate,12.996014,77.573383,high,name+distance,388813864,388813864,Malleshwaram Underpass,underpass,217,1.0,3,True
+39,Back of presidency school in ward no. -44,swd_vulnerable_moderate,13.009511,77.535528,medium,distance,142263556,142263556,1st Main Road,low_bridge,47,0.0,1,True
+40,3rd circular road nandhini layout ward no-44,swd_vulnerable_moderate,13.009511,77.535528,medium,distance,142263556,142263556,1st Main Road,low_bridge,47,0.0,1,True
+41,Near bescom office mattikere in ward no. -36,swd_vulnerable_moderate,13.036736,77.556706,high,none,,,,,,,16,True
+42,near yashavanthpur TTMC in ward no. -45,swd_vulnerable_moderate,13.025031,77.534025,low,none,,,,,,,0,True
+43,Near summanahalli bridge(up stream) in ward no- 102,swd_vulnerable_moderate,12.984675,77.518939,low,none,,,,,,,8,True
+44,1st main road bridge down stream in ward no-74,swd_vulnerable_moderate,13.001000,77.527878,high,none,,,,,,,3,True
+45,Jai maruthi nagar and nandhini layout bridge ( up and doen stream) in ward no 43/66,swd_vulnerable_moderate,13.001756,77.532553,medium,none,,,,,,,0,True
+46,NGEF Layout in ward no.128,swd_vulnerable_moderate,12.959058,77.508539,low,none,,,,,,,0,True
+47,"Kalyan Nagar , Moodalapalya, Ward 127",swd_vulnerable_moderate,12.971169,77.518656,medium,distance,768593000,768593000,,low_bridge,15,0.0,1,True
+48,Netaji Nagara in ward no.120 KP Agrahara,swd_vulnerable_moderate,12.976456,77.562103,high,none,,,,,,,1,True
+49,Nagamma nagara Near binny mill road,swd_vulnerable_moderate,12.980000,77.569772,high,none,,,,,,,8,True
+50,"Netaji ground & Saneguruvanalli, Ward 100",swd_vulnerable_moderate,12.990872,77.544050,high,none,,,,,,,14,True
+51,"Srirammandir ward.108, Gubbanna Industrial Estate",swd_vulnerable_moderate,12.987564,77.559297,medium,none,,,,,,,2,True
+52,Prakashnagar Near mudalayar Choultry,swd_vulnerable_moderate,12.993483,77.557167,high,none,,,,,,,8,True
+53,Nayandahalli ward.131 and near Railway track,swd_vulnerable_moderate,12.944653,77.525586,high,name+distance,328283601,328283601,Nayandahalli Flyover,low_bridge,162,1.0,5,True
+54,"Siddartha Nagar, Cheluvadipalya Ward 138",swd_vulnerable_moderate,12.965317,77.566525,medium,none,,,,,,,3,True
+55,Munikrishnappa layout area of kaveripura in ward No.103,swd_vulnerable_moderate,13.003306,77.563611,high,none,,,,,,,0,True
+56,"Rayapuram near Govt Maternity Hospital, Ward 137",swd_vulnerable_moderate,12.965883,77.552619,high,none,,,,,,,2,True
+57,Chamarajapet Ward 140,swd_vulnerable_moderate,12.957039,77.562083,high,none,,,,,,,0,True
+58,"Nari Halla, Ward 141",swd_vulnerable_moderate,12.957242,77.568681,high,none,,,,,,,0,True
+59,"Sri Galianjaneya swamy temple, Mysore road",swd_vulnerable_severe,12.953035,77.541253,high,name+distance,1282361004-x1,1282361004,Mysore Road,culvert,39,1.0,1,False
+60,"Kempapura Agrahara Secondary Drain, Magadi road",swd_vulnerable_severe,12.972248,77.554109,high,none,,,,,,,7,True
+61,"Nayandahalli Junction, Mysore road",swd_vulnerable_severe,12.945480,77.528937,high,name+distance,1248258445,1248258445,Mysore Road,dip,20,1.0,10,True
+62,Kavika Bridge to Nice road bridge,swd_vulnerable_moderate,12.950568,77.538597,high,name+distance,976064954,976064954,NICE Expressway,low_bridge,125,0.5,2,True
+63,Vrishabhavthi main valley near Cholurapalya in ward 123,swd_vulnerable_moderate,12.968405,77.549697,high,distance,1104617634,1104617634,,low_bridge,19,0.0,1,True
+64,"Manuvana, Pipeline road",swd_vulnerable_moderate,12.973730,77.546651,high,name+distance,1221482412-x1,1221482412,Pipeline Road,dip,152,1.0,1,True
+65,Ranganatha Colony in W 158,swd_vulnerable_moderate,12.945302,77.535070,medium,none,,,,,,,0,True
+66,"Hosaguddadahalli, Bapujinagara",swd_vulnerable_moderate,12.956317,77.542580,high,none,,,,,,,0,True
+67,"Hosakere halli, near D'souza Nagara",swd_vulnerable_moderate,12.932023,77.535323,medium,distance,797278826-x1,797278826,,culvert,41,0.0,1,True
+68,"Near Dattarthraya Temple, Hosakerehalli",swd_vulnerable_moderate,12.924696,77.539133,high,none,,,,,,,3,True
+69,"Bannerghatta Road near spar super market, no shoulder drain to rsd",swd_vulnerable_severe,12.930250,77.601028,medium,name+distance,1227540390,1227540390,Bannerghatta Road,low_bridge,92,1.0,2,False
+70,"Bannerghatta Road near oakyard Apartment, because choked Rsd",swd_vulnerable_severe,12.921694,77.599944,medium,none,,,,,,,0,True
+71,Hosur road Jayadeva flyover to Udupi Garden Signal due to choked Rsd.,swd_vulnerable_severe,12.916472,77.599889,medium,name+distance,40692574,40692574,Jayadeva Hospital Underpass,underpass,3,0.5,2,True
+72,SILK BOARD due to choked Rsd and shoulder drain,swd_vulnerable_severe,12.918639,77.621889,medium,name+distance,40696222,40696222,Silk Board Flyover,low_bridge,4,1.0,3,True
+73,Sony Signal to Maharaja signal in Koramangala due Rsd work and Choked Rsd and shoulder drains.,swd_vulnerable_severe,12.936889,77.626417,medium,none,,,,,,,2,True
+74,Magrath road and brigade road junction,swd_vulnerable_severe,12.970611,77.609667,high,name+distance,1276784690-x1,1276784690,Magrath Road,dip,12,1.0,3,True
+75,Anepalya Gajendranagar SWD surroundings,swd_vulnerable_severe,12.951944,77.605944,high,none,,,,,,,3,True
+76,Kumbargundi lead off drains,swd_vulnerable_severe,12.962417,77.583972,high,none,,,,,,,6,True
+77,Siddpaura gate,swd_vulnerable_severe,12.946306,77.589639,medium,none,,,,,,,5,True
+78,Wilson garden PWD quarters,swd_vulnerable_severe,12.952972,77.596833,high,distance,1306969132-x1,1306969132,,dip,28,0.0,4,True
+79,Palm grove road,swd_vulnerable_moderate,12.963722,77.614639,high,name+distance,28126844-x1,28126844,Palm Grove Road,culvert,101,1.0,1,False
+80,JK Pura,swd_vulnerable_moderate,12.951167,77.599000,high,distance,1306969132-x2,1306969132,,culvert,15,0.0,3,True
+81,Micheal church,swd_vulnerable_moderate,12.956139,77.597028,high,distance,38762865-x1,38762865,,dip,23,0.0,1,True
+82,Gulbarga Calony RBI extension.,swd_vulnerable_moderate,12.931917,77.593917,high,none,,,,,,,3,True
+83,Anepalya junction,swd_vulnerable_moderate,12.951000,77.605611,high,none,,,,,,,7,True
+84,Kumbaragundi,swd_vulnerable_moderate,12.962111,77.582806,high,name+distance,462585108,462585108,Kumbaragundi Road,low_bridge,157,1.0,1,True
+85,Byrasandara Fire station,swd_vulnerable_moderate,12.932944,77.588972,high,none,,,,,,,0,True
+86,Osaman Khan Road Near KR Market,swd_vulnerable_moderate,12.963000,77.579806,high,name+distance,23081595-x1,23081595,Usman Khan Road,dip,2,0.5,1,True
+87,BTM layout,swd_vulnerable_moderate,12.915750,77.616750,high,distance,229976708-x1,229976708,Tank Bund Road,culvert,43,0.0,1,True
+88,RV Teachers College,swd_vulnerable_moderate,12.943583,77.581472,high,none,,,,,,,9,True
+89,Tavarkere Main road.,swd_vulnerable_moderate,12.924944,77.609028,medium,distance,443045598,443045598,Tavarekere Main Road,low_bridge,7,0.0,4,True
+90,Silk Board junction,swd_vulnerable_moderate,12.917194,77.622722,high,name+distance,40696222,40696222,Silk Board Flyover,low_bridge,1,1.0,4,True
+91,Navoduya Layout,swd_vulnerable_moderate,12.914056,77.574917,medium,none,,,,,,,0,True
+92,RAJENDRA NAGARA slum opp kpwd quarters,swd_vulnerable_moderate,12.947861,77.619194,high,distance,1109191939-x1,1109191939,80 Feet Road,culvert,30,0.0,2,True
+93,Ejipura opp army land,swd_vulnerable_moderate,12.950389,77.625889,high,name+distance,52736010-x1,52736010,Ejipura Main Road,dip,291,1.0,1,True
+94,Ejpura ashwini layout,swd_vulnerable_moderate,12.938639,77.628750,medium,distance,208944727,208944727,Inner Ring Road,low_bridge,32,0.0,2,True
+95,ST BED KORAMANGALA,swd_vulnerable_moderate,12.934722,77.630139,high,distance,350096398,350096398,1st Cross Road,low_bridge,9,0.0,1,True
+96,Koramangala 4 th block,swd_vulnerable_moderate,12.933806,77.630389,high,none,,,,,,,7,True
+97,Gurappanapalya banneragatta main road,swd_vulnerable_moderate,12.923000,77.600444,high,none,,,,,,,1,True
+98,Kariyannapalya Bridge over flowed ORR,swd_vulnerable_severe,13.043611,77.600278,high,distance,376649535-x1,376649535,Outer Ring Road,dip,5,0.0,4,True
+99,Near Rachanahalli lake inlet over flow due to let out of BWSSB,swd_vulnerable_severe,13.057778,77.614722,medium,none,,,,,,,0,True
+100,Lbs nagar Yelahanka,swd_vulnerable_severe,13.092500,77.593611,medium,distance,1311986983-x1,1311986983,,dip,64,0.0,2,True
+101,Veerannapaly drain near Manpho convention center.,swd_vulnerable_severe,13.042500,77.615556,high,none,,,,,,,6,True
+102,"Kariyannapalya outer ring road,w.no.7 near varun motors see H100.",swd_vulnerable_moderate,13.043056,77.598889,medium,none,,,,,,,4,True
+103,"H 183 manyata tech park, m.s.ranaiah north city to element mall.in ward no.6",swd_vulnerable_moderate,13.047222,77.623611,high,distance,695618083,695618083,,dip,20,0.0,2,True
+104,"TATA nagar 8th cross, inward no.8",swd_vulnerable_moderate,13.055000,77.571667,high,distance,674699455-x1,674699455,,dip,46,0.0,1,True
+105,Thindlu to doddabommasandra tank. In ward no.9,swd_vulnerable_moderate,13.069167,77.562778,high,name+distance,215214007-x1,215214007,Nanjappa - Thindlu Road,culvert,46,0.5,1,True
+106,H200 from esteem mall beside dhobi that to yogesh nagar bridge in ward no.7,swd_vulnerable_moderate,13.047222,77.593333,high,none,,,,,,,4,True
+107,Kondappa layout in Ward no.2,swd_vulnerable_moderate,13.110278,77.593333,high,none,,,,,,,0,True
+108,Kogilu cross behind Udupi Grand hotel in Ward no.1,swd_vulnerable_moderate,13.103056,77.601111,high,name+distance,1219682011-x1,1219682011,Kogilu Main Road,culvert,58,1.0,2,False
+109,Sarjapuraroad,swd_vulnerable_severe,,,none,none,,,,,,,0,True
+110,Gunjur,swd_vulnerable_severe,12.921090,77.732498,high,none,,,,,,,0,True
+111,Varthur,swd_vulnerable_severe,12.956940,77.735939,high,none,,,,,,,0,True
+112,Panathur,swd_vulnerable_severe,12.936355,77.705013,high,name+distance,1221269788,1221269788,Panathur Main Road,underpass,255,1.0,2,True
+113,Balagere,swd_vulnerable_severe,12.938932,77.723178,high,none,,,,,,,2,True
+114,Hoodi,swd_vulnerable_severe,12.992015,77.718137,high,none,,,,,,,0,True
+115,Munnekolalu,swd_vulnerable_moderate,12.959824,77.708075,medium,distance,648496928-x1,648496928,,culvert,88,0.0,1,True
+116,Pattandur agrahara,swd_vulnerable_moderate,12.978889,77.733753,high,name+distance,677454723-x1,677454723,Pattandur Agrahara Road,dip,183,1.0,1,True
+117,Ddoddenakundi near gururaja layout,swd_vulnerable_moderate,12.969066,77.692178,medium,none,,,,,,,1,True
+118,Maheshwari nagar,swd_vulnerable_moderate,12.994920,77.692871,high,none,,,,,,,5,True
+119,Bellandur,swd_vulnerable_moderate,12.926464,77.678116,high,none,,,,,,,5,True
+120,S G R dental college,swd_vulnerable_moderate,12.949943,77.700679,high,name+distance,100402557-x1,100402557,S G R Dental College Road,culvert,236,1.0,1,True
+121,varthur columbia asia hospital,swd_vulnerable_moderate,13.014108,77.556049,low,none,,,,,,,0,True
+122,varthur police station,swd_vulnerable_moderate,12.938078,77.746844,high,distance,1349757525-x1,1349757525,Halasahalli Road,culvert,13,0.0,1,True
+123,Ramagondanahalli,swd_vulnerable_moderate,13.112929,77.556933,low,none,,,,,,,2,True
+124,Vinayaka layout orr,swd_vulnerable_moderate,12.949595,77.487694,medium,none,,,,,,,0,True
+125,Beml layout,swd_vulnerable_moderate,12.911066,77.512709,high,none,,,,,,,3,True
+126,Deepa nursing home,swd_vulnerable_moderate,12.955021,77.690549,high,none,,,,,,,2,True
+127,Nellurahalli,swd_vulnerable_moderate,12.969300,77.736686,high,none,,,,,,,0,True
+128,Thubarahalli,swd_vulnerable_moderate,12.955652,77.720545,high,none,,,,,,,4,True
+129,Pai Layout,swd_vulnerable_severe,12.990278,77.668333,high,distance,1313184571-x1,1313184571,,culvert,46,0.0,1,True
+130,Ambedkar Nagar near Ramamurthy Nagar.,swd_vulnerable_severe,13.010833,77.681389,high,none,,,,,,,7,True
+131,RR layout & Ambedkar Nagar,swd_vulnerable_severe,13.006667,77.672222,high,none,,,,,,,19,True
+132,Vaddera Palya (Railway track),swd_vulnerable_severe,13.042778,77.644722,high,none,,,,,,,5,True
+133,Talakaveri layout,swd_vulnerable_severe,12.966389,77.682778,high,distance,1332592275-x1,1332592275,Namjoshi Road,culvert,16,0.0,1,True
+134,ITI Layout,swd_vulnerable_moderate,13.010556,77.680278,high,none,,,,,,,8,True
+135,Koudenahalli (Ramamurthy Nagar main road),swd_vulnerable_moderate,13.011389,77.679167,high,distance,1102791103-x1,1102791103,,dip,32,0.0,2,True
+136,Hoysala nagar in Hormavu,swd_vulnerable_moderate,13.018611,77.665556,high,distance,1442524342,1442524342,13th Cross Road,low_bridge,41,0.0,2,True
+137,Devasandra(Nethravathi Badavane),swd_vulnerable_moderate,13.006667,77.696389,high,name+distance,1207691764,1207691764,Devasandra Main Road,low_bridge,161,1.0,1,True
+138,Shivaganga layout,swd_vulnerable_moderate,12.988889,77.690278,high,none,,,,,,,6,True
+139,NRI layout,swd_vulnerable_moderate,13.012778,77.678889,high,none,,,,,,,9,True
+140,Richi's Garden,swd_vulnerable_moderate,13.036667,77.681111,high,none,,,,,,,0,True
+141,HSR 3rd sector lead off drains and no shoulder drains,swd_vulnerable_severe,12.909359,77.641585,high,none,,,,,,,2,True
+142,Sector 6 lead off drains surrounding 5th and 9th main,swd_vulnerable_severe,12.911655,77.632402,medium,distance,1182406075-x1,1182406075,,dip,5,0.0,3,True
+143,NS palya RSD not desilted from 3 years,swd_vulnerable_severe,12.904903,77.603036,medium,none,,,,,,,9,True
+144,HSR sector 2 Garden layout RSD blocked,swd_vulnerable_severe,12.909073,77.644933,medium,distance,45194562-x1,45194562,22nd Cross Road,culvert,50,0.0,1,True
+145,Garebhavipalya NH service road junction,swd_vulnerable_severe,12.900922,77.633121,high,name+distance,1105763532-x1,1105763532,Service Road,dip,111,1.0,2,False
+146,BDA layout Hulimavu,swd_vulnerable_severe,12.880518,77.603987,high,none,,,,,,,0,True
+147,Kempamma layout RSD Arekere,swd_vulnerable_severe,12.880586,77.604415,high,none,,,,,,,0,True
+148,Someshwara layout Arekere,swd_vulnerable_severe,12.879969,77.604051,high,none,,,,,,,0,True
+149,Anugraha layout RSD phase 1,swd_vulnerable_severe,12.901886,77.611262,high,none,,,,,,,1,True
+150,Doddakanneli,swd_vulnerable_severe,12.897817,77.692907,medium,none,,,,,,,0,True
+151,"Hosur road near Royal Enfield show room, white s hall",swd_vulnerable_severe,12.885937,77.642075,high,name+distance,1203508693-x1,1203508693,Hosur Road,dip,9,1.0,2,False
+152,singasandra Country club road ward 191,swd_vulnerable_severe,12.878907,77.637418,high,none,,,,,,,0,True
+153,HSR layout 9th and 5th main,swd_vulnerable_moderate,12.911655,77.632402,medium,distance,1182406075-x1,1182406075,,dip,5,0.0,3,True
+154,Oxford college NH Junction,swd_vulnerable_moderate,12.901360,77.631443,high,distance,1411398445-x1,1411398445,,dip,45,0.0,1,True
+155,Hongasandara Ambedkar Nagar,swd_vulnerable_moderate,12.904782,77.626758,high,none,,,,,,,0,True
+156,Anugraha layout Billekalhalli,swd_vulnerable_moderate,,,none,none,,,,,,,0,True
+157,Dollars Colony JP Nagar,swd_vulnerable_moderate,12.903331,77.598853,high,distance,1271375006-x1,1271375006,,culvert,40,0.0,1,True
+158,Dollars Colony NS palya(BTM 2nd stage),swd_vulnerable_moderate,12.904455,77.602807,medium,none,,,,,,,9,True
+159,Hulimavu Sri Lanka colony,swd_vulnerable_moderate,12.881756,77.608253,high,name+distance,795217290-x1,795217290,Hulimavu Main Road,culvert,293,1.0,1,True
+160,Ward non160 RR nagar beml 5th stage near kapi katte hotel,swd_vulnerable_severe,12.916433,77.520883,high,none,,,,,,,0,True
+161,Ward no.38 peenya industrial area 3rd phase 1 st main road,swd_vulnerable_severe,13.033097,77.520142,medium,distance,1094460831-x1,1094460831,,dip,91,0.0,2,True
+162,Ward no.160 near DIAT college,swd_vulnerable_severe,12.931592,77.512992,high,none,,,,,,,1,True
+163,Pattanagere main road beside r v college,swd_vulnerable_severe,12.923679,77.504071,high,distance,636268137,636268137,Patanagere Main Road,low_bridge,2,0.0,1,True
+164,Andanappa layout doddabidarakallu,swd_vulnerable_severe,13.039565,77.488025,medium,distance,1104925571,1104925571,,low_bridge,91,0.0,1,True
+165,Bhavani nagara doddabidarakallu,swd_vulnerable_severe,13.033788,77.490534,high,none,,,,,,,2,True
+166,Herohalli lake inlet handrahalli main road,swd_vulnerable_severe,12.990491,77.489889,medium,distance,1112003842,1112003842,,low_bridge,51,0.0,1,True
+167,Mallathahalli lake inlet muddaiahna palya road,swd_vulnerable_severe,12.962212,77.491921,high,distance,148017342-x1,148017342,,dip,37,0.0,1,True
+168,Srinivasa Nagara to P & T Layout,swd_vulnerable_moderate,,,none,none,,,,,,,0,True
+169,Near Nammura Thindi Hotel,swd_vulnerable_moderate,,,none,none,,,,,,,0,True
+170,VV Puram Law College to Mallathhali tank,swd_vulnerable_moderate,12.953748,77.574283,medium,none,,,,,,,0,True
+171,Gurudutta Layout to Sapthagiri Layout in ward 160,swd_vulnerable_moderate,12.924711,77.541875,medium,none,,,,,,,2,True
+172,Shankarappa Layout to BEML gate R.R.Nagara,swd_vulnerable_moderate,12.916406,77.522556,high,none,,,,,,,0,True
+173,"Jawaregowdana Doddi, Bangarappa Nagara",swd_vulnerable_moderate,12.928569,77.520331,high,none,,,,,,,0,True
+174,Malagala main road to Vrishabhavathi Valley,swd_vulnerable_moderate,12.965950,77.517489,high,none,,,,,,,3,True
+175,Basaveshwara Circle BEML 3rd stage in ward no.160,swd_vulnerable_moderate,12.922817,77.518522,high,none,,,,,,,0,True
+176,Gurudutta Layout to Sapthagiri Layout in ward 160,swd_vulnerable_moderate,12.924711,77.539097,medium,none,,,,,,,3,True
+177,Halagevadeyarahalli lake to Kenchenahalli lake in ward no 160,swd_vulnerable_moderate,12.924817,77.521556,high,none,,,,,,,0,True
+178,Lavakushanagara to Vrishabhavathi Valley,swd_vulnerable_moderate,13.001532,77.516454,medium,none,,,,,,,6,True
+179,Ideal Homes beside Akkamahadevi choultry,swd_vulnerable_moderate,12.932791,77.516858,medium,none,,,,,,,2,True
+180,Bande Maramma Temple behind Nagarabhavi 10th cross Bus Stop,swd_vulnerable_moderate,12.965703,77.517394,high,none,,,,,,,3,True
+181,Near Tippena Halli Govt. School,swd_vulnerable_moderate,13.036639,77.487364,medium,distance,1156007220,1156007220,,low_bridge,25,0.0,3,True
+182,Chakranagara Doddabidirukallu,swd_vulnerable_moderate,13.009690,77.477201,medium,none,,,,,,,5,True
+183,Thigalara Palya Doddabidirukallu,swd_vulnerable_moderate,,,none,none,,,,,,,0,True
+184,Horanadu Annapurneshwari Layout Doddabidirukallu,swd_vulnerable_moderate,13.021657,77.484496,medium,none,,,,,,,0,True
+185,Ambedkar Nagara Ullala,swd_vulnerable_moderate,12.963815,77.478921,medium,distance,1548526923,1548526923,,low_bridge,46,0.0,2,True
+186,Dubasipalya Tank,swd_vulnerable_moderate,12.926779,77.495400,medium,none,,,,,,,1,True
+187,Bande Matta Kengeri,swd_vulnerable_moderate,12.918535,77.477999,medium,distance,1283573970,1283573970,Kommagatta Main Road,low_bridge,1,0.0,2,True
+188,Mysore Road Kengeri Satellite Town Main Road,swd_vulnerable_moderate,12.905953,77.478994,medium,name,135401454,135401454,Kengeri Flyover,low_bridge,318,1.0,1,True
+189,Vijayashri Layout,swd_vulnerable_moderate,12.913417,77.490779,medium,none,,,,,,,0,True
+190,Vishva Vakkaligara Maha Samsthana Mysore road,swd_vulnerable_moderate,12.901002,77.466559,medium,none,,,,,,,0,True
+191,Kempegowda nagar Ward,swd_vulnerable_moderate,12.989302,77.483394,low,none,,,,,,,0,True
+192,Balaji Layout Ward 198 Kanakapura Road,swd_vulnerable_moderate,12.876393,77.538538,medium,none,,,,,,,0,True
+193,Mantri Lake view Appartment Next to Talagattapura Lake,swd_vulnerable_moderate,12.860256,77.527756,low,none,,,,,,,1,True
+194,Raghuvanahalli at Hemmigepura ward,swd_vulnerable_moderate,12.878313,77.549440,medium,none,,,,,,,4,True
+195,Global Village Joining V Vally at Glabal Village Property ward no.198.,swd_vulnerable_moderate,12.920448,77.502519,medium,name+distance,1091999632,1091999632,Global Village Road,low_bridge,109,1.0,1,False
+196,Kendriya nagara ward 198,swd_vulnerable_moderate,12.872472,77.528255,high,none,,,,,,,1,True
+197,Shettyhalli Janatha colony near Railway bridge,swd_vulnerable_moderate,,,none,none,,,,,,,0,True
+198,Visghneshwara Layout Chikkansdra,swd_vulnerable_moderate,,,none,none,,,,,,,0,True
+199,Kammagondanahalli near MNTI Polytecnic,swd_vulnerable_moderate,13.064070,77.534710,medium,none,,,,,,,7,True
+200,Chikkasandra near Mahaveer Aprt.,swd_vulnerable_moderate,,,none,none,,,,,,,0,True
+201,Siddeswara Layout,swd_vulnerable_moderate,13.034332,77.572710,low,none,,,,,,,5,True
+202,MEI layout,swd_vulnerable_moderate,13.060870,77.501160,high,none,,,,,,,5,True
+203,Gundappa Layout & Belmar Layout,swd_vulnerable_moderate,13.046810,77.500740,high,none,,,,,,,2,True
+204,Government School & Durgalamma Temple,swd_vulnerable_moderate,13.012640,77.511780,high,none,,,,,,,1,True
+205,Settyhalli & Chikkasandra Village in Settyhalli Ward no. 12,swd_vulnerable_moderate,13.066340,77.511780,medium,distance,215052774-x1,215052774,Hanumanthe Gowder Main Road,dip,59,0.0,1,True
+206,"Aaimatha layout, Mallasandra, Bengaluru",swd_vulnerable_moderate,13.060680,77.511780,high,name+distance,37238647-x2,37238647,Chikka Banavar Railway Station Road - Mallasandra Main Road,dip,103,0.5,2,True
+207,Pillappanakatte valley (KTG Roads to DWCC),swd_vulnerable_moderate,12.998220,77.516740,high,none,,,,,,,2,True
+208,Shivapura tank in ward No 41.,swd_vulnerable_moderate,13.057960,77.604870,low,none,,,,,,,0,True
+209,Shambhavinagar in ward No 70,swd_vulnerable_moderate,13.041370,77.478080,high,none,,,,,,,0,True
+210,Mantri Lake view Appartment Next to Talagattapura Lake,swd_vulnerable_kgis,12.867499,77.532435,low,none,,,,,,,2,True
+211,Kendriya nagara,swd_vulnerable_kgis,12.871775,77.528083,high,none,,,,,,,1,True
+212,Raghuvanahalli,swd_vulnerable_kgis,12.877711,77.542694,medium,none,,,,,,,1,True
+213,"Balaji Layout, Kanakapura Road",swd_vulnerable_kgis,12.877865,77.541273,medium,none,,,,,,,1,True
+214,Singasandra Country club road,swd_vulnerable_kgis,12.878907,77.637418,high,none,,,,,,,0,True
+215,Someshwara layout Arekere,swd_vulnerable_kgis,12.879969,77.604051,high,none,,,,,,,0,True
+216,BDA layout Hulimavu,swd_vulnerable_kgis,12.880518,77.603987,high,none,,,,,,,0,True
+217,Kempamma layout RSD Arekere,swd_vulnerable_kgis,12.880586,77.604415,high,none,,,,,,,0,True
+218,Hulimavu Sri Lanka colony,swd_vulnerable_kgis,12.881756,77.608253,high,name+distance,795217290-x1,795217290,Hulimavu Main Road,culvert,293,1.0,1,True
+219,Hosur road near Royal Enfield show room,swd_vulnerable_kgis,12.885937,77.642075,high,name+distance,1203508693-x1,1203508693,Hosur Road,dip,9,1.0,2,False
+220,Anugraha layout Billekahalli,swd_vulnerable_kgis,12.896570,77.611508,medium,none,,,,,,,1,True
+221,Doddakannelli,swd_vulnerable_kgis,12.897817,77.692907,medium,none,,,,,,,0,True
+222,Garebhavipalya NH  service road junction,swd_vulnerable_kgis,12.900922,77.633121,high,name+distance,1105763532-x1,1105763532,Service Road,dip,111,1.0,2,False
+223,Oxford college NH Junction,swd_vulnerable_kgis,12.901360,77.631443,high,distance,1411398445-x1,1411398445,,dip,45,0.0,1,True
+224,Anugraha layout RSD phase 1,swd_vulnerable_kgis,12.901886,77.611262,high,none,,,,,,,1,True
+225,Dollars Colony JP Nagar,swd_vulnerable_kgis,12.903331,77.598853,high,distance,1271375006-x1,1271375006,,culvert,40,0.0,1,True
+226,Dollars Colony NS palya (BTM 2nd stage),swd_vulnerable_kgis,12.904455,77.602807,medium,none,,,,,,,9,True
+227,Hongasandara Ambedkar Nagar,swd_vulnerable_kgis,12.904782,77.626758,high,none,,,,,,,0,True
+228,NS palya RSD,swd_vulnerable_kgis,12.904903,77.603036,medium,none,,,,,,,9,True
+229,HSR sector 2 Garden layout,swd_vulnerable_kgis,12.909073,77.644933,medium,distance,45194562-x1,45194562,22nd Cross Road,culvert,50,0.0,1,True
+230,HSR 3rd sector lead off drains,swd_vulnerable_kgis,12.909359,77.641585,high,none,,,,,,,2,True
+231,BEML layout,swd_vulnerable_kgis,12.911066,77.512709,high,none,,,,,,,3,True
+232,Sector 6 lead off drains surrounding 5th and 9th main,swd_vulnerable_kgis,12.911655,77.632402,medium,distance,1182406075-x1,1182406075,,dip,5,0.0,3,True
+233,HSR layout 9th and 5th main,swd_vulnerable_kgis,12.911655,77.632402,medium,distance,1182406075-x1,1182406075,,dip,5,0.0,3,True
+234,Navodaya Layout,swd_vulnerable_kgis,12.914056,77.574917,medium,none,,,,,,,0,True
+235,BTM layout,swd_vulnerable_kgis,12.915750,77.616750,high,distance,229976708-x1,229976708,Tank Bund Road,culvert,43,0.0,1,True
+236,"Near Kapi Katte hotel, BEML Layout, 3rd Stage",swd_vulnerable_kgis,12.915793,77.520507,medium,none,,,,,,,0,True
+237,Shankarappa Layout to BEML gate,swd_vulnerable_kgis,12.916406,77.522556,high,none,,,,,,,0,True
+238,RR nagar BEML 5th stage near Kapi katte hotel,swd_vulnerable_kgis,12.916433,77.520883,high,none,,,,,,,0,True
+239,Hosur road Jayadeva flyover to Udupi Garden Signal,swd_vulnerable_kgis,12.916472,77.599889,medium,name+distance,40692574,40692574,Jayadeva Hospital Underpass,underpass,3,0.5,2,True
+240,Silk Board junction,swd_vulnerable_kgis,12.917194,77.622722,high,name+distance,40696222,40696222,Silk Board Flyover,low_bridge,1,1.0,4,True
+241,Global Village Joining V Valley at Global Village Property,swd_vulnerable_kgis,12.918067,77.501991,medium,name+distance,1091999632,1091999632,Global Village Road,low_bridge,166,1.0,1,True
+242,Silk Board,swd_vulnerable_kgis,12.918639,77.621889,medium,name+distance,40696222,40696222,Silk Board Flyover,low_bridge,4,1.0,4,True
+243,Gunjur,swd_vulnerable_kgis,12.921090,77.732498,high,none,,,,,,,0,True
+244,Bannerghatta road near Oakyard Apartment,swd_vulnerable_kgis,12.921694,77.599944,medium,none,,,,,,,0,True
+245,"Heorhalli, Mahadeshwara Nagara",swd_vulnerable_kgis,12.922204,77.511480,medium,none,,,,,,,4,True
+246,Basaveshwara Circle BEML 3rd stage,swd_vulnerable_kgis,12.922817,77.518522,high,none,,,,,,,0,True
+247,Gurappanapalya Banneragatta main road,swd_vulnerable_kgis,12.923000,77.600444,high,none,,,,,,,1,True
+248,Gurudutta Layout to Sapthagiri Layout,swd_vulnerable_kgis,12.923239,77.538937,medium,none,,,,,,,2,True
+249,Pattanagere main road beside RV college,swd_vulnerable_kgis,12.923415,77.505003,high,none,,,,,,,1,True
+250,"Near Dattarthraya Temple, Hosakerehalli",swd_vulnerable_kgis,12.924696,77.539133,high,none,,,,,,,3,True
+251,Halagevadeyarahalli lake to Kenchenahalli  lake,swd_vulnerable_kgis,12.924817,77.521556,high,none,,,,,,,0,True
+252,Tavarekere Main road,swd_vulnerable_kgis,12.924944,77.609028,medium,name+distance,443045598,443045598,Tavarekere Main Road,low_bridge,7,1.0,1,False
+253,Bellandur,swd_vulnerable_kgis,12.926464,77.678116,high,none,,,,,,,5,True
+254,"Jawaregowdana Doddi, Bangarappa Nagara",swd_vulnerable_kgis,12.928569,77.520331,high,none,,,,,,,0,True
+255,Sarjapura road,swd_vulnerable_kgis,12.928796,77.717908,medium,none,,,,,,,0,True
+256,Bannerghatta Road near spar super market,swd_vulnerable_kgis,12.930250,77.601028,medium,name+distance,1227540390,1227540390,Bannerghatta Road,low_bridge,92,1.0,2,False
+257,Near DIAT college,swd_vulnerable_kgis,12.931592,77.512992,high,none,,,,,,,1,True
+258,Gulbarga Calony RBI extension,swd_vulnerable_kgis,12.931917,77.593917,high,none,,,,,,,3,True
+259,"Hosakerehalli, near D'souza Nagara",swd_vulnerable_kgis,12.932023,77.535323,medium,distance,797278826-x1,797278826,,culvert,41,0.0,1,True
+260,Ideal Homes beside Akkamahadevi choultry,swd_vulnerable_kgis,12.932791,77.516858,medium,none,,,,,,,2,True
+261,Byrasandara Fire station,swd_vulnerable_kgis,12.932944,77.588972,high,none,,,,,,,0,True
+262,Koramangala 4 th block,swd_vulnerable_kgis,12.933806,77.630389,high,none,,,,,,,7,True
+263,ST Bed Koramangala,swd_vulnerable_kgis,12.934722,77.630139,high,distance,350096398,350096398,1st Cross Road,low_bridge,9,0.0,1,True
+264,Panathur,swd_vulnerable_kgis,12.936355,77.705013,high,name+distance,1221269788,1221269788,Panathur Main Road,underpass,255,1.0,2,True
+265,Sony Signal to Maharaja signal in Koramangala,swd_vulnerable_kgis,12.936889,77.626417,medium,none,,,,,,,2,True
+266,Varthur police station,swd_vulnerable_kgis,12.938078,77.746844,high,distance,1349757525-x1,1349757525,Halasahalli Road,culvert,13,0.0,1,True
+267,Ejipura Ashwini layout,swd_vulnerable_kgis,12.938639,77.628750,medium,distance,208944727,208944727,Inner Ring Road,low_bridge,32,0.0,2,True
+268,Balagere,swd_vulnerable_kgis,12.938932,77.723178,high,none,,,,,,,2,True
+269,Sonnenahalli Bridge Upstream  Gollarahatti,swd_vulnerable_kgis,12.942045,77.482942,medium,distance,793822566-x1,793822566,Dodda Basti Main Road,culvert,6,0.0,2,True
+270,RV Teachers College,swd_vulnerable_kgis,12.943583,77.581472,high,none,,,,,,,9,True
+271,Nayandahalli and near Railway track,swd_vulnerable_kgis,12.944653,77.525586,high,name+distance,328283601,328283601,Nayandahalli Flyover,low_bridge,162,1.0,5,True
+272,Ranganatha Colony,swd_vulnerable_kgis,12.945302,77.535070,medium,none,,,,,,,0,True
+273,"Nayandahalli Junction, Mysore road",swd_vulnerable_kgis,12.945480,77.528937,high,name+distance,1248258445,1248258445,Mysore Road,dip,20,1.0,10,True
+274,Siddpapura gate,swd_vulnerable_kgis,12.946306,77.589639,medium,none,,,,,,,5,True
+275,Kempegowda Nagar,swd_vulnerable_kgis,12.947235,77.563378,low,none,,,,,,,0,True
+276,Anjanappa Layout to Kempegowda Nagara,swd_vulnerable_kgis,12.947328,77.563375,low,none,,,,,,,0,True
+277,Rajendra Nagar slum opp KPWD quarters,swd_vulnerable_kgis,12.947861,77.619194,high,distance,1109191939-x1,1109191939,80 Feet Road,culvert,30,0.0,2,True
+278,Vinayaka layout,swd_vulnerable_kgis,12.949595,77.487694,medium,none,,,,,,,0,True
+279,S G R Dental college,swd_vulnerable_kgis,12.949943,77.700679,high,name+distance,100402557-x1,100402557,S G R Dental College Road,culvert,236,1.0,1,True
+280,Ejipura opp army land,swd_vulnerable_kgis,12.950389,77.625889,high,name+distance,52736010-x1,52736010,Ejipura Main Road,dip,291,1.0,1,True
+281,Kavika Bridge to Nice road bridge,swd_vulnerable_kgis,12.950568,77.538597,high,name+distance,976064954,976064954,NICE Expressway,low_bridge,125,0.5,2,True
+282,Anepalya junction,swd_vulnerable_kgis,12.951000,77.605611,high,none,,,,,,,7,True
+283,JK Pura,swd_vulnerable_kgis,12.951167,77.599000,high,distance,1306969132-x2,1306969132,,culvert,15,0.0,3,True
+284,Anepalya Gajendranagar SWD surroundings,swd_vulnerable_kgis,12.951944,77.605944,high,none,,,,,,,3,True
+285,Wilson garden PWD quarters,swd_vulnerable_kgis,12.952972,77.596833,high,distance,1306969132-x1,1306969132,,dip,28,0.0,4,True
+286,"Sri Galianjaneya  swamy temple, Mysore road",swd_vulnerable_kgis,12.953035,77.541253,high,name+distance,1282361004-x1,1282361004,Mysore Road,culvert,39,1.0,1,False
+287,VV Puram Law College to Mallathhali tank,swd_vulnerable_kgis,12.953748,77.574283,medium,none,,,,,,,0,True
+288,Deepa nursing home,swd_vulnerable_kgis,12.955021,77.690549,high,none,,,,,,,2,True
+289,BDA Layout Konena Agrahara,swd_vulnerable_kgis,12.955624,77.649048,low,none,,,,,,,0,True
+290,Thubarahalli,swd_vulnerable_kgis,12.955652,77.720545,high,none,,,,,,,4,True
+291,Micheal church,swd_vulnerable_kgis,12.956139,77.597028,high,distance,38762865-x1,38762865,,dip,23,0.0,1,True
+292,Ramagondanahalli,swd_vulnerable_kgis,12.956182,77.741044,low,none,,,,,,,0,True
+293,"Hosaguddadahalli, Bapujinagara",swd_vulnerable_kgis,12.956317,77.542580,high,none,,,,,,,0,True
+294,Varthur,swd_vulnerable_kgis,12.956940,77.735939,high,none,,,,,,,0,True
+295,Chamarajapet,swd_vulnerable_kgis,12.957039,77.562083,high,none,,,,,,,0,True
+296,Nari Halla,swd_vulnerable_kgis,12.957242,77.568681,high,none,,,,,,,0,True
+297,NGEF layout,swd_vulnerable_kgis,12.957687,77.514429,low,none,,,,,,,5,True
+298,Varthur Columbia Asia hospital,swd_vulnerable_kgis,12.958488,77.744919,low,name+distance,1112430291-x1,1112430291,Varthur Lake Road,culvert,201,0.5,2,True
+299,Backside Fortis Hospital NGEF Layout,swd_vulnerable_kgis,12.959262,77.511303,medium,distance,1098732320-x1,1098732320,,dip,50,0.0,2,True
+300,Munnekolalu,swd_vulnerable_kgis,12.959824,77.708075,medium,distance,648496928-x1,648496928,,culvert,88,0.0,1,True
+301,Nandhini hotel backside on 100 feet road Indiranagar,swd_vulnerable_kgis,12.961111,77.643056,high,distance,28451872,28451872,Domlur Flyover Ramp,low_bridge,6,0.0,3,True
+302,Kumbaragundi,swd_vulnerable_kgis,12.962111,77.582806,high,name+distance,462585108,462585108,Kumbaragundi Road,low_bridge,157,1.0,1,True
+303,Mallathahalli lake inlet Muddaiahna palya road,swd_vulnerable_kgis,12.962410,77.491910,high,distance,148017342-x1,148017342,,dip,43,0.0,1,True
+304,Kumbargundi lead off drains,swd_vulnerable_kgis,12.962417,77.583972,high,none,,,,,,,6,True
+305,Osaman Khan  road near KR Market,swd_vulnerable_kgis,12.963000,77.579806,high,name+distance,23081595-x1,23081595,Usman Khan Road,dip,2,0.5,1,True
+306,Palm grove road,swd_vulnerable_kgis,12.963722,77.614639,high,name+distance,28126844-x1,28126844,Palm Grove Road,culvert,101,1.0,1,False
+307,Cheluvadipalya Near by  Good Shed Road,swd_vulnerable_kgis,12.965317,77.566525,medium,none,,,,,,,3,True
+308,"Siddartha Nagar, Cheluvadipalya",swd_vulnerable_kgis,12.965317,77.566525,medium,none,,,,,,,3,True
+309,Bande Maramma Temple behind Nagarabhavi 10th cross Bus Stop,swd_vulnerable_kgis,12.965703,77.517394,high,none,,,,,,,3,True
+310,Rayapuram near Govt. Maternity Hospital,swd_vulnerable_kgis,12.965883,77.552619,high,none,,,,,,,2,True
+311,Malagala main road to Vrishabhavathi Valley,swd_vulnerable_kgis,12.965950,77.517489,high,none,,,,,,,3,True
+312,Talakaveri layout,swd_vulnerable_kgis,12.966389,77.682778,high,distance,1332592275-x1,1332592275,Namjoshi Road,culvert,16,0.0,1,True
+313,Vrishabhavthi main valley near Cholurapalya,swd_vulnerable_kgis,12.968405,77.549697,high,distance,1104617634,1104617634,,low_bridge,19,0.0,1,True
+314,Doddenakundi near Gururaja layout,swd_vulnerable_kgis,12.969066,77.692178,medium,none,,,,,,,1,True
+315,Nellurahalli,swd_vulnerable_kgis,12.969300,77.736686,high,none,,,,,,,0,True
+316,Magrath road and brigade road junction,swd_vulnerable_kgis,12.970611,77.609667,high,name+distance,1276784690-x1,1276784690,Magrath Road,dip,12,1.0,3,True
+317,Cambridge layout near Jogupalya,swd_vulnerable_kgis,12.970833,77.633611,high,distance,1091048730,1091048730,,low_bridge,20,0.0,2,True
+318,"Kalyannagar, Moodalapalya",swd_vulnerable_kgis,12.971169,77.518656,medium,distance,768593000,768593000,,low_bridge,15,0.0,1,True
+319,Jogupalya in Ulsoor,swd_vulnerable_kgis,12.971667,77.633333,medium,none,,,,,,,3,True
+320,"Kempapura Agrahara Secondary Drain, Magadi road",swd_vulnerable_kgis,12.972248,77.554109,high,none,,,,,,,7,True
+321,K P Agrahara 7th Cross  Road,swd_vulnerable_kgis,12.972619,77.562883,high,none,,,,,,,0,True
+322,"Manuvana, Pipeline road",swd_vulnerable_kgis,12.973730,77.546651,high,name+distance,1221482412-x1,1221482412,Pipeline Road,dip,152,1.0,1,True
+323,Gopalpura area,swd_vulnerable_kgis,12.975217,77.560417,medium,distance,1096875164,1096875164,,underpass,67,0.0,1,True
+324,Gopalpura,swd_vulnerable_kgis,12.975217,77.560417,medium,distance,1096875164,1096875164,,underpass,67,0.0,1,True
+325,Netaji Nagara in  KP Agrahara,swd_vulnerable_kgis,12.975619,77.562704,high,none,,,,,,,0,True
+326,Binnymill Road  near Belimath,swd_vulnerable_kgis,12.976597,77.567347,high,none,,,,,,,0,True
+327,MV garden & Murphy market,swd_vulnerable_kgis,12.978333,77.627222,high,distance,132907549,132907549,,low_bridge,16,0.0,1,True
+328,Pattandur agrahara,swd_vulnerable_kgis,12.978889,77.733753,high,name+distance,677454723-x1,677454723,Pattandur Agrahara Road,dip,183,1.0,1,True
+329,Nagamma nagara Near Binny mill road,swd_vulnerable_kgis,12.980000,77.569772,high,none,,,,,,,8,True
+330,"Gandi Statue, Oklipuram.",swd_vulnerable_kgis,12.983450,77.565525,medium,none,,,,,,,6,True
+331,"Rajajinagar  Industrial  Area ,1st Cross Road",swd_vulnerable_kgis,12.984117,77.546064,high,none,,,,,,,13,True
+332,Broadway road junction,swd_vulnerable_kgis,12.986389,77.604167,high,distance,400482304-x1,400482304,Hazrat Kambal Posh Road,dip,41,0.0,1,True
+333,Armstrong road junction in Shivajinagar,swd_vulnerable_kgis,12.986389,77.610278,medium,none,,,,,,,5,True
+334,Herohalli lake inlet Handrahalli main road,swd_vulnerable_kgis,12.987014,77.489502,medium,distance,1353417449-x1,1353417449,Magadi Road,culvert,91,0.0,2,True
+335,"Sri Rammandir, Gubbanna Industrial Estate",swd_vulnerable_kgis,12.987564,77.559297,medium,none,,,,,,,2,True
+336,Shivaganga layout,swd_vulnerable_kgis,12.988889,77.690278,high,none,,,,,,,6,True
+337,Pai Layout,swd_vulnerable_kgis,12.990278,77.668333,high,distance,1313184571-x1,1313184571,,culvert,46,0.0,1,True
+338,Netaji ground & Saneguruvanalli,swd_vulnerable_kgis,12.990872,77.544050,high,none,,,,,,,14,True
+339,Near summanahalli bridge (up stream),swd_vulnerable_kgis,12.991243,77.521437,low,none,,,,,,,0,True
+340,Near Mantri Mall bridge,swd_vulnerable_kgis,12.991328,77.570564,high,none,,,,,,,9,True
+341,Hoodi,swd_vulnerable_kgis,12.992015,77.718137,high,none,,,,,,,0,True
+342,Prakashnagar Near Mudalayar Choultry,swd_vulnerable_kgis,12.993483,77.557167,high,none,,,,,,,8,True
+343,Railway parallel road Sadanadanagar,swd_vulnerable_kgis,12.994722,77.658889,high,none,,,,,,,1,True
+344,Maheshwari nagar,swd_vulnerable_kgis,12.994920,77.692871,high,none,,,,,,,5,True
+345,"Link Road, Malleshwaram",swd_vulnerable_kgis,12.996014,77.573383,high,name+distance,388813864,388813864,Malleshwaram Underpass,underpass,217,1.0,3,True
+346,Syndicate Layout beside park,swd_vulnerable_kgis,12.996413,77.488104,medium,none,,,,,,,0,True
+347,"Guttahalli Circle, Malleshwaram",swd_vulnerable_kgis,12.997414,77.578042,high,name,388813863,388813863,Malleshwaram Underpass,underpass,705,1.0,2,True
+348,Near by 2nd Cross Ring Road,swd_vulnerable_kgis,12.997669,77.573108,medium,none,,,,,,,9,True
+349,Pillappanakatte valley (KTG Roads to DWCC),swd_vulnerable_kgis,12.998220,77.516740,high,none,,,,,,,2,True
+350,1st main road bridge down stream,swd_vulnerable_kgis,13.001000,77.527878,high,none,,,,,,,3,True
+351,Lavakushanagara to Vrishabhavathi Valley,swd_vulnerable_kgis,13.001532,77.516454,medium,none,,,,,,,6,True
+352,Jai Maruthi nagar and Nandini layout bridge ( up and down stream),swd_vulnerable_kgis,13.001756,77.532553,medium,none,,,,,,,0,True
+353,Munikrishnappa layout area of Kaveripura,swd_vulnerable_kgis,13.003306,77.563611,high,none,,,,,,,0,True
+354,Sandeep bar,swd_vulnerable_kgis,13.003567,77.529047,high,distance,141778397,141778397,,low_bridge,5,0.0,1,True
+355,Kemegowda bridge,swd_vulnerable_kgis,13.004117,77.529492,high,distance,141914028,141914028,,low_bridge,5,0.0,1,True
+356,17th and 19th main in Kamalanagar,swd_vulnerable_kgis,13.004175,77.529317,high,distance,141914028,141914028,,low_bridge,9,0.0,1,True
+357,Laggere 40-vent Bridge,swd_vulnerable_kgis,13.004406,77.529094,high,distance,141914028,141914028,,low_bridge,43,0.0,1,True
+358,Nandini Layout Junction,swd_vulnerable_kgis,13.005864,77.530042,medium,distance,1113522070,1113522070,,low_bridge,30,0.0,1,True
+359,RR layout & Ambedkar Nagar,swd_vulnerable_kgis,13.006667,77.672222,high,none,,,,,,,19,True
+360,Devasandra (Nethravathi Badavane),swd_vulnerable_kgis,13.006667,77.696389,high,name+distance,1207691764,1207691764,Devasandra Main Road,low_bridge,161,1.0,1,True
+361,Kalyananagar,swd_vulnerable_kgis,13.008889,77.636944,high,none,,,,,,,0,True
+362,Near ward office ( circular road),swd_vulnerable_kgis,13.009511,77.535528,medium,distance,142263556,142263556,1st Main Road,low_bridge,47,0.0,1,True
+363,Back of Presidency school,swd_vulnerable_kgis,13.009511,77.535528,medium,distance,142263556,142263556,1st Main Road,low_bridge,47,0.0,1,True
+364,3rd circular road Nandini layout,swd_vulnerable_kgis,13.009511,77.535528,medium,name+distance,1271968898,1271968898,Nandini Layout Road,low_bridge,127,1.0,2,False
+365,ITI Layout,swd_vulnerable_kgis,13.010556,77.680278,high,none,,,,,,,8,True
+366,Ambedkar Nagar near Ramamurthy Nagar,swd_vulnerable_kgis,13.010833,77.681389,high,none,,,,,,,7,True
+367,Down stream of Aggere bridge (Sakamma badavane),swd_vulnerable_kgis,13.010953,77.528064,high,distance,249194979,249194979,Outer Ring Road,low_bridge,21,0.0,2,True
+368,Koudenahalli (Ramamurthy Nagar main road),swd_vulnerable_kgis,13.011389,77.679167,high,distance,1102791103-x1,1102791103,,dip,32,0.0,2,True
+369,Government School & Durgalamma Temple,swd_vulnerable_kgis,13.012640,77.511780,high,none,,,,,,,1,True
+370,NRI layout,swd_vulnerable_kgis,13.012778,77.678889,high,none,,,,,,,9,True
+371,Near Yashavanthpur TTMC,swd_vulnerable_kgis,13.012895,77.561389,low,none,,,,,,,0,True
+372,Hoysala nagar in Hormavu,swd_vulnerable_kgis,13.018611,77.665556,high,distance,1442524342,1442524342,13th Cross Road,low_bridge,41,0.0,2,True
+373,HRBR Lyt,swd_vulnerable_kgis,13.018889,77.634722,high,none,,,,,,,0,True
+374,Jala Dharshani Layout of Hebbal,swd_vulnerable_kgis,13.024722,77.582500,high,none,,,,,,,0,True
+375,Vasanthappa block  Hebbal,swd_vulnerable_kgis,13.029777,77.584636,low,none,,,,,,,0,True
+376,Peenya industrial  area 3rd phase 1st  main road,swd_vulnerable_kgis,13.033097,77.520142,medium,distance,1094460831-x1,1094460831,,dip,91,0.0,2,True
+377,Bhavani nagara Doddabidarakallu,swd_vulnerable_kgis,13.033173,77.490582,high,none,,,,,,,4,True
+378,A Block of  Hebbal,swd_vulnerable_kgis,13.033333,77.590278,high,none,,,,,,,0,True
+379,Low Laying areas of Chamundi nagar of Hebbal,swd_vulnerable_kgis,13.033333,77.600278,high,none,,,,,,,6,True
+380,Sun Rise colony of Hebbal,swd_vulnerable_kgis,13.035556,77.597222,high,none,,,,,,,0,True
+381,Richi's Garden,swd_vulnerable_kgis,13.036667,77.681111,high,none,,,,,,,0,True
+382,Andanappa layout Doddabidarakallu,swd_vulnerable_kgis,13.036698,77.487117,medium,distance,1156007220,1156007220,,low_bridge,38,0.0,3,True
+383,Near bescom office Mattikere,swd_vulnerable_kgis,13.036736,77.556706,high,none,,,,,,,16,True
+384,HBR Layout,swd_vulnerable_kgis,13.039167,77.638056,high,none,,,,,,,0,True
+385,Near Jalahalli Metro station,swd_vulnerable_kgis,13.039729,77.519926,medium,distance,380052400,380052400,Goraguntepalya Flyover,low_bridge,56,0.0,2,True
+386,Veerannapalya,swd_vulnerable_kgis,13.041111,77.612222,high,name+distance,376649539,376649539,Veerannapalya Flyover,low_bridge,139,1.0,2,False
+387,Shambhavinagar,swd_vulnerable_kgis,13.041370,77.478080,high,none,,,,,,,0,True
+388,Veerannapalya drain near Manpho convention center,swd_vulnerable_kgis,13.042500,77.615556,high,name+distance,376530241,376530241,Veerannapalya Flyover,low_bridge,110,1.0,2,False
+389,Near Shani mahathma temple beside Hebbal Flyover,swd_vulnerable_kgis,13.042500,77.591389,medium,none,,,,,,,0,True
+390,Vaddera Palya (Railway track),swd_vulnerable_kgis,13.042778,77.644722,high,none,,,,,,,5,True
+391,"Kariyannapalya outer ring road, near Varun motors",swd_vulnerable_kgis,13.043056,77.598889,medium,none,,,,,,,4,True
+392,Nanda gokula,swd_vulnerable_kgis,13.043611,77.628056,medium,none,,,,,,,2,True
+393,Kariyannapalya Bridge over flowed ORR,swd_vulnerable_kgis,13.043611,77.600278,high,distance,376649535-x1,376649535,Outer Ring Road,dip,5,0.0,4,True
+394,Upstreams of Devinagar (junction of Ring road and railway track)  of Hebbal,swd_vulnerable_kgis,13.046667,77.570833,medium,name+distance,1166043705,1166043705,Devinagar Main Road,low_bridge,121,1.0,1,False
+395,Gundappa Layout & Belmar Layout,swd_vulnerable_kgis,13.046810,77.500740,high,none,,,,,,,2,True
+396,"Manyata tech park, MS Ramaiah north city To element mall",swd_vulnerable_kgis,13.047222,77.623611,high,distance,695618083,695618083,,dip,20,0.0,2,True
+397,From Esteem mall beside Dhobi Ghat to Yogesh nagar bridge,swd_vulnerable_kgis,13.047222,77.593333,high,none,,,,,,,4,True
+398,TATA nagar 8th cross,swd_vulnerable_kgis,13.055000,77.571667,high,distance,674699455-x1,674699455,,dip,46,0.0,1,True
+399,Near Rachanahalli lake inlet,swd_vulnerable_kgis,13.057778,77.614722,medium,none,,,,,,,0,True
+400,"Aaimatha layout, Mallasandra",swd_vulnerable_kgis,13.060680,77.511780,high,name+distance,37238647-x2,37238647,Chikka Banavar Railway Station Road - Mallasandra Main Road,dip,103,0.5,2,True
+401,MEI layout,swd_vulnerable_kgis,13.060870,77.501160,high,none,,,,,,,5,True
+402,Kammagondanahalli near MNTI Polytechnic,swd_vulnerable_kgis,13.064070,77.534710,medium,none,,,,,,,7,True
+403,Shettihalli & Chikkasandra Village,swd_vulnerable_kgis,13.066340,77.511780,medium,distance,215052774-x1,215052774,Hanumanthe Gowder Main Road,dip,59,0.0,1,True
+404,Siddeswara Layout,swd_vulnerable_kgis,13.067240,77.500650,low,none,,,,,,,0,True
+405,Shivapura tank,swd_vulnerable_kgis,13.067240,77.500650,low,none,,,,,,,0,True
+406,Thindlu  to Doddabommasandra tank,swd_vulnerable_kgis,13.069167,77.562778,high,name+distance,215214007-x1,215214007,Nanjappa - Thindlu Road,culvert,46,0.5,1,True
+407,LBSnagar Yelahanka,swd_vulnerable_kgis,13.092500,77.593611,medium,distance,1311986983-x1,1311986983,,dip,64,0.0,2,True
+408,Kogilu cross behind Udupi Grand hotel,swd_vulnerable_kgis,13.103056,77.601111,high,name+distance,1219682011-x1,1219682011,Kogilu Main Road,culvert,58,1.0,2,False
+409,Kondappa layout,swd_vulnerable_kgis,13.110278,77.593333,high,none,,,,,,,0,True
+410,Bhadrappa layout,flood_prone_map,13.048408,77.576020,medium,none,,,,,,,7,True
+411,Sampangiram Nagar,flood_prone_map,12.993629,77.574680,medium,distance,1103735386,1103735386,Link Road,low_bridge,79,0.0,2,True
+412,KEB Compound Maththikere,flood_prone_map,13.036299,77.558617,medium,none,,,,,,,12,True
+413,Gubbanna Layout,flood_prone_map,12.979209,77.555646,medium,distance,1156003376,1156003376,,low_bridge,62,0.0,2,True
+414,Minerva Mill,flood_prone_map,12.979452,77.564464,medium,none,,,,,,,1,True
+415,Binny Mill Tank Area,flood_prone_map,12.968746,77.568083,medium,distance,780991643-x2,780991643,Belli Mutt Road,underpass,78,0.0,2,True
+416,Binny Mill Tank Area,flood_prone_map,12.974240,77.571703,medium,none,,,,,,,4,True
+417,Kamakshipalya Tank Slum Area,flood_prone_map,12.988683,77.527091,medium,none,,,,,,,0,True
+418,Shivananda circle_Railway under pass,flood_prone_map,12.987788,77.577829,medium,distance,372083757-x1,372083757,Hare Krishna Road Underpass,underpass,0,0.0,4,True
+419,Okalipuram Junction,flood_prone_map,12.982687,77.568930,medium,distance,1312014813,1312014813,Old Mysuru Road Underpass,underpass,15,0.0,5,True
+420,Mekhri circle,flood_prone_map,13.016991,77.583793,medium,name+distance,71523618,71523618,Mekhri Circle Underpass,underpass,243,1.0,2,True
+421,Railway underbridge near Kino theatre,flood_prone_map,12.984507,77.574868,medium,distance,1343300245-x1,1343300245,Subedar Chatram Road,underpass,12,0.0,3,True
+422,Jagajeevan ram nagar,flood_prone_map,12.965588,77.550679,medium,none,,,,,,,0,True
+423,Padarayan pura,flood_prone_map,12.964563,77.549606,medium,none,,,,,,,0,True
+424,Cotton pete,flood_prone_map,12.966685,77.565447,medium,none,,,,,,,2,True
+425,City Market Area,flood_prone_map,12.965265,77.584138,medium,none,,,,,,,1,True
+426,Jayanagar 3rd Block LIC Colony,flood_prone_map,12.929768,77.589531,medium,name+distance,27994955-x1,27994955,4th Cross LIC Colony,culvert,235,1.0,1,True
+427,Krishnappa Garden behind Byrasandra Tank D/s,flood_prone_map,12.929943,77.598476,medium,none,,,,,,,2,True
+428,Wilson Garden Area up to Bannerghatta Road,flood_prone_map,12.948034,77.597177,medium,distance,23078244-x1,23078244,8th Main Road,dip,82,0.0,1,True
+429,Arekempannahalli Area,flood_prone_map,12.946265,77.593107,medium,distance,213006821-x1,213006821,,dip,25,0.0,8,True
+430,Marehahalli Tank,flood_prone_map,12.915301,77.588436,medium,none,,,,,,,9,True
+431,Bismillanagar – Agencies,flood_prone_map,12.925853,77.602199,medium,none,,,,,,,8,True
+432,Ejipura,flood_prone_map,12.938392,77.630820,low,none,,,,,,,2,True
+433,Koramangala Slum,flood_prone_map,12.924817,77.627974,medium,none,,,,,,,0,True
+434,Cholurpalya,flood_prone_map,12.972010,77.549051,medium,none,,,,,,,3,True
+435,Bapujinagar,flood_prone_map,12.956771,77.539729,medium,none,,,,,,,1,True
+436,Sanjaya Gandhi Slum Area,flood_prone_map,12.927233,77.592459,medium,none,,,,,,,1,True
+437,NGV to HSR Layout,flood_prone_map,12.948554,77.620147,medium,none,,,,,,,3,True
+438,Shanthi Nagar,flood_prone_map,12.954259,77.593239,low,none,,,,,,,7,True
+439,Vidyapeeta circle,flood_prone_map,12.933396,77.560866,medium,none,,,,,,,0,True
+440,Srinvas nagar,flood_prone_map,12.935582,77.554778,medium,distance,133887611-x1,133887611,5th Cross Road,culvert,22,0.0,7,True
+441,KH Road,flood_prone_map,12.955464,77.592032,medium,distance,1125144622,1125144622,,dip,57,0.0,3,True
+442,Magadi Police station,flood_prone_map,12.974491,77.551510,medium,name,172895631,172895631,Magadi Underpass road,underpass,327,1.0,2,True
+443,RPC layout,flood_prone_map,12.962782,77.537898,medium,none,,,,,,,0,True
+444,Ghali Anjaneya temple road,flood_prone_map,12.952727,77.541289,medium,distance,328314975,328314975,Chord Road Flyover Ramp,low_bridge,5,0.0,7,True
+445,Brindavananagar below Matthikere Tank Market,flood_prone_map,13.034809,77.555149,medium,name+distance,236851657-x1,236851657,Tank Bund Road,dip,168,0.5,1,True
+446,Shankarappa Garden Gopalapura,flood_prone_map,12.921671,77.523011,medium,none,,,,,,,0,True
+447,Kamakshipalya Tank Slum Area,flood_prone_map,12.992806,77.522042,medium,none,,,,,,,4,True
+448,Yeshwanthpur Railway station,flood_prone_map,13.023777,77.550377,medium,none,,,,,,,0,True
+449,BEML Layout in RR Nagar,flood_prone_map,12.907736,77.519661,low,none,,,,,,,0,True
+450,Nayandahalli,flood_prone_map,12.941093,77.524762,medium,name,328283584,328283584,Nayandahalli Flyover,low_bridge,425,1.0,5,True
+451,Kengeri Yellamma temple,flood_prone_map,12.898912,77.482736,medium,none,,,,,,,0,True
+452,"Bhovi Colony, near Sane Guruvanahalli Tank",flood_prone_map,13.012097,77.676207,medium,none,,,,,,,9,True
+453,HAL Airport Road,flood_prone_map,12.954504,77.682264,medium,none,,,,,,,0,True
+454,Sulthan Palya Main Road,flood_prone_map,13.029909,77.604783,medium,distance,551796243,551796243,,underpass,77,0.0,1,True
+455,Pillappa Garden – Agencies,flood_prone_map,13.025907,77.591178,medium,none,,,,,,,12,True
+456,Anandanagara,flood_prone_map,13.031328,77.591312,medium,none,,,,,,,1,True
+457,"Miller Tank,",flood_prone_map,12.991994,77.598064,medium,name+distance,46728021-x1,46728021,Millers Tank Bund Road,culvert,235,0.5,1,True
+458,"Miller Tank,  Chinnappa Garden",flood_prone_map,13.002206,77.602972,medium,none,,,,,,,0,True
+459,Saraswathipuram – Jogu Palya,flood_prone_map,12.972383,77.632890,medium,none,,,,,,,5,True
+460,K R Garden,flood_prone_map,12.954015,77.656156,medium,none,,,,,,,9,True
+461,Rudrappa Garden,flood_prone_map,12.959964,77.617996,low,none,,,,,,,4,True
+462,TV tower-Jaymahal extension,flood_prone_map,13.008077,77.591904,medium,none,,,,,,,0,True
+463,hotel Chalukya Junction,flood_prone_map,12.984499,77.588161,medium,none,,,,,,,0,True
+464,Dommlur,flood_prone_map,12.960933,77.638739,medium,none,,,,,,,4,True
+465,Ulsoor,flood_prone_map,12.981958,77.623968,medium,none,,,,,,,0,True
+466,DJ Halli,flood_prone_map,13.009268,77.610288,medium,none,,,,,,,1,True
+467,KR circle Underpass,flood_prone_map,12.975429,77.587323,medium,name+distance,52032737,52032737,KR Circle Underpass,underpass,29,1.0,1,False
+468,"Ashok Nagar
+,museum road",flood_prone_map,12.970776,77.604797,medium,none,,,,,,,4,True
+469,UB city  road,flood_prone_map,12.971329,77.596618,medium,none,,,,,,,2,True
+470,New Thippasandra,flood_prone_map,12.972032,77.654143,medium,name+distance,461556554-x2,461556554,Thippasandra Main Road,dip,122,1.0,1,False
+471,Cox town,flood_prone_map,12.995442,77.623408,medium,none,,,,,,,2,True
+472,Thippasandra,flood_prone_map,12.973707,77.646811,medium,none,,,,,,,1,True
+473,Indiranagar 80ft road,flood_prone_map,12.968873,77.647744,medium,distance,24403215-x1,24403215,Jeevan Bhima Nagar Main Road,culvert,2,0.0,3,True
+474,Pulakeshinagara,flood_prone_map,12.996841,77.609904,medium,none,,,,,,,0,True
+475,Banaswadi,flood_prone_map,13.011904,77.647129,medium,name+distance,213352703-x1,213352703,Banaswadi Main Road,dip,143,1.0,2,False
+476,Sarjapur road,flood_prone_map,13.006586,77.499379,medium,none,,,,,,,8,True
+477,NGV to HSR Layout,flood_prone_map,12.906770,77.647668,medium,none,,,,,,,6,True
+478,Kallena Agrahara in Arekere,flood_prone_map,12.870970,77.593502,medium,none,,,,,,,0,True
+479,RR Layout in Arekere & Hulimavu junction,flood_prone_map,12.884240,77.596581,medium,none,,,,,,,0,True
+480,"Gurudarshan Layout,Near Doddabommasandra",low_lying_area,13.071537,77.559324,medium,none,,,,,,,8,True
+481,Devi Nagara,low_lying_area,13.052073,77.573025,medium,none,,,,,,,5,True
+482,JRD Tata Nagar,low_lying_area,13.055279,77.573364,medium,none,,,,,,,7,True
+483,"Bhadrappa Layout, Nagashettihalli",low_lying_area,13.048669,77.573961,medium,none,,,,,,,8,True
+484,Someshwara Nagar,low_lying_area,13.092327,77.579297,medium,none,,,,,,,5,True
+485,EWS working colony 3rd stage,low_lying_area,13.093543,77.582441,medium,none,,,,,,,3,True
+486,"Attur, Near Dairy Circle",low_lying_area,13.107285,77.568995,medium,none,,,,,,,3,True
+487,"Balaji Layout, Near Tata Nagar",low_lying_area,13.054010,77.576472,medium,none,,,,,,,5,True
+488,"Shankrappa Layout,MAruthi nagar",low_lying_area,13.103662,77.605114,medium,none,,,,,,,5,True
+489,Kempapura,low_lying_area,13.048485,77.604810,medium,none,,,,,,,0,True
+490,Mariyanna Palya,low_lying_area,13.051319,77.615372,medium,none,,,,,,,2,True
+491,"Telecom layout,Ashwathnagar",low_lying_area,13.055844,77.634656,medium,none,,,,,,,0,True
+492,Sanguruvanahalli,low_lying_area,12.990867,77.540867,medium,none,,,,,,,0,True
+493,"8TH CROSS 6TH BLOCK SANKARAPPA GARDEN ,RAJAJINAGAR",low_lying_area,12.981399,77.552533,medium,none,,,,,,,1,True
+494,BHAKSHI GARDEN,low_lying_area,12.968430,77.566055,medium,none,,,,,,,5,True
+495,SANJEEVAPPA GARDEN,low_lying_area,13.028223,77.558805,medium,none,,,,,,,7,True
+496,"NAGANNA NAGAR,NEAR BINNIY MILL ROAD",low_lying_area,12.967097,77.568751,medium,none,,,,,,,4,True
+497,KANTEERAVA NAGARA,low_lying_area,13.019605,77.541546,medium,none,,,,,,,2,True
+498,KAMALANAGAR,low_lying_area,13.022687,77.557861,medium,none,,,,,,,22,True
+499,12th  cross gubbanalayout industrial area,low_lying_area,12.978705,77.555546,medium,distance,1228592558,1228592558,,low_bridge,64,0.0,2,True
+500,SARVABHOUMA NAGAR-WARD NO 131 NAYANDHALLI,low_lying_area,12.950779,77.526379,medium,name,249912697,249912697,Nayandhalli Flyover,low_bridge,548,1.0,2,True
+501,"14TH CROSS P&T COLONY,CHOLARPALYA",low_lying_area,12.991323,77.547741,medium,distance,1459793728,1459793728,12th Cross Road,underpass,92,0.0,1,True
+502,"1ST MAIN 8TH CROSS N.R.GARDEN,CHOLARPALYA",low_lying_area,12.992941,77.543553,medium,name+distance,1209279615-x1,1209279615,8th B Main Road,dip,128,0.5,1,True
+503,MUDALPALYA,low_lying_area,13.014327,77.531387,medium,none,,,,,,,0,True
+504,"METRO LAYOUT-WARD NO 131,NEAR NAYANDHALLI",low_lying_area,12.965437,77.530224,medium,none,,,,,,,0,True
+505,bismillanagar,low_lying_area,12.926952,77.603111,medium,none,,,,,,,12,True
+506,rudrappa garden,low_lying_area,12.956324,77.547572,low,none,,,,,,,0,True
+507,samrudhinagar,low_lying_area,12.952625,77.546893,medium,distance,687319748-x1,687319748,,culvert,88,0.0,1,True
+508,silkboardjunction,low_lying_area,12.896674,77.559872,medium,none,,,,,,,0,True
+509,SARVABHOUMA NAGAR-WARD NO 131 NAYANDHALLI,low_lying_area,12.950779,77.526379,medium,name,249912697,249912697,Nayandhalli Flyover,low_bridge,548,1.0,2,True
+510,SOMESHWARA COLONY NEAR SILK BOARD JUNCTION,low_lying_area,12.915518,77.615996,medium,name,40696222,40696222,Silk Board Flyover,low_bridge,722,1.0,2,True
+511,"MARUTHI NAGAR, SANKRAPPA LAYOUT",low_lying_area,12.917843,77.628961,medium,none,,,,,,,2,True
+512,"VENKATAREDDY NAGAR,SIDDAPURA",low_lying_area,12.948752,77.596505,medium,distance,23078244-x1,23078244,8th Main Road,dip,11,0.0,4,True
+513,"VITTALA NAGAR , NEAR KEMPEGOWDANAGAR",low_lying_area,12.953108,77.542285,medium,distance,1097920904-x1,1097920904,,dip,66,0.0,5,True
+514,"MARUTHI NAGARA ,NEAR BAPUJI NAGARA",low_lying_area,12.955497,77.538396,medium,none,,,,,,,2,True
+515,"RANGANATHA LAYOUT,BHEL CIRCLE",low_lying_area,12.947511,77.535384,medium,none,,,,,,,0,True
+516,PWD QUARTERS NEAR WISLSON GARDEN,low_lying_area,12.948594,77.597968,medium,none,,,,,,,10,True
+517,ASHWINI LAYOUT,low_lying_area,12.940539,77.629190,medium,distance,8680575-x1,8680575,3rd Cross Road,dip,93,0.0,1,True
+518,EJIPURA,low_lying_area,12.943109,77.627296,low,none,,,,,,,8,True
+519,LAKSHMAN RAO NAGARA,low_lying_area,12.949079,77.614683,medium,none,,,,,,,2,True
+520,"Kengunta,Near Mallathalli",low_lying_area,12.959254,77.499259,medium,none,,,,,,,0,True
+521,Sri Hari layout,low_lying_area,12.957438,77.494171,medium,none,,,,,,,3,True
+522,Near Vidyanikethan School,low_lying_area,12.956032,77.488698,medium,none,,,,,,,3,True
+523,"Vinayaka Layout,Near Nagarabhavi",low_lying_area,12.964788,77.514889,medium,name+distance,1361741145-x1,1361741145,Nagarabhavi Circle Flyover,dip,282,1.0,2,True
+524,Bandemata-Near Kengeri,low_lying_area,12.913138,77.488522,medium,none,,,,,,,0,True
+525,"Janapriya Apartments,Near Rajarajeshwari Temple",low_lying_area,12.927633,77.508905,medium,none,,,,,,,3,True
+526,Kenchenahalli,low_lying_area,12.930472,77.509445,medium,distance,1101381565,1101381565,,underpass,70,0.0,1,True
+527,"Shivanna Layout,Near Halagevaddarahalli",low_lying_area,12.920464,77.519020,medium,none,,,,,,,0,True
+528,BRINDAVAN NAGAR,low_lying_area,13.034625,77.554580,medium,distance,37107055-x1,37107055,B Srinivas Murthy Road,dip,90,0.0,1,True
+529,CHICKKABIDRIKAL,low_lying_area,13.044566,77.490517,medium,none,,,,,,,1,True
+530,"ANJANA NAGARA ,NEAR ANJANEYA TEMPLE (WARD NO 72)",low_lying_area,12.988674,77.481959,medium,none,,,,,,,0,True
+531,"BYRAVESHWARA NAGARA , HAGGANAHALLI",low_lying_area,12.989322,77.504201,medium,none,,,,,,,0,True
+532,"CHOWDESHWARINAGAR,RAJIV GANDHI CIRCLE ,LAGGERE",low_lying_area,13.009711,77.526952,medium,distance,244585798,244585798,Outer Ring Road,low_bridge,9,0.0,3,True
+533,KALIKA NAGARA MAIN ROAD (WARD NO 41),low_lying_area,13.009936,77.491958,medium,none,,,,,,,12,True
+534,KOTTIGEPALYA,low_lying_area,12.985970,77.512042,medium,distance,1098476447-x1,1098476447,,culvert,70,0.0,2,True
+535,RUKMINI NAGARA NEAR MAGADI ROAD (WARD NO 73),low_lying_area,13.041586,77.493881,medium,none,,,,,,,0,True
+536,SHIVANANDANAGARA,low_lying_area,13.006781,77.495142,medium,none,,,,,,,1,True
+537,KALLAPA LAYOUT NEAR BASAVANAGARA,low_lying_area,12.967840,77.686900,medium,none,,,,,,,8,True
+538,TALA KAVERI LAYOUT NEAR HAL AIRPORT,low_lying_area,12.960494,77.686208,medium,none,,,,,,,0,True
+539,SJR DENTAL COLLEGE MAIN ROAD,low_lying_area,12.948996,77.703029,medium,name+distance,100402557-x1,100402557,S G R Dental College Road,culvert,17,0.67,1,True
+540,GANDHIPURAM NEAR WHITE FIELD,low_lying_area,12.971316,77.755935,medium,none,,,,,,,3,True
+541,UDAYANAGARA NEAR A NARAYANPURA,low_lying_area,12.990081,77.675599,medium,none,,,,,,,0,True
+542,PAI LAYOUT,low_lying_area,12.991415,77.668829,medium,distance,1313184462-x1,1313184462,,culvert,10,0.0,5,True
+543,CHINAPPA LAYOUT,low_lying_area,12.985366,77.685587,medium,none,,,,,,,0,True
+544,GARUDACHARPLAYA BASAVANAGARA,low_lying_area,12.986618,77.719487,medium,none,,,,,,,0,True
+545,PASTTANDUR AGRAHARA NEAR ITPL,low_lying_area,12.974947,77.735077,medium,none,,,,,,,2,True
+546,SAI BABA ASHRAM KADUGODI,low_lying_area,13.001554,77.754159,medium,name,95187518,95187518,Kadugodi Railway Bridge,low_bridge,416,1.0,1,True
+547,PATTALAMMA LAYOUT NEAR KADUGODI,low_lying_area,12.998829,77.759073,medium,name+distance,95187518,95187518,Kadugodi Railway Bridge,low_bridge,99,1.0,1,False
+548,SIDDHARTHA LAYOUT KADUGODI,low_lying_area,12.997007,77.763192,medium,name,95187518,95187518,Kadugodi Railway Bridge,low_bridge,510,1.0,1,True
+549,TRIVENI NAGAR NEAR KR PURAM,low_lying_area,13.023151,77.719902,medium,none,,,,,,,9,True
+550,"KRISHNANAGARA , NEAR CHIKKADEVSANDRA",low_lying_area,13.005344,77.706548,medium,none,,,,,,,2,True
+551,VINAYAKA LAYOUT NEAR BASAVANAPURA MAIN ROAD,low_lying_area,13.014299,77.706673,medium,none,,,,,,,8,True
+552,HOYSALANAGARA KR PURA,low_lying_area,13.017243,77.665983,medium,none,,,,,,,2,True
+553,RR LAYOUT  NEAR VIJNANAPURA,low_lying_area,13.011501,77.675809,medium,distance,130659889-x2,130659889,,culvert,67,0.0,2,True
+554,DR AMBEDKAR NAGAR NEAR VIJNANAPURA,low_lying_area,13.015196,77.686649,medium,distance,1119761081,1119761081,,low_bridge,90,0.0,1,True
+555,"ABBAREDDY LAYOUT ,VIJNANA NAGARA",low_lying_area,12.980353,77.680829,medium,none,,,,,,,0,True
+556,"Vaddara palya, Near Hennur Bande",low_lying_area,13.040110,77.644374,medium,none,,,,,,,2,True
+557,BHUVANESHWARI NAGARA WARD NO 15,low_lying_area,13.042979,77.507982,medium,none,,,,,,,14,True
+558,BAGALKUNTE( L NARSIMHAYA LAYOUT),low_lying_area,13.064251,77.503017,medium,none,,,,,,,0,True
+559,KEMPEGOWDANAGAR,low_lying_area,13.045112,77.510646,medium,none,,,,,,,10,True
+560,NELEGADARANAHALLI,low_lying_area,13.033632,77.502142,medium,none,,,,,,,0,True
+561,SHIVAPURA KERE NEAR NTTF,low_lying_area,13.026011,77.505858,medium,none,,,,,,,1,True
+562,KARAMCHAND LAYOUT NEAR KARIYANNA PALYA,low_lying_area,,,none,none,,,,,,,0,True
+563,SHAMPURA SLUM,low_lying_area,13.022821,77.613497,medium,name+distance,764500261-x1,764500261,Shampura Main Road,culvert,136,1.0,1,False
+564,BASAVANNA NAGARA NEAR KADUGODANAHALLI,low_lying_area,13.019739,77.619731,medium,none,,,,,,,0,True
+565,"THAMMANA LAYOUT NEAR LINGARAJAPURA,",low_lying_area,13.009947,77.628758,medium,none,,,,,,,19,True
+566,MUNIREDDY PALYA,low_lying_area,13.007065,77.601026,medium,distance,1107649410,1107649410,,low_bridge,40,0.0,3,True
+567,CHINAPPA GARDEN,low_lying_area,13.002968,77.602600,medium,none,,,,,,,0,True
+568,AMBEDKAR NAGAR NEAR BYAPPANAHALLI,low_lying_area,12.988099,77.640502,medium,none,,,,,,,1,True
+569,"BANDAPPA COLONY , NEAR NEW BYAPPANAHALLI",low_lying_area,12.984318,77.640679,medium,none,,,,,,,1,True
+570,CAMBRIDGE LAYOUT,low_lying_area,12.973290,77.626670,medium,none,,,,,,,0,True
+571,BHARATHI NAGARA,low_lying_area,12.987921,77.611414,medium,none,,,,,,,0,True
+572,"RAJIV GANDHI COLONY ,NEAR QUEENS ROAD",low_lying_area,12.989232,77.601206,medium,name+distance,458439814-x1,458439814,Queen's Road,culvert,279,1.0,1,True
+573,MURUGESHPALYA,low_lying_area,12.956135,77.655992,medium,none,,,,,,,11,True
+574,SRINIVAGILU TANK BED LAYOUT,low_lying_area,12.936238,77.636726,medium,none,,,,,,,0,True
+575,SHANTHI NAGARA,low_lying_area,12.956486,77.599551,low,none,,,,,,,7,True
+576,SAMPANGI RAMA NAGARA,low_lying_area,12.972939,77.592226,medium,none,,,,,,,4,True
+577,SEETHAPPA LAYOUT NEAR RABINDRANATH TAGORE LAYOUT,low_lying_area,13.033872,77.603767,medium,none,,,,,,,1,True
+578,BAMBOO BAZAR,low_lying_area,12.992651,77.603824,medium,none,,,,,,,4,True
+579,munireddypalya anekappa block,low_lying_area,13.013126,77.594439,medium,none,,,,,,,2,True
+580,SHANKAR NAGAR,low_lying_area,13.031118,77.571187,medium,none,,,,,,,9,True
+581,"Govindapura,Nesar Nagavara",low_lying_area,13.033684,77.615025,medium,none,,,,,,,0,True
+582,ILLIYAS NAGAR KUMARSWAMY LAYOUT,low_lying_area,12.905830,77.569786,medium,none,,,,,,,9,True
+583,MUNISUBBAREDDY LAYOUT HONGASANDRA,low_lying_area,12.898934,77.628470,medium,none,,,,,,,0,True
+584,AMBEDKAR COLONY NEAR HONGASANDRA,low_lying_area,12.892687,77.628147,medium,none,,,,,,,6,True
+585,MICO LAYOUT,low_lying_area,12.887503,77.626956,medium,none,,,,,,,5,True
+586,ROYQAL MERIDIAN LAYOUT,low_lying_area,12.887586,77.624363,medium,none,,,,,,,0,True
+587,VISHWA PRIYA NAGARA NEAR BEGUR MAIN RAOD,low_lying_area,12.882051,77.629051,medium,none,,,,,,,3,True
+588,BEGUR KERE AREA,low_lying_area,12.876405,77.624941,medium,name+distance,334653045-x1,334653045,Begur Road,culvert,118,1.0,1,False
+589,SUBASH NAGARA,low_lying_area,12.869882,77.639541,medium,none,,,,,,,0,True
+590,GARVE BHAVI PALYA,low_lying_area,12.894441,77.637980,medium,none,,,,,,,3,True
+591,PARAPPAN AGRAHARA,low_lying_area,12.880294,77.661159,medium,none,,,,,,,0,True
+592,G K LAYOUT,low_lying_area,12.873697,77.660327,medium,none,,,,,,,3,True
+593,KUDLU VILLAGE,low_lying_area,12.889427,77.657504,medium,none,,,,,,,0,True
+594,B.T.R GARDEN LAYOUT,low_lying_area,12.888512,77.642364,medium,none,,,,,,,6,True
+595,RAGHAVENDRA SLUM NEAR LAKSHMI LAYOUT,low_lying_area,12.890726,77.631708,medium,none,,,,,,,2,True
+596,MUNIREDDY LAYOUT NEAR MANGAMMNAPALYA,low_lying_area,12.905057,77.637142,medium,none,,,,,,,3,True
+597,VYSHYA BANK COLONY NEAR AREKERE,low_lying_area,12.883350,77.604285,medium,none,,,,,,,0,True
+598,KRISHNA LAYOUT NEAR HULIMAVU KERE,low_lying_area,12.877822,77.605805,medium,none,,,,,,,0,True
+599,BDA LAYOUT,low_lying_area,12.857844,77.591492,medium,none,,,,,,,0,True
+600,PUTTENHALLI,low_lying_area,12.901192,77.584920,medium,none,,,,,,,0,True
+601,"ASHTA LAKSHMI LAYOUT ,PUTTENHALLI",low_lying_area,12.901839,77.586612,medium,none,,,,,,,0,True
+602,GANAPATHPURA NEAR CHUNCHANGHATTA MAIN RAOD,low_lying_area,12.886308,77.570390,medium,none,,,,,,,0,True
+603,HARI NAGAR NEAR KONANKUNTTE,low_lying_area,12.883297,77.575201,medium,none,,,,,,,0,True
+604,"VITTAL NAGAR NEAR ISRO LAYOUT,UTTARAHALLI",low_lying_area,12.902625,77.553865,medium,none,,,,,,,4,True
+605,sanjaynagar,low_lying_area,12.917834,77.545009,medium,none,,,,,,,2,True
+606,Yelechenahalli,low_lying_area,12.905651,77.571272,medium,none,,,,,,,3,True
+607,Kanakanagar-Near kumaraswamylayout,low_lying_area,12.902480,77.571761,medium,none,,,,,,,0,True
+608,Dorakere,low_lying_area,12.903358,77.545712,medium,none,,,,,,,3,True
+609,ORR between Nagawara Junction and Hebbal,traffic_waterlogging,13.045204,77.626545,low,none,,,,,,,5,True
+610,Hebbal Circle below the flyover,traffic_waterlogging,13.041662,77.589944,high,none,,,,,,,0,True
+611,International Airport Road at Hunasamaranahalli,traffic_waterlogging,13.139862,77.623051,low,none,,,,,,,0,True
+612,International Airport Road at Vidyashilp Junction,traffic_waterlogging,13.131905,77.587775,low,none,,,,,,,0,True
+613,Rupena Agrahara on Hosur Road,traffic_waterlogging,12.910640,77.623826,medium,none,,,,,,,1,True
+614,ORR at Marathahalli police station,traffic_waterlogging,12.945553,77.697942,high,distance,985390127,985390127,Service Road,low_bridge,42,0.0,2,True
+615,ORR at Karthik Nagar,traffic_waterlogging,12.969376,77.699675,medium,none,,,,,,,0,True
+616,ORR at Kasturi Nagar bridge (Horamavu),traffic_waterlogging,13.001528,77.651236,low,none,,,,,,,0,True
+617,Palace Guttahalli on Ballari Road,traffic_waterlogging,12.999489,77.584347,high,none,,,,,,,0,True
+618,Agara at 14th Main HSR,traffic_waterlogging,12.919840,77.638427,high,none,,,,,,,0,True
+619,Ruby-1 and Ruby-2 on Bannerghatta Road,traffic_waterlogging,,,none,none,,,,,,,0,True
+620,Queens Circle,traffic_waterlogging,,,none,none,,,,,,,0,True
+621,ORR at Eco World (Kadubeesanahalli),traffic_waterlogging,,,none,none,,,,,,,0,True
+622,Panathur underpass,traffic_waterlogging,12.936355,77.705013,medium,name+distance,1221269788,1221269788,Panathur Main Road,underpass,255,1.0,2,True
+623,ORR between Nagawara Junction and Hebbal,traffic_waterlogging,13.045204,77.626545,low,none,,,,,,,5,True
+624,Hebbal Circle below the flyover,traffic_waterlogging,13.041662,77.589944,high,none,,,,,,,0,True
+625,Airport Road to Hunsmaranahalli,traffic_waterlogging,13.139862,77.623051,low,none,,,,,,,0,True
+626,International Airport Road to Vidyashilp Junction,traffic_waterlogging,13.131905,77.587775,low,none,,,,,,,0,True
+627,ORR at the Marathahalli police station,traffic_waterlogging,12.945553,77.697942,high,distance,985390127,985390127,Service Road,low_bridge,42,0.0,2,True
+628,Karthik Nagar,traffic_waterlogging,12.969376,77.699675,medium,none,,,,,,,0,True
+629,Kasturi Nagar bridge,traffic_waterlogging,13.001528,77.651236,low,none,,,,,,,0,True
+630,Palace Guttahalli on Ballari Road,traffic_waterlogging,12.999489,77.584347,high,none,,,,,,,0,True
+631,Agara Road at HSR,traffic_waterlogging,12.922140,77.647937,medium,none,,,,,,,0,True
+632,Ruby-1 and Ruby-2 on Bannerghatta Road,traffic_waterlogging,,,none,none,,,,,,,0,True
+633,Queen's Circle,traffic_waterlogging,,,none,none,,,,,,,0,True
+634,Panathur railway underpass,traffic_waterlogging,12.936355,77.705013,medium,name+distance,1221269788,1221269788,Panathur Main Road,underpass,255,1.0,2,True
+635,Benniganahalli on Old Madras Road,traffic_waterlogging,12.994919,77.662603,medium,name+distance,380724513,380724513,Benniganahalli Flyover,low_bridge,276,1.0,3,True
+636,Ramamurthy Nagar underpass on Outer Ring Road,traffic_waterlogging,13.012022,77.677782,low,none,,,,,,,12,True
+637,Bannerghatta Road,traffic_waterlogging,12.921475,77.600120,low,none,,,,,,,0,True
+638,Hebbal,traffic_waterlogging,13.038218,77.591900,low,none,,,,,,,0,True
+639,Windsor Manor-Mehkri Circle stretch,traffic_waterlogging,13.020046,77.584018,low,name,71523618,71523618,Mekhri Circle Underpass,underpass,580,1.0,2,True
+640,Palace Road,traffic_waterlogging,12.985619,77.588522,low,none,,,,,,,0,True
+641,Sankey Road,traffic_waterlogging,12.988007,77.587296,low,name,1039668762,1039668762,Sankey Road Underpass,underpass,386,1.0,2,True
+642,Mysuru Road (near Nayandahallli),traffic_waterlogging,12.941325,77.521212,medium,none,,,,,,,1,True
+643,Kengeri Satellite Town bus stand,traffic_waterlogging,,,none,name,135401454,135401454,Kengeri Flyover,low_bridge,,1.0,1,True
+644,Roopena Agrahara,traffic_waterlogging,12.910640,77.623826,medium,none,,,,,,,1,True
+645,HSR Layout,traffic_waterlogging,12.911623,77.638862,low,none,,,,,,,0,True
+646,Underpass in Kadubeesanahalli,underpass_news,12.937595,77.701070,low,none,,,,,,,0,True
+647,Nehru Circle underpass,underpass_news,12.988309,77.577183,high,none,,,,,,,4,True
+648,Shivananda Circle underpass,underpass_news,,,none,none,,,,,,,0,True
+649,Suranjandas Road underpass,underpass_news,12.962653,77.664503,low,name,1135874169,1135874169,Suranjandas Road Underpass,underpass,495,1.0,2,True
+650,Kundalahalli Gate underpass,underpass_news,12.955914,77.714803,low,name+distance,1072664296,1072664296,Kundalahalli Underpass,underpass,2,1.0,2,True
+651,Okalipuram underpass,underpass_news,12.982687,77.568930,medium,distance,1312014813,1312014813,Old Mysuru Road Underpass,underpass,15,0.0,5,True
+652,Lingarajapuram underpass,underpass_news,13.009395,77.626788,low,none,,,,,,,7,True
+653,Tagore circle underpass,underpass_news,12.943695,77.573283,low,name+distance,328774396,328774396,Tagore Circle Underpass,underpass,51,1.0,2,True
+654,Laggere,ksndmc_flood_points,13.010868,77.520730,low,none,,,,,,,2,True
+655,Mudalapalya,ksndmc_flood_points,12.968625,77.524462,low,none,,,,,,,0,True
+656,Yeshwantpur Railway Station Area,ksndmc_flood_points,13.023268,77.549875,low,none,,,,,,,0,True
+657,Jai Prakash Narayan Park,ksndmc_flood_points,13.034481,77.550853,low,none,,,,,,,0,True
+658,Shivananda Nagar,ksndmc_flood_points,12.986745,77.579692,low,none,,,,,,,4,True
+659,NR Garden,ksndmc_flood_points,,,none,none,,,,,,,0,True
+660,National Games Village to HSR Layout,ksndmc_flood_points,12.944619,77.623326,low,none,,,,,,,2,True
+661,Munireddy Layout in Bommanahalli Zone,ksndmc_flood_points,12.938740,77.699179,low,none,,,,,,,0,True
+662,Maruthi Nagar,ksndmc_flood_points,13.103662,77.605114,medium,none,,,,,,,5,True
+663,Bismillah Nagar,ksndmc_flood_points,12.926338,77.603385,low,none,,,,,,,13,True
+664,Magadi police station area,ksndmc_flood_points,12.974491,77.551510,medium,name,172895631,172895631,Magadi Underpass road,underpass,327,1.0,2,True
+665,Rudrappa Garden,ksndmc_flood_points,12.959964,77.617996,medium,none,,,,,,,4,True
+666,Dommaluru,ksndmc_flood_points,12.962467,77.638196,low,none,,,,,,,1,True
+667,Jayamahal road (from Doordarshan center to JC Nagar),ksndmc_flood_points,12.999742,77.597002,low,none,,,,,,,0,True
+668,Shivananda Junction,ksndmc_flood_points,,,none,none,,,,,,,0,True
+669,UB City Road,ksndmc_flood_points,12.971329,77.596618,medium,none,,,,,,,2,True
+670,Indiranagar 80 feet Road,ksndmc_flood_points,12.982173,77.645881,low,none,,,,,,,0,True
+671,Kalyannagar 100 feet road,ksndmc_flood_points,13.022142,77.640337,low,none,,,,,,,8,True
+672,Kadugodi,ksndmc_flood_points,12.995743,77.757949,low,name+distance,95187518,95187518,Kadugodi Railway Bridge,low_bridge,33,1.0,1,True
+673,Yeshwanthpur Railway station,ksndmc_flood_points,13.023777,77.550377,medium,none,,,,,,,0,True
+674,City Market (KR Market),ksndmc_flood_points,12.965265,77.584138,medium,none,,,,,,,1,True
+675,Wilson Garden up to Bannerghatta Road,ksndmc_flood_points,12.948034,77.597177,medium,distance,23078244-x1,23078244,8th Main Road,dip,82,0.0,1,True
+676,Vidyapeeta Circle,ksndmc_flood_points,12.933396,77.560866,medium,none,,,,,,,0,True
+677,Someshwara colony near silk board junction,ksndmc_flood_points,12.915518,77.615996,medium,name,40696222,40696222,Silk Board Flyover,low_bridge,722,1.0,2,True
+678,Madiwala lake outlet near silk board junction,ksndmc_flood_points,12.908227,77.617725,medium,none,,,,,,,0,True
+679,Jayanagar east in Krishnappa Garden (behind Byrasandra tank),ksndmc_flood_points,12.977456,77.659325,medium,none,,,,,,,0,True
+680,Bapuji Nagar upstream of Galianjaneya temple,ksndmc_flood_points,12.955670,77.540249,medium,none,,,,,,,4,True
+681,Hulimavu Lake Junction,civic_watchlist,12.870081,77.604205,medium,none,,,,,,,0,True
+682,Sagar Junction to Sagar Hospital Road,civic_watchlist,12.927948,77.599850,low,none,,,,,,,0,True
+683,HSR Layout 14th Main Road,civic_watchlist,12.919840,77.638427,high,none,,,,,,,0,True
+684,Sony World Junction,civic_watchlist,12.937502,77.626611,high,none,,,,,,,5,True
+685,Outer Ring Road,civic_watchlist,12.923110,77.670269,low,none,,,,,,,0,True
+686,HSR Layout 5th Main Road,civic_watchlist,12.911655,77.632402,medium,distance,1182406075-x1,1182406075,,dip,5,0.0,3,True
+687,Shri Rangam Junction,civic_watchlist,12.912168,77.635394,high,none,,,,,,,0,True
+688,Bellandur-Iblur Junction,civic_watchlist,12.920660,77.665197,high,none,,,,,,,8,True
+689,Wipro Junction on Sarjapur Road,civic_watchlist,,,none,none,,,,,,,0,True
+690,Roopena Agrahara,civic_watchlist,12.910640,77.623826,medium,none,,,,,,,1,True
+691,Madiwala Ayyappa Junction,civic_watchlist,12.925940,77.617142,high,name+distance,148210029,148210029,Madiwala Underpass,underpass,7,1.0,6,True
+692,Devarabisanahalli,civic_watchlist,12.923485,77.686966,low,none,,,,,,,7,True
+693,Panathur,civic_watchlist,12.936355,77.705013,medium,name+distance,1221269788,1221269788,Panathur Main Road,underpass,255,1.0,2,True
+694,Varthur,civic_watchlist,12.956940,77.735939,medium,none,,,,,,,0,True
+695,Thubarahalli,civic_watchlist,12.955652,77.720545,medium,none,,,,,,,4,True
+696,Whitefield,civic_watchlist,12.995743,77.757949,low,none,,,,,,,4,True
+697,Hope Farm Junction,civic_watchlist,12.987297,77.753884,low,none,,,,,,,0,True
+698,Cunningham Road and Kumara Krupa Road underpass across Sankey Road,underpass_audit,12.994621,77.585015,high,name+distance,1306480003-x1,1306480003,Sankey Road Underpass,underpass,88,1.0,4,True
+699,Kino Theatre road (Anand Rao Circle) railway underbridge,underpass_audit,12.980714,77.574742,high,none,,,,,,,2,True
+700,Cauvery Theatre front vehicle underpass,underpass_audit,13.003419,77.584005,high,distance,163101103,163101103,Sankey Underpass,underpass,22,0.0,1,True
+701,Kodigehalli railway vehicle underpass,underpass_audit,13.003167,77.727283,low,none,,,,,,,0,True
+702,Mekhri Circle vehicle underpass,underpass_audit,13.016991,77.583793,medium,name+distance,71523618,71523618,Mekhri Circle Underpass,underpass,243,1.0,2,True
+703,Yelahanka railway vehicle underpass,underpass_audit,13.100698,77.596345,low,none,,,,,,,0,True
+704,C.N.R. Rao Circle vehicle underpass,underpass_audit,13.014030,77.565967,high,name+distance,378597858,378597858,CNR Rao Underpass,underpass,4,1.0,10,True
+705,Kuvempu Circle vehicle underpass (Outer Ring Road and New BEL Road),underpass_audit,12.909841,77.521079,low,none,,,,,,,0,True
+706,Outer Ring Road and Gangamma Gudi Circle vehicle underpass,underpass_audit,,,none,none,,,,,,,0,True
+707,RMV Layout railway vehicle underpass next to Fairfield residential complex,underpass_audit,13.037756,77.574445,low,none,,,,,,,0,True
+708,Bengaluru Cantonment railway station circle railway vehicle underpass,underpass_audit,12.993687,77.598000,medium,none,,,,,,,4,True
+709,Anandanagar Hebbal Traffic Police Station front vehicle underpass,underpass_audit,13.042419,77.589307,high,none,,,,,,,0,True
+710,Nayandahalli junction railway vehicle underpass,underpass_audit,12.941093,77.524762,medium,name,1217250873,1217250873,Nayandahalli Underpass,underpass,567,1.0,3,True
+711,KR Circle underpass,underpass_audit,12.975429,77.587323,medium,name+distance,52032737,52032737,KR Circle Underpass,underpass,29,1.0,1,False

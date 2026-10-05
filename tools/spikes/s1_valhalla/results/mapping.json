@@ -62,8 +62,26 @@
   },
   "timing": {
    "calls": 5996,
-   "ms_p50": 1.63,
-   "ms_p95": 2.64
+   "ms_p50": 1.78,
+   "ms_p95": 3.13
+  }
+ },
+ "locate_vs_trace_v1": {
+  "fwd_exact_trace": 2617,
+  "fwd_exact_locate": 2793,
+  "fwd_exact_either": 2793,
+  "fwd_exact_neither": 207,
+  "rev_exact_trace": 1935,
+  "rev_exact_locate": 2059,
+  "rev_exact_either": 2060,
+  "rev_exact_neither": 940,
+  "locate_ids_equal_trace_ids_when_both_exact": 4549,
+  "both_exact": 4551,
+  "locate_ms_per_segment": 2.65,
+  "short_segments_under_15m_fwd": {
+   "n": 597,
+   "trace_exact": 410,
+   "locate_exact": 577
   }
  },
  "map_while_closed_exact_count": {
@@ -137,8 +155,8 @@
   },
   "timing": {
    "calls": 5996,
-   "ms_p50": 1.67,
-   "ms_p95": 3.23
+   "ms_p50": 1.66,
+   "ms_p95": 3.08
   }
  },
  "rebuild_compare": {
