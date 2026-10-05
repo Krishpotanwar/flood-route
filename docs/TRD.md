@@ -64,7 +64,7 @@ For each need: does it have to exist, is it already in the codebase, does the st
 | Infra as code | **Terraform, Docker, one VM class for api and routing** | Kubernetes at MVP. Revisit past 10 cities. |
 | Observability | **CloudWatch logs and metrics, one dashboard, one on-call page** | Prometheus, Grafana stack, tracing vendor. |
 
-Language: **Python 3.12 backend and jobs, TypeScript clients** (D6). One backend language, matches geospatial and data work.
+Language: **Python 3.11 or newer for the backend and jobs (the dev sandbox runs 3.11), TypeScript clients** (D6). One backend language, matches geospatial and data work.
 
 ## 4. Data model
 
