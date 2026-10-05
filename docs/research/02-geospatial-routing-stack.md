@@ -104,16 +104,16 @@ Startup implications:
 
 ## 6. Spatial indexing and data engineering
 
-**Primary key = road segment, not hex.** Flooding is a property of a linear asset and its low point; routing needs edge-level weights. Use H3 only as a secondary aggregation and join index. H3 res 9 averages 0.105 km², res 10 0.015 km². [V-36] Suggested scheme:
+**Primary key = road segment, not hex.** Flooding is a property of a linear asset and its low point; routing needs edge-level weights. H3 is an optional secondary aggregation index; under the ponytail-ultra dependency rule, skip it in the MVP and use a precomputed segment-to-grid-cell column in PostGIS instead. H3 res 9 averages 0.105 km², res 10 0.015 km². [V-36] Suggested scheme:
 
 | Layer | Key | Store | Refresh |
 |---|---|---|---|
 | Static segment attributes (class, structure, lowest elevation, historical flood count, drain proximity) | stable segment ID (OSM way ID + node pair, or Overture GERS ID [V-21]) | PostGIS + GeoParquet snapshot | nightly/weekly |
-| Rainfall nowcast/forecast grid | H3 res 8–9 | Redis / Parquet | 5–15 min |
-| Segment risk score P(impassable at t+Δ), Δ ∈ {0, 30, 60, 120} min | segment ID | Redis hash → engine overlay | 5–15 min |
+| Rainfall nowcast/forecast grid | grid cell (H3 res 8–9 later) | Postgres table | 5–15 min |
+| Segment risk score P(impassable at t+Δ), Δ ∈ {0, 30, 60, 120} min | segment ID | Postgres table → engine overlay | 5–15 min |
 | User/agency reports and probe-derived speed drops | segment ID after map-matching | Postgres + stream | continuous |
 
-Pipeline (EST latency): rainfall/gauge ingest → batch scoring job (DuckDB over GeoParquet, or a small Python worker with precomputed segment-to-grid join tables) → write only changed segments → patch Valhalla `traffic.tar` / GraphHopper custom areas / OSRM CSV → atomic reload. A 3-city MVP (~2–3 million segments) rescored in under a minute is plausible on one machine because the join is table lookups, not geometry. [U: estimate.] DuckDB spatial + GeoParquet is directly supported by Overture's tooling. [V-23]
+Pipeline (EST latency): rainfall/gauge ingest → SQL scoring job on cron (precomputed segment-to-grid join; DuckDB only if analytics outgrow Postgres) → write only changed segments → patch Valhalla `traffic.tar` / GraphHopper custom areas / OSRM CSV → atomic reload. A 3-city MVP (~2–3 million segments) rescored in under a minute is plausible on one machine because the join is table lookups, not geometry. [U: estimate.] DuckDB spatial + GeoParquet is directly supported by Overture's tooling. [V-23]
 
 **Incident feeds.** No India-wide DATEX II or GTFS-like incident standard was found. Practical inputs: your own report API (JSON, GeoJSON with segment ID and TTL), city control-room feeds by MoU (Bengaluru's ASTraM already tracks congestion every 15 min and ambulance delays >120 s [V-38]), and Google's closure information sharing with eight Indian cities (reported; not usable as a feed for you) [U]. Define an internal schema loosely modelled on DATEX II SituationRecord (location, cause, validity start/end, severity).
 
@@ -129,7 +129,7 @@ Pipeline (EST latency): rainfall/gauge ingest → batch scoring job (DuckDB over
 | Item | MVP (3 cities, pilot) | Scale-up (10+ cities, 100k+ MAU) |
 |---|---|---|
 | Routing (Valhalla, 2 AZ) | 1–2 VMs 8 vCPU/32 GB: ₹25–50k/mo | 6–12 VMs 16 vCPU: ₹2–5 lakh/mo |
-| PostGIS + Redis + workers | ₹20–40k/mo | ₹1–3 lakh/mo |
+| PostGIS (+ cron worker; Redis/queue only at scale) | ₹15–30k/mo | ₹1–3 lakh/mo |
 | Tiles (PMTiles + CDN) | ₹1–5k/mo, anchored on [V-34] | ₹10–40k/mo |
 | Geocoding/autocomplete (Ola or Google) | Within free tiers (Ola 100k free [V-6]) | ~₹0.1–0.2 per request; at 5M geocodes/mo ≈ ₹5 lakh using Ola list price [V-6] |
 | Commercial routing API comparison | n/a | 10M routes/mo: Google Pro ≈ $18.75k (5M×$3/1k + 5M×$0.75/1k) [V-1, EST arithmetic]; Ola ≈ ₹12.2 lakh (4.9M×₹0.199 + 5M×₹0.049) [V-6, EST arithmetic] |
@@ -144,14 +144,14 @@ Note: Google's lower India pricing applies only to customers with India billing 
 ### (a) Recommended MVP stack and why
 - **Graph**: India OSM extract (Geofabrik, [U]) plus FloodRoute's own segment-attribute table keyed by OSM way/node IDs; Overture only for cross-checking buildings/roads (ODbL kept separate).
 - **Engine**: Valhalla, self-hosted, with `traffic.tar` overlay refreshed every 5–15 min, `exclude_polygons` for per-request avoid zones, Meili for map matching. Why: edge-level live closures with no rebuild [V-13], per-request polygons [V-12], MIT licence [U], and one engine for both citizen and emergency profiles.
-- **Risk layer**: PostGIS segment table, H3 res 8–9 for rainfall join, DuckDB/GeoParquet batch scoring, Redis for hot state.
+- **Risk layer (ponytail ultra applied: fewest dependencies)**: one Postgres/PostGIS instance holding one segment table. Score in plain SQL on a cron (5–15 min); a rainfall grid joins by a precomputed segment-to-cell column. No Redis, Kafka, DuckDB or H3 library until a profiler or a real scale need says so. Upgrade path: H3 when multi-city aggregation is needed; DuckDB/GeoParquet for offline analytics only; Redis only if Postgres read latency measurably fails.
 - **Terrain**: GLO-30 plus city LiDAR where official partners share it; no FABDEM in production without a licence.
 - **Tiles**: MapLibre + Protomaps PMTiles on R2, SoI boundary layer, per-city offline packs.
 - **Geocoding**: Ola Maps free tier, with the Ola ToS check on your risk-scoring use (see risks).
 - **Probes**: own app plus 1–2 fleet/ambulance telematics MoUs.
 
 ### (b) Scale-up stack
-Valhalla fleet behind a router with per-vehicle-class overlays, optional CCH/RoutingKit research track for sub-second weight refresh, Kafka for report/probe streams, HERE or negotiated fleet probes, Indian-region cloud only (to satisfy the finer-than-threshold storage rule), Mappls/Ola enterprise agreements for geocoding and ETA benchmarking, city MoUs for drain/LiDAR/gauge data, an automated boundary-compliance CI step.
+Valhalla fleet behind a router with per-vehicle-class overlays, optional CCH/RoutingKit research track for sub-second weight refresh, a queue (Kafka or a managed equivalent) only once report/probe volume outgrows Postgres inserts (not before), HERE or negotiated fleet probes, Indian-region cloud only (to satisfy the finer-than-threshold storage rule), Mappls/Ola enterprise agreements for geocoding and ETA benchmarking, city MoUs for drain/LiDAR/gauge data, an automated boundary-compliance CI step.
 
 ### (c) Top 5 risks
 1. **Licence conflicts**: Ola bars ML/AI and open-database mixing; Google bars non-Google maps, storage, ML training; OSM/Overture ODbL share-alike. Mixing sources wrongly can force disclosure or termination.
