@@ -408,13 +408,17 @@ BENCHMARK_EVENTS = [
 
 
 def seed_benchmark_events(conn: psycopg.Connection) -> int:
-    """Seed benchmark historical ground-truth events into observed_event table."""
+    """Seed benchmark historical ground-truth events into observed_event table.
+
+    Idempotent: an event already present (same city, time and note) is skipped,
+    so re-running the seeder adds zero rows.
+    """
     sql = """
         insert into observed_event (
             city_id, observed_at, location, segment_id, kind,
             depth_class, source_kind, label_tier, source_url, note
         )
-        values (
+        select
             %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 4326),
             (
                 select s.segment_id from segment s
@@ -422,6 +426,9 @@ def seed_benchmark_events(conn: psycopg.Connection) -> int:
                 limit 1
             ),
             %s, %s, %s, %s, %s, %s
+        where not exists (
+            select 1 from observed_event oe
+            where oe.city_id = %s and oe.observed_at = %s and oe.note = %s
         )
     """
     inserted = 0
@@ -442,9 +449,12 @@ def seed_benchmark_events(conn: psycopg.Connection) -> int:
                     ev["label_tier"],
                     ev["source_url"],
                     ev["note"],
+                    ev["city_id"],
+                    ev["observed_at"],
+                    ev["note"],
                 ),
             )
-            inserted += 1
+            inserted += cur.rowcount
     conn.commit()
     return inserted
 

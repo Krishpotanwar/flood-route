@@ -485,3 +485,58 @@ This document tracks local execution, verification, fixes, and ongoing progress 
 
 ---
 
+### Checkpoint 26: Safety Case Emergency Kill Switch and Advisory Freeze (TRD 16)
+- **Status**: Completed
+- **Commit**: `c6c6875`
+- **Tests**: 694/694 passing (0 ruff errors)
+- **Components Implemented**:
+  - **DB Migration (`apps/api/floodroute/db/migrations/0006_safety_kill_switch.sql`)**:
+    - `kill_switch` table with columns: `kill_switch_id`, `scope` (global/city/tenant), `tenant_id`, `city_id`, `reason`, `operator`, `engaged_at`, `disengaged_at`, `disengaged_by`.
+    - Applied to the persistent `floodroute` dev DB via migrator.
+  - **Kill Switch Service (`apps/api/floodroute/safety/kill_switch.py`)**:
+    - `engage_kill_switch(...)`: validates reason (>=5 chars), inserts row, writes `kill_switch_engaged` audit log entry.
+    - `disengage_kill_switch(...)`: enforces two-operator co-verification (`op1 != op2`, case-insensitive), writes `kill_switch_disengaged` audit log.
+    - `get_active_kill_switch(conn, tenant_id, city_id)`: returns first active switch matching global > city > tenant priority.
+    - `list_kill_switches(conn, ...)`: paginated history with optional `active_only` filter.
+  - **Safety API Router (`apps/api/floodroute/api/routes/safety.py`)**:
+    - `GET /v1/safety/kill-switch` - list active switches.
+    - `POST /v1/safety/kill-switch` - engage a kill switch.
+    - `POST /v1/safety/kill-switch/{id}/disengage` - disengage (POST alias for TestClient compatibility).
+    - `DELETE /v1/safety/kill-switch/{id}` - disengage via DELETE (production use).
+    - `GET /v1/safety/kill-switch/history` - paginated audit history.
+  - **Route Integration (`apps/api/floodroute/api/routes/route.py`)**:
+    - `compute_route`: After `plan()`, appends `[ADVISORY FREEZE: ...]` to every route's reasons if kill switch is active.
+    - `compute_reroute`: Returns early `RerouteResponse(action="keep", code="advisory_off")` if kill switch is active.
+  - **Tests**: 4 DB-level + 1 API lifecycle + 1 route freeze test added (all passing).
+  - **Verification**: 694/694 tests passing, 0 ruff errors, zero em-dashes.
+
+---
+
+### Checkpoint 27: Harden Closeout, Dockerfile Import Fix and CI (opencode SDD Task 1)
+- **Status**: Completed
+- **Actions & Findings**:
+  - Verified uncommitted Harden output (`apps/api/Dockerfile`, `apps/api/.dockerignore`, `docker-compose.yml`, `.github/workflows/api.yml`).
+  - Root cause found deeper than the missing data file: `score/config.py parents[4]` raised `IndexError` at import time under old `WORKDIR /app`. Fix: `WORKDIR /app/apps/api` (1 line + comment) plus read-only compose mount of `data/config/scoring.v0.json` on api and worker.
+  - CI `pip install -e ".[dev]"` confirmed against the `dev` extra in `pyproject.toml`.
+  - Evidence: `docker compose config` exit 0, `docker build` exit 0, in-container `load_config()` returns v0.0.1.
+  - SDD task review: Spec PASS, Quality Approved.
+
+### Checkpoint 28: Chennai Chronic Hotspot Seed, 20 Verified Rows (opencode SDD Task 2)
+- **Status**: Completed
+- **Actions & Findings**:
+  - Shipped `data/hotspots/chennai_seed.csv` and `data/hotspots/chennai.csv` (20 rows each, headers byte-identical to Mumbai pattern, all coordinates inside the Chennai bbox, structures 5 underpass / 4 culvert / 11 dip).
+  - Every row carries consulted provenance (Michaung Dec 2023, Fengal Nov 2024, Oct 2024 NE onset). Maduravoyal dropped for lack of verification; GCC 859 list unused (no citable copy).
+  - Registry `hotspot_count` 0 to 20 (one line); mirrored tests (`test_load_chennai_hotspots` plus Chennai assertions in `test_api_cities.py`).
+  - Reviewer fetched 3/20 source URLs, all corroborate. SDD task review: Spec PASS, Quality Approved.
+
+### Checkpoint 29: G0 Evidence Pack, Chennai Shadow Run and Benchmark Dedupe (opencode SDD Tasks 3-4)
+- **Status**: Completed
+- **Actions & Findings**:
+  - Chennai shadow run (run 5, existing `execute_score_run` entry point): 24800 risk rows (1550 x 4 classes x 4 horizons), history and audit rows written. MET Norway ingest extended to Chennai zone 2 (62 fresh forecast rows, run 6 re-score).
+  - New `docs/G0-evidence.md`: real backtest numbers (deduped 6 events, car/0m POD 0.0, FAR None, CSI 0.0, Brier 0.7972, ROC-AUC 0.2), both-city shadow stats, G0 gate checklist (done vs blocked-human: counsel, interviews/partners, S1 live benchmark, IMERG Earthdata login).
+  - Honest limitation recorded: all rows score unknown because `rain_obs` is empty and `state.degrade` maps clear to unknown on missing observations; no threshold tuning applied.
+  - Fixed double-seeded `observed_event` (12 to 6 canonical rows) and made `seed_benchmark_events` idempotent with a new test.
+  - Verification: 696/696 tests passing (100% in 44.4s), 0 ruff errors, zero em-dashes. SDD task reviews: Spec PASS, Quality Approved. Final whole-branch review: Ready to merge.
+
+---
+

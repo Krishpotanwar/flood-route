@@ -149,6 +149,20 @@ def test_db_backtest_with_benchmark_events(db):
     assert "traffic_police" in report["by_source"]
 
 
+def test_seed_benchmark_events_is_idempotent(db):
+    db.execute(
+        "insert into zone (zone_id, city_id, geom, params) "
+        "values (1, 1, 'SRID=4326;MULTIPOLYGON(((77.4 12.8, 77.85 12.8, 77.85 13.2, 77.4 13.2, 77.4 12.8)))', '{}')"
+    )
+    db.execute(
+        "insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed) "
+        "values (1001, 1, 'SRID=4326;LINESTRING(77.6841 12.9298, 77.6842 12.9299)', 'primary', 1, true)"
+    )
+    assert seed_benchmark_events(db) == 6
+    assert seed_benchmark_events(db) == 0
+    assert db.execute("select count(*) from observed_event").fetchone() == (6,)
+
+
 def test_compute_roc_auc():
     # Empty
     assert compute_roc_auc([]) is None
