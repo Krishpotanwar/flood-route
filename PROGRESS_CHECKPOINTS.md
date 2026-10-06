@@ -347,3 +347,29 @@ This document tracks local execution, verification, fixes, and ongoing progress 
     - Zero em-dashes and strict safety invariant maintained.
 
 ---
+
+### Checkpoint 21: Citizen WhatsApp Bot & DLT-Compliant Multilingual SMS Alert Engine
+- **Status**: Completed
+- **Actions & Findings**:
+  - **TRAI DLT SMS Template & Budget Engine (`apps/api/floodroute/bot/sms.py`)**:
+    - Implemented strict single-segment SMS character budget enforcement: 70 characters for Indic Unicode scripts (Kannada, Hindi, Tamil, Telugu) and 160 characters for standard GSM-7 Latin.
+    - Registered pre-approved DLT templates (`KN_ROAD_CLOSED`, `KN_WATERLOGGED_WARNING`, `KN_REROUTE_SUGGEST`, `HI_ROAD_CLOSED`, `HI_WATERLOGGED_WARNING`, `HI_REROUTE_SUGGEST`, `EN_ROAD_CLOSED`, `EN_WATERLOGGED_WARNING`, `EN_REROUTE_SUGGEST`) with associated Entity, Header, and Template IDs.
+    - Built template rendering engine with variable slot interpolation (`{#var#}`) and automated length validation preventing accidental multi-segment billing or TRAI gateway rejection.
+    - Built auto-truncation logic for long street and landmark names to preserve single-segment delivery.
+  - **WhatsApp Business Cloud API Bot (`apps/api/floodroute/bot/whatsapp.py`)**:
+    - Built Meta Cloud API webhook verification handshake responder (`GET /v1/whatsapp/webhook` with `hub.mode`, `hub.verify_token`, and `hub.challenge`).
+    - Implemented conversational intent processor for incoming text messages, quick-reply interactive buttons, and geolocation payloads (`POST /v1/whatsapp/webhook`).
+    - Built spatial location check using PostGIS (`ST_DWithin` 1500m) to inspect nearest underpasses and roads, returning localized waterlogging status with estimated depths and detour advice.
+    - Added multilingual support with native Kannada (kn), Hindi (hi), and English (en) responses and persistent user session memory (`UserSession`).
+    - Added vehicle clearance profile selection (`two_wheeler`, `car`, `ambulance`) tailoring passability advice to vehicle ground clearance.
+    - Implemented city-wide flood summary queries (`status`, `rain`, `flood`).
+  - **API Endpoints (`apps/api/floodroute/api/routes/bot.py`)**:
+    - Created `GET /v1/whatsapp/webhook` and `POST /v1/whatsapp/webhook` mounted directly in the main FastAPI application.
+    - Created `GET /v1/sms/templates` and `POST /v1/sms/render` for dispatchers and fleet integrations to validate outbound SMS text before sending.
+  - **Verification & Testing**:
+    - Added 15 comprehensive tests across `test_bot_sms.py`, `test_bot_whatsapp.py`, and `test_api_bot.py`.
+    - Total API test suite expanded to 669 passing tests (100% pass rate in 40.5s).
+    - 0 ruff lint errors across all Python code.
+    - Zero em-dashes and strict safety invariant maintained.
+
+---

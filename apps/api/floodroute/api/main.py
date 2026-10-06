@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from floodroute.api.routes import feed, health, overrides, reports, risk, route, webhooks
+from floodroute.api.routes import bot, feed, health, overrides, reports, risk, route, webhooks
 
 
 def create_app() -> FastAPI:
@@ -37,6 +37,8 @@ def create_app() -> FastAPI:
     app.include_router(overrides.router)
     app.include_router(feed.router)
     app.include_router(webhooks.router)
+    app.include_router(bot.router)
+
 
 
     # Static assets and Situation Board Console
