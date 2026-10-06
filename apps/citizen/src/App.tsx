@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Header } from "./components/Header";
+import { DotBackground } from "./components/DotBackground";
+import { HeroRoutePreview } from "./components/HeroRoutePreview";
 import { LiveSimulator } from "./components/LiveSimulator";
 import { CITY_HOTSPOTS, MapView, STATUS_SYMBOLS } from "./components/MapView";
 import { ReportModal } from "./components/ReportModal";
@@ -186,6 +188,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-container" id="top">
+      <DotBackground theme={theme} />
       <a className="skip-link" href="#planner">Skip to route planner</a>
       <Header theme={theme} onThemeChange={setTheme} lang={lang} onLangChange={setLang} city={city} onCityChange={changeCity} onOpenReport={() => setReportModalOpen(true)} isOnline={isOnline} />
       <main>
@@ -195,6 +198,7 @@ export const App: React.FC = () => {
           <p className="hero-description">Plan around flooded roads.<br className="mobile-break" /> See when conditions change.</p>
           <div className="hero-actions"><a className="btn-primary" href="#planner">Plan a route <span aria-hidden="true">↗</span></a><a className="text-link" href="#how-it-works">See how it works</a></div>
           <p className="hero-caption">Built for the journey. Prepared for the rain.</p>
+          <HeroRoutePreview city={cityName} />
         </section>
 
         <section className="planner-section section-shell" id="planner" aria-labelledby="planner-title">

@@ -23,7 +23,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
   demoMode = false,
 }) => {
   const worstState = route.worst_state;
-  const assessedCount = route.segments.filter((segment) => segment.assessed).length;
+  const knownCount = route.segments.filter((segment) => segment.assessed && segment.state != null && segment.state !== "unknown").length;
   const age = route.data_age_s;
   const dataAge = age !== undefined && Number.isFinite(age) && age >= 0
     ? `${age < 60 ? Math.round(age) + "s" : Math.ceil(age / 60) + " min"} old`
@@ -58,7 +58,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
       )}
 
       <div className="route-meta">
-        <span>{assessedCount} / {route.segments.length} segments assessed</span>
+        <span>{knownCount} / {route.segments.length} segments with known status</span>
         <span>{demoMode ? "Illustrative conditions" : `Data: ${dataAge}`}</span>
       </div>
 

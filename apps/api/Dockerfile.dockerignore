@@ -1,0 +1,17 @@
+.git
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+**/dist
+**/.pytest_cache
+**/.ruff_cache
+output
+data/raw
+data/photos
+apps/data
+**/*.pbf
+**/*.osm
+.env
+**/.env
+**/.env.local

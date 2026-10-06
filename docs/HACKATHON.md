@@ -2,6 +2,8 @@
 
 Frontend preparation: 6 October 2026. The HHGoa submission deadline, portal, and required assets still need to be supplied by the project owner.
 
+Track completed work and verification in [Progress checkpoints](../PROGRESS_CHECKPOINTS.md). The current frontend source passes TypeScript, 18 Node tests, and the production build. The [backend runbook](BACKEND_RUNBOOK.md) documents the working local source API and the remaining container/routing setup blockers. Current [desktop](../output/frontend-preview/2026-10-06-dots/desktop.png), [mobile](../output/frontend-preview/2026-10-06-dots/mobile.png), and [black theme](../output/frontend-preview/2026-10-06-dots/black-planner.png) captures show the dotted background and labelled hero route illustration.
+
 ## Run the frontend
 
 Use Node.js 24 and the repository's pinned pnpm 10.28.0. Run these commands from the repository root:
@@ -13,14 +15,17 @@ corepack pnpm --filter @floodroute/citizen dev --host 0.0.0.0
 
 Open `http://localhost:5173`. With no API origin configured, the frontend starts in **Demo** mode: routes, conditions, navigation events, and reports are local presentation examples. Use the **Live data** control or open `http://localhost:5173/?live=1` to request real API responses through the development proxy. A failed live route request shows an error instead of an invented route.
 
-For a live local API, the Vite development proxy expects `http://127.0.0.1:8000`:
+The frontend now includes a whole-page dot background that reacts subtly to a pointer, stays static for touch and reduced motion, and stops animating when idle. The hero route is a labelled SVG illustration; it is separate from the road route returned by the API.
+
+The Vite development and preview proxies expect the local API at `http://127.0.0.1:8080`. Complete the environment/database setup in the [backend runbook](BACKEND_RUNBOOK.md) first. Its native-source fallback serves the built citizen app at `http://127.0.0.1:8080/app/?live=1`.
+
+To use a different API port in Vite:
 
 ```sh
-cd apps/api
-python -m uvicorn floodroute.api.main:app --host 127.0.0.1 --port 8000
+FLOODROUTE_DEV_API_URL=http://127.0.0.1:8000 corepack pnpm --filter @floodroute/citizen dev
 ```
 
-The API needs its Python dependencies, configured PostGIS database, migrations, road inventory, scored segments, and routing service. Starting the server alone does not provide live flood routing. The existing Docker Compose API instead exposes port `8080`; see the separate-origin configuration below when using it directly.
+The API needs Python dependencies, configured PostGIS, migrations, road inventory, source observations, and a routing service. Starting the server alone does not provide live flood guidance. The Compose defaults use loopback API port `8080` and isolated database port `54330`, leaving the existing test database on `54329`. Required startup secrets, inventory seeding, the worker, and optional self-hosted routing are described in the runbook.
 
 ## Check and build
 
@@ -30,20 +35,22 @@ corepack pnpm --filter @floodroute/citizen check
 corepack pnpm --filter @floodroute/citizen preview --host 0.0.0.0
 ```
 
-`check` runs TypeScript, the existing Node tests, and Vite's production build. Open `http://localhost:4173` for the production preview. The deployable static files are in `apps/citizen/dist`; Vite preview is for local verification. The frontend GitHub Actions workflow runs the same checks with a frozen lockfile and uploads `floodroute-frontend` as a build artifact.
+`check` runs TypeScript, the existing Node tests, and Vite's production build. Open `http://localhost:4173` for the production preview, or append `--port 5174` to use `http://localhost:5174`. Preview uses the same `FLOODROUTE_DEV_API_URL` override as development. The deployable static files are in `apps/citizen/dist`; Vite preview is for local verification. The frontend GitHub Actions workflow runs the same checks with a frozen lockfile and uploads `floodroute-frontend` as a build artifact.
 
 ## Static hosting and API configuration
 
+For Vercel repository import, keep **Root Directory `.`**, select **Node.js `24.x`**, and set `ENABLE_EXPERIMENTAL_COREPACK=1`. The root `vercel.json` supplies the install command, citizen build command, and output directory. Leave `VITE_API_BASE_URL` unset for the presentation demo. [Corepack setup](https://vercel.com/docs/builds/configure-a-build#corepack).
+
 Configure a static host with repository root as the working directory, Node.js 24, pnpm 10.28.0, build command `pnpm install --frozen-lockfile && pnpm --filter @floodroute/citizen build`, and publish directory `apps/citizen/dist`.
 
-Serve the frontend over HTTPS at the domain root or a directory such as `/app/` or `/flood-route/`. The manifest, app icon, service worker, and offline shell use relative, directory-scoped URLs. Use a trailing slash on directory URLs and configure the host to redirect `/app` to `/app/`, for example; relative Vite assets resolve against that directory. The API's existing `/app/` static mount can serve the locally built frontend when `apps/citizen/dist` is present, but the current API Docker image does not include that sibling directory.
+Serve the frontend over HTTPS at the domain root or a directory such as `/app/` or `/flood-route/`. The manifest, app icon, service worker, and offline shell use relative, directory-scoped URLs. Use a trailing slash on directory URLs and configure the host to redirect `/app` to `/app/`, for example; relative Vite assets resolve against that directory. The API's `/app/` static mount serves the locally built frontend when `apps/citizen/dist` is present. The updated Dockerfile also builds this frontend from the repository root, but a fresh complete image build is currently blocked by PyPI connectivity.
 
 Choose one API setup:
 
 | Setup | Configuration |
 | --- | --- |
 | Presentation demo | No API configuration required. **Demo** is selected by default; no real report is posted. Label sample conditions, illustrative routes, and simulated navigation honestly. |
-| API on the same origin | Leave `VITE_API_BASE_URL` empty and choose **Live data** or open `?live=1`. Configure the host's `/v1/*` reverse proxy to the API. Vite's development proxy is not included in the production build. |
+| API on the same origin | Leave `VITE_API_BASE_URL` empty and choose **Live data** or open `?live=1`. Use the API's `/app/` mount, or configure the host's `/v1/*` reverse proxy to the API. Vite's development/preview proxy is not included in the production build. |
 | API on a separate origin | Set `VITE_API_BASE_URL` to the API origin **before building**, without a `/v1` suffix. Live mode is the default for a configured API origin. The API must permit the frontend origin with `FLOODROUTE_CORS_ORIGINS`; use HTTPS for both public origins. |
 
 For example, to build against a local Docker API on port 8080:
@@ -64,6 +71,8 @@ Verify the hosted app directory, `manifest.webmanifest`, `icons/floodroute.svg`,
 4. Open the flood-report form, choose a water-depth category, and submit a sample report. In Demo mode this is only a local demonstration; it is not uploaded or queued for later delivery. If demonstrating a connected live API separately, explain whether that report was sent or queued for retry.
 5. Switch city and theme, then show the mobile layout. Close by distinguishing the frontend demonstration from the live data and routing work below.
 
+For a connected-source demo, the verified local API on port `8080` serves real road geometry through the official external Valhalla demo. One Bengaluru public-landmark request returned 203 road vertices and a 25-minute estimate. Its road risk was `unknown` with zero assessed segments; the empty closure snapshot was stale. Present this as API/road-routing integration, with current flood observations still unavailable. Use the [backend smoke check](BACKEND_RUNBOOK.md#smoke-check) to reproduce the endpoint checks.
+
 ## Demo and live limits
 
 - Preset locations and corridor examples demonstrate the flow; they are not current field observations or a full address search.
@@ -76,8 +85,8 @@ Verify the hosted app directory, `manifest.webmanifest`, `icons/floodroute.svg`,
 
 ## Remaining work before a live pilot
 
-1. Validate the API, PostGIS migrations, road-to-segment matching, and scored coverage end to end for each submitted city. Confirm no-route responses and unavailable services remain clear in the frontend.
-2. Bring up Valhalla and verify route geometry, vehicle overlays, and detour behavior against the real road graph. Docker Compose currently defines database, API, and worker services, but no Valhalla service.
+1. The local source API, eight migrations, and 5,383 seeded Bengaluru road segments are verified. Validate current observations, scored coverage, and road-to-segment matching for each submitted city before presenting live flood assessments.
+2. Complete a fresh API image build once PyPI is reachable. Build the optional Compose Valhalla graph once its registry blobs can be pulled; the current image pull failed with EOF, so self-hosted routing remains unverified. Verify vehicle overlays and detours against that graph. The working integration probe currently uses an external demo router.
 3. Confirm feed access, data terms, freshness, coverage, and calibration. The existing [G0 evidence pack](G0-evidence.md) tracks incomplete routing and human-dependent data/validation work.
 4. Complete production handling for report photos, privacy, retention, moderation, and delivery retries. The hackathon frontend is an advisory demonstration, not an operational public warning system.
 
@@ -88,4 +97,4 @@ Verify the hosted app directory, `manifest.webmanifest`, `icons/floodroute.svg`,
 - Check the target remote and branch before committing or pushing. Do not include `.env`, credentials, or local dependency directories.
 - Prepare the hosted demo URL, repository URL, a short recorded walkthrough, and sample screenshots once the owner supplies the actual HHGoa submission requirements. These are preparation suggestions, not verified event requirements.
 
-The source checkout excludes generated `apps/citizen/dist`. Both CI workflows build it; the API workflow builds before its frontend-serving tests. Run the frontend build locally before testing the API's `/app/` integration.
+The source checkout excludes generated `apps/citizen/dist`. Both CI workflows build it; the API workflow builds before its frontend-serving tests. Run the frontend build locally before testing the API's `/app/` integration. Record the final verification and any unfinished deployment work in [Progress checkpoints](../PROGRESS_CHECKPOINTS.md).

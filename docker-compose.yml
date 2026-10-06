@@ -1,41 +1,91 @@
-# Host tests keep using 54329. Inside the compose network, Postgres is db:5432.
-# After first up: docker compose run --rm api python -m floodroute.db.migrate
+# Local hackathon stack. Host ports bind loopback; existing tests can keep 54329.
+name: floodroute
+
+x-backend: &backend
+  build:
+    context: .
+    dockerfile: apps/api/Dockerfile
+  image: floodroute-api:dev
+  environment:
+    DATABASE_URL: postgresql://postgres:${FLOODROUTE_DB_PASSWORD:-floodroute-local}@db:5432/floodroute
+    VALHALLA_URL: ${VALHALLA_URL:-http://valhalla:8002}
+    WHATSAPP_VERIFY_TOKEN: ${WHATSAPP_VERIFY_TOKEN:-}
+    WHATSAPP_APP_SECRET: ${WHATSAPP_APP_SECRET:-}
+    FLOODROUTE_CONTACT: ${FLOODROUTE_CONTACT:-}
+    FLOODROUTE_SNAPSHOT_DIR: /app/data/snapshots
+    FLOODROUTE_CORS_ORIGINS: ${FLOODROUTE_CORS_ORIGINS:-http://127.0.0.1:5174,http://localhost:5174,http://127.0.0.1:5173,http://localhost:5173}
+  volumes:
+    - snapshots:/app/data/snapshots
+    - photos:/app/apps/data/photos
+
 services:
   db:
     image: postgis/postgis:16-3.4
     ports:
-      - "54329:5432"
+      - "127.0.0.1:${FLOODROUTE_DB_PORT:-54330}:5432"
     environment:
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: floodroute
+      POSTGRES_PASSWORD: ${FLOODROUTE_DB_PASSWORD:-floodroute-local}
+    volumes:
+      - database:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d floodroute"]
       interval: 5s
       timeout: 5s
       retries: 10
 
-  api:
-    build: apps/api
-    image: floodroute-api:dev
-    ports:
-      - "8080:8080"
-    environment:
-      DATABASE_URL: postgresql://postgres@db:5432/postgres
-    volumes:
-      # scoring.v0.json lives outside the apps/api build context, so mount it in.
-      - ./data/config/scoring.v0.json:/app/data/config/scoring.v0.json:ro
+  migrate:
+    <<: *backend
+    command: ["python", "-m", "floodroute.db.migrate"]
     depends_on:
       db:
         condition: service_healthy
 
-  worker:
-    build: apps/api
-    image: floodroute-api:dev
-    command: ["python", "-m", "floodroute.worker"]
-    environment:
-      DATABASE_URL: postgresql://postgres@db:5432/postgres
-    volumes:
-      # scoring.v0.json lives outside the apps/api build context, so mount it in.
-      - ./data/config/scoring.v0.json:/app/data/config/scoring.v0.json:ro
+  api:
+    <<: *backend
+    ports:
+      - "127.0.0.1:${FLOODROUTE_API_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json, urllib.request; assert json.load(urllib.request.urlopen('http://127.0.0.1:8080/v1/health', timeout=3))['database'] == 'connected'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    <<: *backend
+    command: ["python", "-m", "floodroute.worker"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  # Build a local OSM graph first; see docs/BACKEND_RUNBOOK.md.
+  valhalla:
+    profiles: ["routing"]
+    image: ghcr.io/valhalla/valhalla-scripted@sha256:eb31ed81d9819159e80567847aaca5841dd9e057d90f1c656c36b9fc33bdff25
+    ports:
+      - "127.0.0.1:${FLOODROUTE_ROUTING_PORT:-8002}:8002"
+    volumes:
+      - ${FLOODROUTE_ROUTING_DIR:-${HOME}/.cache/floodroute-routing/bengaluru}:/custom_files
+    environment:
+      server_threads: "2"
+      build_elevation: "False"
+      build_admins: "True"
+      build_time_zones: "True"
+      build_tar: "True"
+      serve_tiles: "True"
+      # OSM roads are not live traffic; no fabricated traffic archive.
+      traffic_name: ""
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:8002/status >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      start_period: 10m
+      retries: 10
+
+volumes:
+  database:
+  snapshots:
+  photos:
