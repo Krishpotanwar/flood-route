@@ -172,4 +172,21 @@ This document tracks local execution, verification, fixes, and ongoing progress 
   - Added 4 comprehensive tests in `apps/api/tests/api/test_api_photo.py`.
   - Reached 623 passing tests (100% pass rate in 36.8s) with 0 ruff lint errors.
 
+### Checkpoint 14: Live Navigation Rerouting Endpoint & Pure Trip State Decisioning
+- **Status**: Completed
+- **Actions & Findings**:
+  - Implemented `POST /v1/route/reroute` endpoint in `apps/api/floodroute/api/routes/route.py` exposing `floodroute.route.reroute.decide` for mobile clients and navigation apps (TRD 7.4, FR-RT5 to FR-RT7).
+  - Defined request and response Pydantic models in `apps/api/floodroute/route/models.py`:
+    - `RerouteRequest`: current vehicle position, destination, remaining route edges with geometry and turn-off availability, vehicle class, profile, and client trip state memory.
+    - `TripStatePayload`: persistent memory between position ticks containing `last_suggestion_at`, `baseline_band`, and `closed_at` timestamps for recently closed road segments.
+    - `RerouteResponse`: decision action (`keep`, `suggest`, `hold`), reason strings localized via `explain.say`, machine-readable code, warning flag, current route risk state, and complete `RouteOut` suggested detour.
+  - Extended `Plan` dataclass in `apps/api/floodroute/route/validate.py` with `accepted: Assessment | None` preserving backward compatibility while providing direct access to the validated candidate assessment.
+  - Enforced key safety invariants:
+    - Never uses "safe" label in any client responses or explanations.
+    - Preserves commit zone hold (`hold`, `commit_zone`) when water is within 300m and no junction permits turning off.
+    - Enforces 2.5 min dwell time (`dwell`) between reroute suggestions while continuing to warn of flooding ahead.
+    - Rejects candidate routes entering segments closed within the last 15 minutes (`recently_closed`).
+  - Added 7 comprehensive tests in `apps/api/tests/api/test_api_reroute.py`.
+  - Reached 630 passing tests (100% pass rate in 37.8s) with 0 ruff lint errors.
+
 ---

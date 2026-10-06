@@ -211,3 +211,49 @@ class RouteResponse(BaseModel):
     routes: list[RouteOut]
     guidance_when_no_route: Guidance | None
     lang: str  # language the strings are rendered in (English when the request's is missing)
+
+
+# ---- Live Reroute API models (TRD 7.4, FR-RT5 to FR-RT7) -----------------------------
+
+
+class TripStatePayload(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    last_suggestion_at: AwareDatetime | None = None
+    baseline_band: int = 0
+    closed_at: dict[str, AwareDatetime] = Field(default_factory=dict)
+
+
+class EdgeIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    segment_id: int | None = None
+    travel_time_s: float = Field(ge=0.0)
+    length_m: float = Field(default=0.0, ge=0.0)
+    turn_off_after: bool = True
+    geometry: list[Point] = Field(default_factory=list)
+
+
+class RerouteRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    origin: Point
+    destination: Point
+    vclass: VClass
+    current_edges: list[EdgeIn]
+    trip_state: TripStatePayload | None = None
+    depart_at: AwareDatetime | None = None
+    profile: Profile = "citizen"
+    lang: str = Field(default="en", pattern=r"^[a-z]{2,3}$")
+
+
+class RerouteResponse(BaseModel):
+    decision_id: str
+    action: Literal["keep", "suggest", "hold"]
+    code: str
+    warn: bool
+    reasons: list[str]
+    reason_keys: list[str]
+    trip_state: TripStatePayload
+    suggested_route: RouteOut | None = None
+    current_worst_state: State | None = None
+    current_worst_band: int = 0
+    current_violations_count: int = 0
+    lang: str

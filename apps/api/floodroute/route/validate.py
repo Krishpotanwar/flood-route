@@ -337,6 +337,7 @@ class Plan:
     response: RouteResponse
     iterations: int  # router calls after the first (the TRD 7.3 metric)
     rejected: tuple[Assessment, ...]  # routes that failed validation, for route_decision.rejected
+    accepted: Assessment | None = None
 
 
 def plan(
@@ -396,4 +397,4 @@ def plan(
         lang=lang,
     )
     rejected = tuple(a for a in found if a.violations)
-    return Plan(response, max(0, calls - 1), rejected)
+    return Plan(response, max(0, calls - 1), rejected, ok)
