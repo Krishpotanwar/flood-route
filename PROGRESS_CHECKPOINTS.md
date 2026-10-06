@@ -154,4 +154,22 @@ This document tracks local execution, verification, fixes, and ongoing progress 
   - Added unit test in `apps/api/tests/api/test_api_console.py`.
   - Reached 619 passing tests (100% pass rate in 33.8s) with 0 ruff lint errors.
 
+### Checkpoint 13: Photo Evidence Sanitization Pipeline & DPDP Act 2023 Compliance
+- **Status**: Completed
+- **Actions & Findings**:
+  - Implemented `apps/api/floodroute/api/photo.py`:
+    - Privacy-safe photo processing satisfying DPDP Act 2023 (Section 8, FR-M4).
+    - EXIF metadata stripping: completely purges GPS coordinates, camera/device serial numbers, timestamps, and orientation tags.
+    - Resolution normalization: downsizes oversized images to max 1600px dimension preserving aspect ratio.
+    - Pure RGB re-encoding: discards color profile and auxiliary channels, re-encoding clean JPEG with quality 85.
+    - Content-addressed reference: deterministic SHA-256 digest reference `ph_<hash>.jpg` (24 hex characters).
+    - Hard limit enforcement: 5 MB file size limit and format allowlist (`JPEG`, `PNG`, `WEBP`, `MPO`).
+  - Added photo upload and retrieval endpoints to `apps/api/floodroute/api/routes/reports.py`:
+    - `POST /v1/reports/photo`: accepts raw image stream, strips EXIF, stores sanitized file, returns `photo_ref`, dimension, and size.
+    - `GET /v1/reports/photo/{photo_ref}`: serves sanitized JPEG with security headers (`Cache-Control: public, max-age=86400, immutable`, `X-Content-Type-Options: nosniff`), and strict path traversal protection.
+  - Linked photo evidence with crowd flood reports via optional `photo_ref` in `ReportCreate` and `evidence.uri`.
+  - Added Pillow dependency in `apps/api/pyproject.toml` and updated `.gitignore` for photo caches.
+  - Added 4 comprehensive tests in `apps/api/tests/api/test_api_photo.py`.
+  - Reached 623 passing tests (100% pass rate in 36.8s) with 0 ruff lint errors.
+
 ---

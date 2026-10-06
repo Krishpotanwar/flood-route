@@ -7,4 +7,6 @@ node_modules/
 *.pbf
 *.osm
 data/raw/
+data/photos/
+apps/data/
 .env

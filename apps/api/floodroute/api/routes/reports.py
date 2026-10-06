@@ -4,13 +4,19 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from typing import Annotated, Any, Literal
 
 import psycopg
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field
 
 from floodroute.api.deps import get_db
+from floodroute.api.photo import (
+    PhotoSanitizationError,
+    sanitize_photo,
+    store_photo,
+)
 from floodroute.route.models import IN_LAT, IN_LON
 
 router = APIRouter(prefix="/v1", tags=["reports"])
@@ -83,3 +89,51 @@ def submit_report(
         "depth_class": req.depth_class,
         "status": "received",
     }
+
+
+@router.post("/reports/photo", status_code=201)
+async def upload_photo(
+    request: Request,
+) -> dict[str, Any]:
+    """Upload and sanitize citizen flood photo (DPDP Act 2023, EXIF stripped)."""
+    raw_bytes = await request.body()
+    try:
+        proc = sanitize_photo(raw_bytes)
+    except PhotoSanitizationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    storage_dir = Path(__file__).resolve().parents[4] / "data" / "photos"
+    store_photo(proc, storage_dir)
+
+    return {
+        "photo_ref": proc.photo_ref,
+        "content_type": proc.content_type,
+        "width": proc.width,
+        "height": proc.height,
+        "bytes": proc.sanitized_bytes,
+        "original_bytes": proc.original_bytes,
+    }
+
+
+@router.get("/reports/photo/{photo_ref}", include_in_schema=False)
+def get_photo(photo_ref: str) -> Response:
+    """Retrieve sanitized flood evidence photo."""
+    if (
+        "/" in photo_ref
+        or "\\" in photo_ref
+        or ".." in photo_ref
+        or not photo_ref.startswith("ph_")
+        or not photo_ref.endswith(".jpg")
+    ):
+        raise HTTPException(status_code=400, detail="Invalid photo_ref")
+
+    storage_dir = Path(__file__).resolve().parents[4] / "data" / "photos"
+    photo_path = storage_dir / photo_ref
+    if not photo_path.exists():
+        raise HTTPException(status_code=404, detail="Photo not found")
+
+    return Response(
+        content=photo_path.read_bytes(),
+        media_type="image/jpeg",
+        headers={"Cache-Control": "public, max-age=86400, immutable"},
+    )
