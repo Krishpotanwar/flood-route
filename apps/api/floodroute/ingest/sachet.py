@@ -321,8 +321,11 @@ def _references(text: str | None) -> list[dict]:
     out = []
     for token in _limit((text or "").split(), MAX_REFERENCES, "references"):
         parts = token.split(",")
-        out.append(dict(zip(("sender", "identifier", "sent"), parts)) if len(parts) == 3
-                   else {"raw": token[:300]})
+        out.append(
+            dict(zip(("sender", "identifier", "sent"), parts))
+            if len(parts) == 3
+            else {"raw": token[:300]}
+        )
     return out
 
 
@@ -398,10 +401,22 @@ def parse_cap(data: bytes) -> Alert:
     if msg_type in ("Alert", "Update") and not stamps:
         raise Rejected(f"{msg_type} without an info block")
     alert = Alert(
-        identifier=identifier, sender=sender, sent=sent, status=status, msg_type=msg_type,
-        scope=scope, references=_references(_t(root, "references", 1 << 16)), infos=infos,
-        event=None, severity=None, certainty=None, onset=None, expires=None,
-        rings=rings, polygon_urls=urls[:MAX_POLYGON_URLS], area_errors=errors,
+        identifier=identifier,
+        sender=sender,
+        sent=sent,
+        status=status,
+        msg_type=msg_type,
+        scope=scope,
+        references=_references(_t(root, "references", 1 << 16)),
+        infos=infos,
+        event=None,
+        severity=None,
+        certainty=None,
+        onset=None,
+        expires=None,
+        rings=rings,
+        polygon_urls=urls[:MAX_POLYGON_URLS],
+        area_errors=errors,
     )
     if stamps:
         english = next((s for s in stamps if (s[0] or "").lower().startswith("en")), stamps[0])
@@ -449,8 +464,15 @@ def build_row(alert: Alert, item: RssItem, xml: str, rings: list[Ring], errors: 
     }
     severity = alert.severity if alert.status == "Actual" else None
     return (
-        alert.identifier, alert.sender, alert.event, severity, alert.certainty,
-        alert.onset, alert.expires, wkt, Jsonb(raw),
+        alert.identifier,
+        alert.sender,
+        alert.event,
+        severity,
+        alert.certainty,
+        alert.onset,
+        alert.expires,
+        wkt,
+        Jsonb(raw),
     )
 
 
@@ -465,7 +487,9 @@ def _polygons(http, alert: Alert, blocked: list[str]) -> tuple[list[Ring], list[
             continue
         try:
             more, bad = parse_polygon_doc(http.get(url, MAX_POLYGONS), alert.identifier)
-        except HttpStatusError as e:  # the host answered, so keep the alert and say the area is missing
+        except (
+            HttpStatusError
+        ) as e:  # the host answered, so keep the alert and say the area is missing
             errors.append(f"polygon fetch: {e}")
             if e.status not in (404, 410):
                 blocked.append(str(e))
@@ -506,20 +530,27 @@ def ingest(conn, http, *, now: datetime | None = None, max_new: int = MAX_NEW_PE
         except Rejected as e:
             refused.append(f"{item.guid}: {e}")
     if not stored and len(refused) >= SYSTEMIC_REJECTS:
-        raise IngestError(f"{len(refused)} new items refused, none stored: {'; '.join(refused[:3])}")
+        raise IngestError(
+            f"{len(refused)} new items refused, none stored: {'; '.join(refused[:3])}"
+        )
     notes = []
     if refused:
         notes.append(f"{len(refused)} item(s) refused: " + "; ".join(refused[:3]))
     active_without_area = conn.execute(NO_AREA_SQL, (now,)).fetchone()[0]
     if active_without_area:  # stable across quiet runs: it is about the table, not this run
-        notes.append(f"{active_without_area} active alert(s) have no area (raw.area_error says why; "
-                     "raw.cap keeps the LGD district codes)")
+        notes.append(
+            f"{active_without_area} active alert(s) have no area (raw.area_error says why; "
+            "raw.cap keeps the LGD district codes)"
+        )
     if len(todo) > max_new:
         notes.append(f"catching up, {len(todo) - max_new} new item(s) wait for the next run")
     lag = max(0, int((now - items[0].pub).total_seconds()))
     summary = {
-        "items": len(items), "new": len(todo), "stored": stored, "refused": len(refused),
-        "stored_without_area": no_area, "bad_rss_items": bad,
+        "items": len(items),
+        "new": len(todo),
+        "stored": stored,
+        "refused": len(refused),
+        "stored_without_area": no_area,
+        "bad_rss_items": bad,
     }
     return Outcome(summary, lag, "; ".join(notes) or None)
-

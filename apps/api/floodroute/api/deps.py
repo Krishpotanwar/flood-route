@@ -8,6 +8,7 @@ from typing import Annotated
 
 import psycopg
 from fastapi import Depends
+from psycopg_pool import ConnectionPool
 
 from floodroute.db.conn import database_url
 from floodroute.route.models import (
@@ -29,11 +30,37 @@ from floodroute.score.config import load_config
 
 RouterCallable = Callable[[LatLon, LatLon, str, any, Sequence[Polygon]], Route | None]
 
+_POOL: ConnectionPool | None = None
+
+
+def get_pool() -> ConnectionPool:
+    """Get or create singleton connection pool."""
+    global _POOL
+    if _POOL is None or _POOL.closed:
+        url = database_url()
+        _POOL = ConnectionPool(
+            conninfo=url,
+            min_size=10,
+            max_size=50,
+            timeout=10.0,
+            open=True,
+            kwargs={"autocommit": True},
+        )
+    return _POOL
+
+
+def close_pool() -> None:
+    """Close the active connection pool if open."""
+    global _POOL
+    if _POOL is not None and not _POOL.closed:
+        _POOL.close()
+        _POOL = None
+
 
 def get_db() -> Generator[psycopg.Connection, None, None]:
     """Provide a connection to PostgreSQL acting as floodroute_app (DML only)."""
-    url = database_url()
-    with psycopg.connect(url, autocommit=True) as conn:
+    pool = get_pool()
+    with pool.connection() as conn:
         conn.execute("set role floodroute_app")
         yield conn
 

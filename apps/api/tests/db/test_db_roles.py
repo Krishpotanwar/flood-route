@@ -92,10 +92,14 @@ def test_app_role_writes_identity_tables_without_sequence_grants(app_db):
 
 def test_a_later_migration_that_sets_the_role_is_owned_and_granted_correctly(db, db_url, tmp_path):
     shutil.copytree(MIGRATIONS, tmp_path, dirs_exist_ok=True)
-    (tmp_path / "0004_later.sql").write_text(
+    next_num = (
+        max(int(f.name.split("_")[0]) for f in MIGRATIONS.iterdir() if f.name.endswith(".sql")) + 1
+    )
+    next_name = f"{next_num:04d}_later.sql"
+    (tmp_path / next_name).write_text(
         "set local role floodroute_migrator;\ncreate table later (x int);\n"
     )
-    assert migrate(db_url, tmp_path) == ["0004_later.sql"]
+    assert migrate(db_url, tmp_path) == [next_name]
     assert owners(db)["later"] == "floodroute_migrator"
     can_insert = db.execute("select has_table_privilege('floodroute_app', 'later', 'INSERT')")
     assert can_insert.fetchone() == (True,)

@@ -19,9 +19,7 @@ from floodroute.score.db import (
     load_run_input,
 )
 
-ZONE_GEOM = (
-    "SRID=4326;MULTIPOLYGON(((77.5 12.9, 77.7 12.9, 77.7 13.1, 77.5 13.1, 77.5 12.9)))"
-)
+ZONE_GEOM = "SRID=4326;MULTIPOLYGON(((77.5 12.9, 77.7 12.9, 77.7 13.1, 77.5 13.1, 77.5 12.9)))"
 ALERT_GEOM = (
     "SRID=4326;MULTIPOLYGON(((77.55 12.95, 77.65 12.95, 77.65 13.05, 77.55 13.05, 77.55 12.95)))"
 )
@@ -126,9 +124,7 @@ def test_load_run_input_with_populated_tables(app_db):
     )
 
     # 7. Insert override
-    app_db.execute(
-        "insert into tenant (tenant_id, name, kind) values (1, 'Test Admin', 'admin')"
-    )
+    app_db.execute("insert into tenant (tenant_id, name, kind) values (1, 'Test Admin', 'admin')")
     app_db.execute(
         """
         insert into override (tenant_id, segment_id, action, reason, operator_id, starts_at, expires_at)
@@ -169,11 +165,11 @@ def test_load_run_input_with_populated_tables(app_db):
     seg = run_input.segments[0]
     assert seg.segment_id == 1001
     assert seg.assessed is True
-    assert seg.structure == 'underpass'
+    assert seg.structure == "underpass"
     assert len(seg.evidence) == 1
-    assert seg.evidence[0].source_id == 'sens-1'
+    assert seg.evidence[0].source_id == "sens-1"
     assert len(seg.overrides) == 1
-    assert seg.overrides[0].action == 'close'
+    assert seg.overrides[0].action == "close"
 
 
 def test_execute_score_run_end_to_end(app_db):
@@ -208,33 +204,33 @@ def test_execute_score_run_end_to_end(app_db):
     )
 
     # Run scoring
-    run_id, result = execute_score_run(app_db, cfg=cfg, now=now, notes='initial scoring cycle')
+    run_id, result = execute_score_run(app_db, cfg=cfg, now=now, notes="initial scoring cycle")
     assert run_id > 0
     assert len(result.rows) > 0
 
     # 1. Verify shadow_run was created
-    cur = app_db.execute('select model_version, config_hash, notes from shadow_run where run_id = %s', (run_id,))
+    cur = app_db.execute(
+        "select model_version, config_hash, notes from shadow_run where run_id = %s", (run_id,)
+    )
     row = cur.fetchone()
     assert row is not None
     assert row[0] == cfg.model_version
-    assert row[2] == 'initial scoring cycle'
+    assert row[2] == "initial scoring cycle"
 
     # 2. Verify segment_risk has rows
     cur = app_db.execute(
-        'select segment_id, vclass, horizon_min, state, p_unusable, confidence from segment_risk where segment_id = 2001'
+        "select segment_id, vclass, horizon_min, state, p_unusable, confidence from segment_risk where segment_id = 2001"
     )
     risk_rows = cur.fetchall()
     assert len(risk_rows) == len(SUPPORTED_VCLASSES) * len(cfg.horizons_min)
     for sid, vclass, h, state, p, conf in risk_rows:
         assert sid == 2001
-        assert state in ('clear', 'watch', 'risky', 'impassable')
+        assert state in ("clear", "watch", "risky", "impassable")
         assert 0.0 <= p <= 1.0
-        assert conf in ('low', 'medium', 'high')
+        assert conf in ("low", "medium", "high")
 
     # 3. Verify segment_risk_history references run_id
-    cur = app_db.execute(
-        'select count(*) from segment_risk_history where run_id = %s', (run_id,)
-    )
+    cur = app_db.execute("select count(*) from segment_risk_history where run_id = %s", (run_id,))
     assert cur.fetchone()[0] == len(risk_rows)
 
     # 4. Verify audit_log recorded changes
@@ -244,8 +240,8 @@ def test_execute_score_run_end_to_end(app_db):
     audit_rows = cur.fetchall()
     assert len(audit_rows) > 0
     for actor, action, seg_id, new_state in audit_rows:
-        assert actor == f'system:scoring:{cfg.model_version}'
-        assert action == 'state_change'
+        assert actor == f"system:scoring:{cfg.model_version}"
+        assert action == "state_change"
         assert seg_id == 2001
 
 
@@ -278,7 +274,7 @@ def test_persist_run_result_upsert_and_history(app_db):
     )
 
     # First run
-    run_id1, _ = execute_score_run(app_db, cfg=cfg, now=now1, notes='run 1')
+    run_id1, _ = execute_score_run(app_db, cfg=cfg, now=now1, notes="run 1")
 
     # Add torrential rain
     app_db.execute(
@@ -287,17 +283,17 @@ def test_persist_run_result_upsert_and_history(app_db):
     )
 
     # Second run
-    run_id2, _ = execute_score_run(app_db, cfg=cfg, now=now2, notes='run 2')
+    run_id2, _ = execute_score_run(app_db, cfg=cfg, now=now2, notes="run 2")
     assert run_id2 > run_id1
 
     # segment_risk must have the same number of rows (upserted in place)
-    cur = app_db.execute('select count(*) from segment_risk where segment_id = 3001')
+    cur = app_db.execute("select count(*) from segment_risk where segment_id = 3001")
     expected_rows = len(SUPPORTED_VCLASSES) * len(cfg.horizons_min)
     assert cur.fetchone()[0] == expected_rows
 
     # segment_risk_history must contain rows from both runs
     cur = app_db.execute(
-        'select run_id, count(*) from segment_risk_history where segment_id = 3001 group by run_id order by run_id'
+        "select run_id, count(*) from segment_risk_history where segment_id = 3001 group by run_id order by run_id"
     )
     history_counts = cur.fetchall()
     assert len(history_counts) == 2
@@ -314,10 +310,14 @@ def test_audit_log_append_only_trigger(app_db, db):
         values ('test_user', 'manual_probe', 9999, 'testing append only')
         """
     )
-    with pytest.raises(psycopg.errors.InsufficientPrivilege, match="permission denied for table audit_log"):
+    with pytest.raises(
+        psycopg.errors.InsufficientPrivilege, match="permission denied for table audit_log"
+    ):
         app_db.execute("update audit_log set reason = 'tampered' where segment_id = 9999")
 
-    with pytest.raises(psycopg.errors.InsufficientPrivilege, match="permission denied for table audit_log"):
+    with pytest.raises(
+        psycopg.errors.InsufficientPrivilege, match="permission denied for table audit_log"
+    ):
         app_db.execute("delete from audit_log where segment_id = 9999")
 
     # 2. superuser / owner is blocked by the audit_log_append_only trigger

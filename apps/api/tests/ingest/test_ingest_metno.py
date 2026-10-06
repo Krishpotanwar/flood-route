@@ -45,54 +45,126 @@ def test_two_backends_with_slightly_different_stamps_give_the_same_issue():
     assert metno.parse_forecast(other, NOW)[1] == metno.parse_forecast(BLR, NOW)[1]
 
 
-@pytest.mark.parametrize("name, change", [
-    ("unit is inches", lambda d: d["properties"]["meta"]["units"].update(precipitation_amount="in")),
-    ("negative amount", lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"]
-     .update(precipitation_amount=-0.1)),
-    ("absurd amount", lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"]
-     .update(precipitation_amount=5000)),
-    ("string amount", lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"]
-     .update(precipitation_amount="2.0")),
-    ("bool amount", lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"]
-     .update(precipitation_amount=True)),
-    ("null amount", lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"]
-     .update(precipitation_amount=None)),
-    ("missing amount", lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"]
-     .clear()),
-    ("no properties", lambda d: d.pop("properties")),
-    ("no meta", lambda d: d["properties"].pop("meta")),
-    ("no timeseries", lambda d: d["properties"].pop("timeseries")),
-    ("timeseries is a string", lambda d: d["properties"].update(timeseries="x")),
-    ("naive timestamp", lambda d: d["properties"]["timeseries"][0].update(time="2026-10-05T20:00:00")),
-    ("bad timestamp", lambda d: d["properties"]["timeseries"][0].update(time="tomorrow")),
-    ("updated_at missing offset", lambda d: d["properties"]["meta"].update(updated_at="2026-10-05T19:19:14")),
-    ("updated_at in the future", lambda d: d["properties"]["meta"].update(updated_at="2026-10-06T19:19:14Z")),
-    ("forecast two days old", lambda d: d["properties"]["meta"].update(updated_at="2026-10-03T19:19:14Z")),
-    ("no hourly steps", lambda d: [t["data"].pop("next_1_hours", None) for t in d["properties"]["timeseries"]]),
-    ("too many entries", lambda d: d["properties"].update(timeseries=d["properties"]["timeseries"] * 5)),
-])
+@pytest.mark.parametrize(
+    "name, change",
+    [
+        (
+            "unit is inches",
+            lambda d: d["properties"]["meta"]["units"].update(precipitation_amount="in"),
+        ),
+        (
+            "negative amount",
+            lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"].update(
+                precipitation_amount=-0.1
+            ),
+        ),
+        (
+            "absurd amount",
+            lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"].update(
+                precipitation_amount=5000
+            ),
+        ),
+        (
+            "string amount",
+            lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"].update(
+                precipitation_amount="2.0"
+            ),
+        ),
+        (
+            "bool amount",
+            lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"].update(
+                precipitation_amount=True
+            ),
+        ),
+        (
+            "null amount",
+            lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"].update(
+                precipitation_amount=None
+            ),
+        ),
+        (
+            "missing amount",
+            lambda d: d["properties"]["timeseries"][0]["data"]["next_1_hours"]["details"].clear(),
+        ),
+        ("no properties", lambda d: d.pop("properties")),
+        ("no meta", lambda d: d["properties"].pop("meta")),
+        ("no timeseries", lambda d: d["properties"].pop("timeseries")),
+        ("timeseries is a string", lambda d: d["properties"].update(timeseries="x")),
+        (
+            "naive timestamp",
+            lambda d: d["properties"]["timeseries"][0].update(time="2026-10-05T20:00:00"),
+        ),
+        ("bad timestamp", lambda d: d["properties"]["timeseries"][0].update(time="tomorrow")),
+        (
+            "updated_at missing offset",
+            lambda d: d["properties"]["meta"].update(updated_at="2026-10-05T19:19:14"),
+        ),
+        (
+            "updated_at in the future",
+            lambda d: d["properties"]["meta"].update(updated_at="2026-10-06T19:19:14Z"),
+        ),
+        (
+            "forecast two days old",
+            lambda d: d["properties"]["meta"].update(updated_at="2026-10-03T19:19:14Z"),
+        ),
+        (
+            "no hourly steps",
+            lambda d: [t["data"].pop("next_1_hours", None) for t in d["properties"]["timeseries"]],
+        ),
+        (
+            "too many entries",
+            lambda d: d["properties"].update(timeseries=d["properties"]["timeseries"] * 5),
+        ),
+    ],
+)
 def test_unexpected_or_hostile_json_is_refused(name, change):
     with pytest.raises(Rejected):
         metno.parse_forecast(tweak(change), NOW)
 
 
-@pytest.mark.parametrize("body", [
-    b"", b"not json", b"[]", b"{}", b'{"properties": null}', b"\xff\xfe", b"null",
-    (b'{"properties": {"meta": {"units": {"precipitation_amount": "mm"},'
-     b' "updated_at": "2026-10-05T19:19:14Z"}, "timeseries": [{"time": "2026-10-05T20:00:00Z",'
-     b' "data": {"next_1_hours": {"details": {"precipitation_amount": NaN}}}}]}}'),
-    b"[" * 100_000 + b"]" * 100_000,  # deep nesting must not crash the run
-])
+@pytest.mark.parametrize(
+    "body",
+    [
+        b"",
+        b"not json",
+        b"[]",
+        b"{}",
+        b'{"properties": null}',
+        b"\xff\xfe",
+        b"null",
+        (
+            b'{"properties": {"meta": {"units": {"precipitation_amount": "mm"},'
+            b' "updated_at": "2026-10-05T19:19:14Z"}, "timeseries": [{"time": "2026-10-05T20:00:00Z",'
+            b' "data": {"next_1_hours": {"details": {"precipitation_amount": NaN}}}}]}}'
+        ),
+        b"[" * 100_000 + b"]" * 100_000,  # deep nesting must not crash the run
+    ],
+)
 def test_garbage_bodies_are_refused(body):
     with pytest.raises(Rejected):
         metno.parse_forecast(body, NOW)
 
 
-@pytest.mark.parametrize("args", [
-    (1, 77.59, 12.97),  # lon,lat swapped: this is how a zone with lat and lon the wrong way round looks
-    (1, None, 77.0), (1, 12.0, None), (1, float("nan"), 77.0), (1, "x", 77.0), (1, 12.0, float("inf")),
-    (True, 12.9, 77.5), ("7", 12.9, 77.5), (None, 12.9, 77.5), (1, 51.0, 77.5), (1, 12.9, 120.0),
-])
+@pytest.mark.parametrize(
+    "args",
+    [
+        (
+            1,
+            77.59,
+            12.97,
+        ),  # lon,lat swapped: this is how a zone with lat and lon the wrong way round looks
+        (1, None, 77.0),
+        (1, 12.0, None),
+        (1, float("nan"), 77.0),
+        (1, "x", 77.0),
+        (1, 12.0, float("inf")),
+        (True, 12.9, 77.5),
+        ("7", 12.9, 77.5),
+        (None, 12.9, 77.5),
+        (1, 51.0, 77.5),
+        (1, 12.9, 120.0),
+    ],
+)
 def test_bad_zone_points_are_refused(args):
     with pytest.raises(Rejected):
         metno.check_point(*args)
@@ -109,13 +181,24 @@ def test_zones_are_fetched_with_four_decimals_and_stored_idempotently():
     http = FakeHttp(routes(*points))
     out = metno.ingest(conn, http, points=points, now=NOW)
     assert http.calls == [
-        BLR_URL, "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=13.1235&lon=77.6000"]
+        BLR_URL,
+        "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=13.1235&lon=77.6000",
+    ]
     assert out.summary == {"zones": 2, "rows": 128} and out.warn is None
     assert out.lag_s == int((NOW - utc("2026-10-05T19:19:14+00:00")).total_seconds()) == 4246
     assert len(conn.rain) == 128
     snapshot = dict(conn.rain)
-    row = conn.rain[("metno", 1, utc("2026-10-05T19:00:00+00:00"), utc("2026-10-06T07:00:00+00:00"))]
-    assert row == ("metno", 1, utc("2026-10-05T19:00:00+00:00"), utc("2026-10-06T07:00:00+00:00"), 2.7, None)
+    row = conn.rain[
+        ("metno", 1, utc("2026-10-05T19:00:00+00:00"), utc("2026-10-06T07:00:00+00:00"))
+    ]
+    assert row == (
+        "metno",
+        1,
+        utc("2026-10-05T19:00:00+00:00"),
+        utc("2026-10-06T07:00:00+00:00"),
+        2.7,
+        None,
+    )
 
     metno.ingest(conn, FakeHttp(routes(*points)), points=points, now=NOW)  # same issue again
     assert conn.rain == snapshot  # same keys, same values: nothing new
@@ -126,9 +209,13 @@ def test_a_new_issue_adds_rows_and_leaves_the_old_ones():
     points = [(1, 12.9716, 77.5946)]
     metno.ingest(conn, FakeHttp(routes(*points)), points=points, now=NOW)
     later = tweak(lambda d: d["properties"]["meta"].update(updated_at="2026-10-06T01:20:00Z"))
-    metno.ingest(conn, FakeHttp(routes(*points, body=later)), points=points, now=NOW + timedelta(hours=6))
+    metno.ingest(
+        conn, FakeHttp(routes(*points, body=later)), points=points, now=NOW + timedelta(hours=6)
+    )
     assert len(conn.rain) == 128 and {k[2] for k in conn.rain} == {
-        utc("2026-10-05T19:00:00+00:00"), utc("2026-10-06T01:00:00+00:00")}
+        utc("2026-10-05T19:00:00+00:00"),
+        utc("2026-10-06T01:00:00+00:00"),
+    }
 
 
 def test_zone_points_come_from_the_zone_table_when_not_given():
@@ -177,14 +264,19 @@ def test_one_request_per_second_across_zones_and_a_failed_run_reports_itself(cap
         stamps.append(clock[0])
         return httpx.Response(200, content=BLR)
 
-    http = Http(metno.HOSTS, transport=httpx.MockTransport(handler),
-                sleep=lambda s: clock.__setitem__(0, clock[0] + s), clock=lambda: clock[0])
+    http = Http(
+        metno.HOSTS,
+        transport=httpx.MockTransport(handler),
+        sleep=lambda s: clock.__setitem__(0, clock[0] + s),
+        clock=lambda: clock[0],
+    )
     points = [(i, 12.0 + i / 100, 77.5) for i in range(1, 6)]
     metno.ingest(FakeConn(), http, points=points, now=NOW)
     assert len(stamps) == 5
     assert all(b - a >= 1.0 - 1e-9 for a, b in itertools.pairwise(stamps))
 
     conn = FakeConn()
-    code = common.run(conn, "metno", lambda c: metno.ingest(c, FakeHttp({}), now=NOW), clock=lambda: NOW)
+    code = common.run(
+        conn, "metno", lambda c: metno.ingest(c, FakeHttp({}), now=NOW), clock=lambda: NOW
+    )
     assert code == 1 and "zone table is empty" in conn.health["metno"]["last_error"]
-

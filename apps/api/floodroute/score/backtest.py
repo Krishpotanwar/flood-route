@@ -77,7 +77,9 @@ class EvaluationMetrics:
             "pod": round(self.contingency.pod, 4) if self.contingency.pod is not None else None,
             "far": round(self.contingency.far, 4) if self.contingency.far is not None else None,
             "csi": round(self.contingency.csi, 4) if self.contingency.csi is not None else None,
-            "accuracy": round(self.contingency.accuracy, 4) if self.contingency.accuracy is not None else None,
+            "accuracy": round(self.contingency.accuracy, 4)
+            if self.contingency.accuracy is not None
+            else None,
             "brier_score": round(self.brier_score, 4) if self.brier_score is not None else None,
             "mae_depth_cm": round(self.mae_depth_cm, 2) if self.mae_depth_cm is not None else None,
         }
@@ -376,9 +378,20 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run backtest evaluation against observed events.")
     parser.add_argument("--city-id", type=int, default=1, help="City ID (default: 1 for Bengaluru)")
     parser.add_argument("--vclass", default="car", choices=SUPPORTED_VCLASSES, help="Vehicle class")
-    parser.add_argument("--horizon", type=int, default=0, choices=SUPPORTED_HORIZONS, help="Forecast horizon (min)")
-    parser.add_argument("--threshold", type=float, default=0.30, help="Probability threshold for flood classification")
-    parser.add_argument("--seed-benchmark", action="store_true", help="Seed benchmark historical events before evaluation")
+    parser.add_argument(
+        "--horizon", type=int, default=0, choices=SUPPORTED_HORIZONS, help="Forecast horizon (min)"
+    )
+    parser.add_argument(
+        "--threshold",
+        type=float,
+        default=0.30,
+        help="Probability threshold for flood classification",
+    )
+    parser.add_argument(
+        "--seed-benchmark",
+        action="store_true",
+        help="Seed benchmark historical events before evaluation",
+    )
     parser.add_argument(
         "--db-url",
         default="postgresql://postgres:postgres@localhost:54329/floodroute",
@@ -400,19 +413,29 @@ def main() -> None:
         )
 
         print("\n=== FloodRoute Backtest Evaluation Report ===")
-        print(f"Vehicle Class: {report.get('vclass')} | Horizon: {report.get('horizon_min')}m | Threshold: {report.get('threshold')}")
+        print(
+            f"Vehicle Class: {report.get('vclass')} | Horizon: {report.get('horizon_min')}m | Threshold: {report.get('threshold')}"
+        )
         m = report.get("metrics", {})
-        print(f"Samples: {m.get('samples')} | Hits: {m.get('hits')} | Misses: {m.get('misses')} | False Alarms: {m.get('false_alarms')} | Negatives: {m.get('correct_negatives')}")
-        print(f"POD: {m.get('pod')} | FAR: {m.get('far')} | CSI: {m.get('csi')} | Accuracy: {m.get('accuracy')}")
+        print(
+            f"Samples: {m.get('samples')} | Hits: {m.get('hits')} | Misses: {m.get('misses')} | False Alarms: {m.get('false_alarms')} | Negatives: {m.get('correct_negatives')}"
+        )
+        print(
+            f"POD: {m.get('pod')} | FAR: {m.get('far')} | CSI: {m.get('csi')} | Accuracy: {m.get('accuracy')}"
+        )
         print(f"Brier Score: {m.get('brier_score')} | Depth MAE: {m.get('mae_depth_cm')} cm")
         if report.get("by_tier"):
             print("\nBreakdown by Label Tier:")
             for tier, d in report["by_tier"].items():
-                print(f"  {tier:8s}: samples={d['samples']}, POD={d['pod']}, FAR={d['far']}, CSI={d['csi']}")
+                print(
+                    f"  {tier:8s}: samples={d['samples']}, POD={d['pod']}, FAR={d['far']}, CSI={d['csi']}"
+                )
         if report.get("by_source"):
             print("\nBreakdown by Source Kind:")
             for src, d in report["by_source"].items():
-                print(f"  {src:15s}: samples={d['samples']}, POD={d['pod']}, FAR={d['far']}, CSI={d['csi']}")
+                print(
+                    f"  {src:15s}: samples={d['samples']}, POD={d['pod']}, FAR={d['far']}, CSI={d['csi']}"
+                )
 
 
 if __name__ == "__main__":

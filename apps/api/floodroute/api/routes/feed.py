@@ -33,22 +33,24 @@ def get_closures_geojson(
     cur = db.execute(sql, (vclass, horizon_min))
     features = []
     for sid, rclass, state, p, conf, d50, d90, up_at, geom_str in cur.fetchall():
-        features.append({
-            "type": "Feature",
-            "geometry": json.loads(geom_str),
-            "properties": {
-                "segment_id": sid,
-                "road_class": rclass,
-                "vclass": vclass,
-                "horizon_min": horizon_min,
-                "state": state,
-                "p_unusable": float(p) if p is not None else None,
-                "confidence": conf,
-                "depth_p50_cm": float(d50) if d50 is not None else None,
-                "depth_p90_cm": float(d90) if d90 is not None else None,
-                "updated_at": up_at.isoformat() if up_at else None,
-            },
-        })
+        features.append(
+            {
+                "type": "Feature",
+                "geometry": json.loads(geom_str),
+                "properties": {
+                    "segment_id": sid,
+                    "road_class": rclass,
+                    "vclass": vclass,
+                    "horizon_min": horizon_min,
+                    "state": state,
+                    "p_unusable": float(p) if p is not None else None,
+                    "confidence": conf,
+                    "depth_p50_cm": float(d50) if d50 is not None else None,
+                    "depth_p90_cm": float(d90) if d90 is not None else None,
+                    "updated_at": up_at.isoformat() if up_at else None,
+                },
+            }
+        )
 
     return {
         "type": "FeatureCollection",

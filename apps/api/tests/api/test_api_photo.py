@@ -16,7 +16,9 @@ from floodroute.api.photo import (
 )
 
 
-def _make_image_bytes(size: tuple[int, int] = (100, 100), fmt: str = "JPEG", add_exif: bool = True) -> bytes:
+def _make_image_bytes(
+    size: tuple[int, int] = (100, 100), fmt: str = "JPEG", add_exif: bool = True
+) -> bytes:
     img = Image.new("RGB", size, color="blue")
     buf = io.BytesIO()
     if add_exif and fmt == "JPEG":

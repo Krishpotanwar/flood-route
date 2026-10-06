@@ -49,6 +49,7 @@ def seen_at(clock, stamps, response=None):
 
 # ---------------------------------------------------------------- rate limit
 
+
 def test_requests_to_one_host_are_at_least_a_second_apart():
     clock, stamps = Clock(), []
     http = make(seen_at(clock, stamps), clock)
@@ -91,6 +92,7 @@ def test_retries_are_paced_too():
 
 # ---------------------------------------------------------------- retries
 
+
 def test_503_is_retried_with_exponential_backoff():
     clock, stamps = Clock(), []
     answers = iter([httpx.Response(503), httpx.Response(502), httpx.Response(200, content=b"ok")])
@@ -114,8 +116,12 @@ def test_retries_are_bounded():
 def test_retry_after_is_honoured_and_capped():
     for header, expected in (("5", 5.0), ("99999", MAX_WAIT)):
         clock = Clock()
-        answers = iter([httpx.Response(429, headers={"retry-after": header}),
-                        httpx.Response(200, content=b"ok")])
+        answers = iter(
+            [
+                httpx.Response(429, headers={"retry-after": header}),
+                httpx.Response(200, content=b"ok"),
+            ]
+        )
         http = make(lambda r, a=answers: next(a), clock)
         assert http.get(URL, 100) == b"ok"
         assert clock.sleeps == [expected]
@@ -150,6 +156,7 @@ def test_client_errors_and_redirects_are_not_retried_or_followed(status):
 
 
 # ---------------------------------------------------------------- caps and allow-list
+
 
 def test_declared_oversize_body_is_refused_without_a_retry():
     clock, stamps = Clock(), []
@@ -189,10 +196,18 @@ def test_a_body_that_never_finishes_hits_the_deadline():
         make(lambda r: httpx.Response(200, content=trickle()), clock).get(URL, 1000)
 
 
-@pytest.mark.parametrize("url", [
-    "http://a.example/x", "https://evil.example/x", "https://a.example.evil.example/x",
-    "ftp://a.example/x", "file:///etc/passwd", "https://169.254.169.254/latest", "//a.example/x",
-])
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://a.example/x",
+        "https://evil.example/x",
+        "https://a.example.evil.example/x",
+        "ftp://a.example/x",
+        "file:///etc/passwd",
+        "https://169.254.169.254/latest",
+        "//a.example/x",
+    ],
+)
 def test_only_https_and_listed_hosts_are_fetched(url):
     def never(request):
         raise AssertionError("request should not have been sent")
@@ -224,6 +239,7 @@ def test_india_box_catches_swapped_coordinates():
 
 # ---------------------------------------------------------------- runner
 
+
 def clock_at(*times):
     stamps = iter(times)
     return lambda: next(stamps)
@@ -242,8 +258,14 @@ def test_a_clean_run_writes_health_and_releases_the_lock(capsys):
 
 def test_warnings_keep_last_ok_moving_and_say_what_was_refused():
     conn = FakeConn()
-    assert common.run(conn, "x", lambda c: Outcome({}, 5, "2 items\nrefused"), clock=lambda: NOW) == 0
-    assert conn.health["x"] == {"last_ok": NOW, "last_error": "warning: 2 items refused", "lag_s": 5}
+    assert (
+        common.run(conn, "x", lambda c: Outcome({}, 5, "2 items\nrefused"), clock=lambda: NOW) == 0
+    )
+    assert conn.health["x"] == {
+        "last_ok": NOW,
+        "last_error": "warning: 2 items refused",
+        "lag_s": 5,
+    }
 
 
 def test_a_failed_run_exits_one_keeps_last_ok_and_unknowns_the_lag(capsys):
@@ -259,7 +281,8 @@ def test_a_failed_run_exits_one_keeps_last_ok_and_unknowns_the_lag(capsys):
     assert health["last_ok"] == first  # the true age of the feed stays readable
     assert health["lag_s"] is None  # unknown is not the previous number
     assert health["last_error"] == (
-        "2026-10-05T21:30:00Z failed: FetchError: ConnectError: Connection reset by peer")
+        "2026-10-05T21:30:00Z failed: FetchError: ConnectError: Connection reset by peer"
+    )
     assert "Connection reset" in capsys.readouterr().err
 
     assert common.run(conn, "x", lambda c: Outcome({}, 7), clock=lambda: second) == 0
@@ -269,7 +292,10 @@ def test_a_failed_run_exits_one_keeps_last_ok_and_unknowns_the_lag(capsys):
 def test_the_first_ever_run_failing_still_leaves_a_row():
     conn = FakeConn()
     assert common.run(conn, "x", lambda c: 1 / 0, clock=lambda: NOW) == 1
-    assert conn.health["x"]["last_ok"] is None and "ZeroDivisionError" in conn.health["x"]["last_error"]
+    assert (
+        conn.health["x"]["last_ok"] is None
+        and "ZeroDivisionError" in conn.health["x"]["last_error"]
+    )
 
 
 def test_error_text_is_one_short_line():
@@ -320,6 +346,7 @@ def test_a_connection_that_is_not_autocommit_is_refused():
 
 
 # ---------------------------------------------------------------- command line
+
 
 def test_cli_usage_errors_exit_two(capsys):
     with pytest.raises(SystemExit) as err:

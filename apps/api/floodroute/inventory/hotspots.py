@@ -26,8 +26,18 @@ from floodroute.inventory.geocode import Geocoder, confidence, simplify
 from floodroute.inventory.match import dist_m, tokens
 
 COLS = [
-    "name", "ward_or_area", "source_name", "source_url", "source_date", "list_kind", "raw_text",
-    "lat", "lon", "geocode_method", "geocode_confidence", "needs_review",
+    "name",
+    "ward_or_area",
+    "source_name",
+    "source_url",
+    "source_date",
+    "list_kind",
+    "raw_text",
+    "lat",
+    "lon",
+    "geocode_method",
+    "geocode_confidence",
+    "needs_review",
 ]
 REQUIRED = ("name", "source_name", "source_url", "source_date", "list_kind", "raw_text")
 AGREE_M, CONFLICT_M = 150.0, 500.0
@@ -78,8 +88,14 @@ def build(rows, city, geocoder):
             names_at[p].add(r["name"].strip().lower())
 
     def peers(i):
-        return [j for j, p in enumerate(pts) if p and j != i and rows[j]["source_url"] != rows[i]["source_url"]
-                and jaccard(toks[i], toks[j]) >= SAME_NAME]
+        return [
+            j
+            for j, p in enumerate(pts)
+            if p
+            and j != i
+            and rows[j]["source_url"] != rows[i]["source_url"]
+            and jaccard(toks[i], toks[j]) >= SAME_NAME
+        ]
 
     out, stats = [], Counter()
     for i, r in enumerate(rows):
@@ -94,14 +110,23 @@ def build(rows, city, geocoder):
             elif d and min(d) > CONFLICT_M:
                 method, conf = f"source_latlon;conflicts_with_other_source_{round(min(d))}m", "low"
             else:
-                method, conf = ("source_latlon;other_source_" + f"{round(min(d))}m" if d else "source_latlon"), "medium"
-            if len(names_at[pts[i]]) > 1:  # one printed point for several names: co-located, not exact
+                method, conf = (
+                    ("source_latlon;other_source_" + f"{round(min(d))}m" if d else "source_latlon"),
+                    "medium",
+                )
+            if (
+                len(names_at[pts[i]]) > 1
+            ):  # one printed point for several names: co-located, not exact
                 method += f";shared_by_{len(names_at[pts[i]])}_names"
                 conf = "medium" if conf == "high" else conf
             if r["list_kind"] in AREA_KINDS and conf == "high":
                 conf = "medium"
         else:
-            note = f"source_latlon_rejected({r.get('src_lat')},{r.get('src_lon')} outside city box);" if raw_bad else ""
+            note = (
+                f"source_latlon_rejected({r.get('src_lat')},{r.get('src_lon')} outside city box);"
+                if raw_bad
+                else ""
+            )
             near = peers(i)
             if near:
                 j = max(near, key=lambda j: jaccard(toks[i], toks[j]))
@@ -122,13 +147,22 @@ def build(rows, city, geocoder):
                     lat, lon = float(rs[0]["lat"]), float(rs[0]["lon"])
                     if r.get("extent") in ("stretch", "road", "area") and conf != "low":
                         conf, method = "low", method + f";capped_extent_{r['extent']}"
-        out.append({
-            "name": r["name"], "ward_or_area": r.get("ward_or_area", ""), "source_name": r["source_name"],
-            "source_url": r["source_url"], "source_date": r["source_date"], "list_kind": r["list_kind"],
-            "raw_text": r["raw_text"], "lat": "" if lat is None else f"{lat:.6f}",
-            "lon": "" if lon is None else f"{lon:.6f}", "geocode_method": method,
-            "geocode_confidence": conf, "needs_review": "true" if conf in ("low", "none") else "false",
-        })
+        out.append(
+            {
+                "name": r["name"],
+                "ward_or_area": r.get("ward_or_area", ""),
+                "source_name": r["source_name"],
+                "source_url": r["source_url"],
+                "source_date": r["source_date"],
+                "list_kind": r["list_kind"],
+                "raw_text": r["raw_text"],
+                "lat": "" if lat is None else f"{lat:.6f}",
+                "lon": "" if lon is None else f"{lon:.6f}",
+                "geocode_method": method,
+                "geocode_confidence": conf,
+                "needs_review": "true" if conf in ("low", "none") else "false",
+            }
+        )
         stats[(r["list_kind"], conf)] += 1
     return out, stats
 
@@ -143,8 +177,16 @@ def main(seed, out, city, cache):
         w = csv.DictWriter(fh, COLS)
         w.writeheader()
         w.writerows(res)
-    print(json.dumps({"rows": len(res), "nominatim_requests_sent": g.requests,
-                      "kind|confidence": {f"{k}|{c}": n for (k, c), n in sorted(stats.items())}}, indent=1))
+    print(
+        json.dumps(
+            {
+                "rows": len(res),
+                "nominatim_requests_sent": g.requests,
+                "kind|confidence": {f"{k}|{c}": n for (k, c), n in sorted(stats.items())},
+            },
+            indent=1,
+        )
+    )
 
 
 if __name__ == "__main__":

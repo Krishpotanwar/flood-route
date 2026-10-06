@@ -149,7 +149,9 @@ class ValhallaRouter:
     ) -> Route | None:
         r = self.client.post(
             "/route",
-            json=request_body(origin, dest, vclass, exclude_polygons=exclude_polygons, depart=depart),
+            json=request_body(
+                origin, dest, vclass, exclude_polygons=exclude_polygons, depart=depart
+            ),
         )
         if r.status_code == 400 and _error_code(r) in NO_ROUTE_CODES:
             return None

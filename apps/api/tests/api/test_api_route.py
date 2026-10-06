@@ -106,16 +106,36 @@ def test_route_arrival_time_validation_and_decision_log(app_db):
     ) -> Route | None:
         if not exclude_polygons:
             # Direct route via 9002 (flooded)
-            return Route((
-                Edge(segment_id=9001, geometry=((12.97, 77.58), (12.98, 77.59)), travel_time_s=60.0),
-                Edge(segment_id=9002, geometry=((12.98, 77.59), (12.99, 77.60)), travel_time_s=120.0),
-            ))
+            return Route(
+                (
+                    Edge(
+                        segment_id=9001,
+                        geometry=((12.97, 77.58), (12.98, 77.59)),
+                        travel_time_s=60.0,
+                    ),
+                    Edge(
+                        segment_id=9002,
+                        geometry=((12.98, 77.59), (12.99, 77.60)),
+                        travel_time_s=120.0,
+                    ),
+                )
+            )
         else:
             # Safe detour via 9003
-            return Route((
-                Edge(segment_id=9001, geometry=((12.97, 77.58), (12.98, 77.59)), travel_time_s=60.0),
-                Edge(segment_id=9003, geometry=((12.98, 77.59), (12.99, 77.60)), travel_time_s=180.0),
-            ))
+            return Route(
+                (
+                    Edge(
+                        segment_id=9001,
+                        geometry=((12.97, 77.58), (12.98, 77.59)),
+                        travel_time_s=60.0,
+                    ),
+                    Edge(
+                        segment_id=9003,
+                        geometry=((12.98, 77.59), (12.99, 77.60)),
+                        travel_time_s=180.0,
+                    ),
+                )
+            )
 
     app = create_app()
     app.dependency_overrides[get_db] = lambda: app_db

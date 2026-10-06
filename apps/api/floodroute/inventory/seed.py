@@ -83,9 +83,7 @@ def ensure_city_zone(
     city_id = CITY_IDS.get(city_norm, 1)
     zid = zone_id if zone_id is not None else city_id
     west, south, east, north = CITIES.get(city_norm, (77.40, 12.80, 77.85, 13.20))
-    poly_wkt = (
-        f"MULTIPOLYGON((({west} {south}, {east} {south}, {east} {north}, {west} {north}, {west} {south})))"
-    )
+    poly_wkt = f"MULTIPOLYGON((({west} {south}, {east} {south}, {east} {north}, {west} {north}, {west} {south})))"
     conn.execute(
         """
         insert into zone (zone_id, city_id, geom, params)
@@ -212,7 +210,9 @@ def seed_inventory(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Seed candidate segments and hotspots into PostGIS.")
+    parser = argparse.ArgumentParser(
+        description="Seed candidate segments and hotspots into PostGIS."
+    )
     parser.add_argument("--city", default="bengaluru", help="City name (e.g. bengaluru, chennai)")
     parser.add_argument("--candidates", help="Path to candidates GeoJSON file")
     parser.add_argument("--matched", help="Path to matched hotspots CSV file")

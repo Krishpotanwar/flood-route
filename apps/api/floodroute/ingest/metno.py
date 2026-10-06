@@ -97,7 +97,9 @@ def check_point(zone_id, lat, lon) -> tuple[float, float]:
     return lat, lon
 
 
-def parse_forecast(body: bytes, now: datetime) -> tuple[datetime, datetime, list[tuple[datetime, float]]]:
+def parse_forecast(
+    body: bytes, now: datetime
+) -> tuple[datetime, datetime, list[tuple[datetime, float]]]:
     """(updated_at, issued, [(valid, mm_per_h)]) from a Locationforecast JSON body."""
     try:
         doc = json.loads(body.decode("utf-8"), parse_constant=_no_constants)
@@ -106,7 +108,9 @@ def parse_forecast(body: bytes, now: datetime) -> tuple[datetime, datetime, list
     try:
         props = doc["properties"]
         if props["meta"]["units"]["precipitation_amount"] != "mm":
-            raise Rejected(f"precipitation unit is {props['meta']['units']['precipitation_amount']!r}")
+            raise Rejected(
+                f"precipitation unit is {props['meta']['units']['precipitation_amount']!r}"
+            )
         updated = _utc(props["meta"]["updated_at"])
         series = props["timeseries"]
         if len(series) > MAX_ENTRIES:

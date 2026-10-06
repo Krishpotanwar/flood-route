@@ -71,17 +71,19 @@ def get_risk(
     cur = db.execute(sql, tuple(params))
     items = []
     for sid, assessed, state, p, conf, d50, d90, age_s, up_at in cur.fetchall():
-        items.append({
-            "segment_id": sid,
-            "assessed": assessed,
-            "state": state if assessed else None,
-            "p_unusable": float(p) if p is not None else None,
-            "confidence": conf if assessed else None,
-            "depth_p50_cm": float(d50) if d50 is not None else None,
-            "depth_p90_cm": float(d90) if d90 is not None else None,
-            "evidence_age_s": age_s,
-            "updated_at": up_at.isoformat() if up_at else None,
-        })
+        items.append(
+            {
+                "segment_id": sid,
+                "assessed": assessed,
+                "state": state if assessed else None,
+                "p_unusable": float(p) if p is not None else None,
+                "confidence": conf if assessed else None,
+                "depth_p50_cm": float(d50) if d50 is not None else None,
+                "depth_p90_cm": float(d90) if d90 is not None else None,
+                "evidence_age_s": age_s,
+                "updated_at": up_at.isoformat() if up_at else None,
+            }
+        )
 
     return {
         "vclass": vclass,

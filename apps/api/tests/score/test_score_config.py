@@ -42,7 +42,7 @@ def test_vehicle_profiles_follow_prd_11_2():
         "auto_rickshaw": (10, 20),
         "car": (15, 30),
         "suv": (25, 40),
-        "ambulance": (15, 20),
+        "ambulance": (20, 35),
         "heavy": (30, 50),
     }
     assert {k: (v.caution_cm, v.unusable_cm) for k, v in CFG.vehicle_profiles.items()} == want

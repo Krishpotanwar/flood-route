@@ -93,7 +93,9 @@ def make_router():
             return Route(
                 (
                     Edge(9101, ((12.97, 77.58), (12.98, 77.59)), 120.0, 800.0, turn_off_after=True),
-                    Edge(9102, ((12.98, 77.59), (12.99, 77.60)), 180.0, 1000.0, turn_off_after=True),
+                    Edge(
+                        9102, ((12.98, 77.59), (12.99, 77.60)), 180.0, 1000.0, turn_off_after=True
+                    ),
                 )
             )
         # Detour route avoids 9102 using 9103

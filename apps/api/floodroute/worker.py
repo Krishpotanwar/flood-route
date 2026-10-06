@@ -136,7 +136,9 @@ class Worker:
 
         with psycopg.connect(self.db_url, autocommit=True) as conn:
             # Task 1: SACHET alert feed ingestion
-            if force_all or self.is_due(self.last_sachet, self.config.sachet_interval_s, current_time):
+            if force_all or self.is_due(
+                self.last_sachet, self.config.sachet_interval_s, current_time
+            ):
                 http_sachet = Http(sachet.HOSTS)
                 try:
                     code = run_ingest(conn, sachet.SOURCE, lambda c: sachet.ingest(c, http_sachet))
@@ -149,7 +151,9 @@ class Worker:
                     http_sachet.close()
 
             # Task 2: MET Norway rainfall forecast ingestion
-            if force_all or self.is_due(self.last_metno, self.config.metno_interval_s, current_time):
+            if force_all or self.is_due(
+                self.last_metno, self.config.metno_interval_s, current_time
+            ):
                 http_metno = Http(metno.HOSTS)
                 try:
                     code = run_ingest(conn, metno.SOURCE, lambda c: metno.ingest(c, http_metno))
@@ -162,7 +166,9 @@ class Worker:
                     http_metno.close()
 
             # Task 3: Scoring cycle evaluation
-            if force_all or self.is_due(self.last_score, self.config.score_interval_s, current_time):
+            if force_all or self.is_due(
+                self.last_score, self.config.score_interval_s, current_time
+            ):
                 try:
                     run_id, result = execute_score_run(
                         conn,
@@ -180,7 +186,9 @@ class Worker:
                     summary["tasks"]["score"] = {"error": str(e)}
 
             # Task 4: Data retention and cleanup
-            if force_all or self.is_due(self.last_retention, self.config.retention_interval_s, current_time):
+            if force_all or self.is_due(
+                self.last_retention, self.config.retention_interval_s, current_time
+            ):
                 try:
                     stats = prune_retention(
                         conn,
@@ -224,12 +232,16 @@ class Worker:
 
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point for running the background worker daemon."""
-    ap = argparse.ArgumentParser(prog="python -m floodroute.worker", description="FloodRoute background daemon")
+    ap = argparse.ArgumentParser(
+        prog="python -m floodroute.worker", description="FloodRoute background daemon"
+    )
     ap.add_argument("--once", action="store_true", help="Run one pass across all tasks and exit")
     ap.add_argument("--db-url", default=None, help="PostgreSQL connection string")
     args = ap.parse_args(argv)
 
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
 
     worker = Worker(db_url=args.db_url)
 

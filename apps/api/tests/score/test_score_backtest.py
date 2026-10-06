@@ -48,9 +48,9 @@ def test_contingency_table_zero_division():
 def test_compute_contingency_probabilities():
     # threshold = 0.30
     pairs = [
-        (0.8, True),   # Hit
-        (0.4, True),   # Hit
-        (0.2, True),   # Miss
+        (0.8, True),  # Hit
+        (0.4, True),  # Hit
+        (0.2, True),  # Miss
         (0.5, False),  # False alarm
         (0.1, False),  # Correct negative
     ]
@@ -66,12 +66,12 @@ def test_compute_contingency_probabilities():
 
 def test_compute_contingency_states():
     pairs = [
-        ("impassable", True),   # Hit
-        ("risky", True),        # Hit
-        ("watch", True),        # Miss
-        ("clear", True),        # Miss
+        ("impassable", True),  # Hit
+        ("risky", True),  # Hit
+        ("watch", True),  # Miss
+        ("clear", True),  # Miss
         ("impassable", False),  # False alarm
-        ("clear", False),       # Correct negative
+        ("clear", False),  # Correct negative
     ]
     ct = compute_contingency(pairs)
     assert ct.hits == 2
@@ -118,7 +118,7 @@ def test_db_backtest_with_benchmark_events(db):
         "insert into segment_risk (segment_id, vclass, horizon_min, p_unusable, state, confidence, evidence_age_s, model_version, updated_at, depth_p50_cm, depth_p90_cm) "
         "values (1001, 'car', 0, 0.75, 'impassable', 'high', 0, 'v0.0.1', %s, 50.0, 70.0), "
         "       (1002, 'car', 0, 0.10, 'watch', 'low', 0, 'v0.0.1', %s, 10.0, 20.0)",
-        (now, now)
+        (now, now),
     )
 
     # 3. Seed benchmark events

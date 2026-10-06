@@ -31,9 +31,7 @@ from floodroute.score.records import (
 )
 from floodroute.score.run import score_run
 
-SUPPORTED_VCLASSES: frozenset[str] = frozenset(
-    {"two_wheeler", "car", "ambulance", "heavy"}
-)
+SUPPORTED_VCLASSES: frozenset[str] = frozenset({"two_wheeler", "car", "ambulance", "heavy"})
 
 
 def config_digest(cfg: Config) -> str:

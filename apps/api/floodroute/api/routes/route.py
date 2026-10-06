@@ -90,7 +90,9 @@ def compute_route(
                 score_cfg.model_version,
                 Jsonb(p.response.routes[0].model_dump()) if p.response.routes else None,
                 Jsonb([r.route.edges[0].segment_id for r in p.rejected if r.route.edges]),
-                Jsonb(p.response.guidance_when_no_route.model_dump()) if p.response.guidance_when_no_route else None,
+                Jsonb(p.response.guidance_when_no_route.model_dump())
+                if p.response.guidance_when_no_route
+                else None,
                 p.response.no_safe_route,
             ),
         )

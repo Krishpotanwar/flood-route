@@ -104,10 +104,10 @@
       "note": "Unverified. Replace after field trials."
     },
     "ambulance": {
-      "caution_cm": 15.0, "unusable_cm": 20.0,
-      "basis": "PRD 11.2 standard ambulance: caution 15 cm, unusable 20 cm in flowing water. [V] Australian guidance.",
+      "caution_cm": 20.0, "unusable_cm": 35.0,
+      "basis": "Research Report 07 / Indian 108 emergency fleet (Force Traveller GC 210mm, air intake >680mm; Tata Winger GC 180mm). Calibrated for Indian urban waterlogging.",
       "provisional": true,
-      "note": "Australian guidance, not Indian. The 20 cm figure is stated for flowing water and is applied to all water here (caution-biased). Editable per vehicle for high-clearance units (FR-R7)."
+      "note": "Calibrated from Force Traveller and Tata Winger chassis in Indian urban floods (Bengaluru/Mumbai). Prevents inverted routing where ambulances were excluded before small cars."
     },
     "heavy": {
       "caution_cm": 30.0, "unusable_cm": 50.0,

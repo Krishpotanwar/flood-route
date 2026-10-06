@@ -19,14 +19,35 @@ import osmium
 from floodroute.inventory import CITIES
 
 MOTOR = {
-    "motorway", "trunk", "primary", "secondary", "tertiary", "unclassified", "residential",
-    "service", "living_street", "road", "track",
+    "motorway",
+    "trunk",
+    "primary",
+    "secondary",
+    "tertiary",
+    "unclassified",
+    "residential",
+    "service",
+    "living_street",
+    "road",
+    "track",
 } | {f"{k}_link" for k in ("motorway", "trunk", "primary", "secondary", "tertiary")}
 WATER = {"river", "stream", "canal", "drain", "ditch"}
 TUNNEL = {"yes", "culvert", "building_passage"}
 KEEP = (
-    "name", "ref", "highway", "tunnel", "bridge", "layer", "maxheight", "flood_prone", "oneway",
-    "surface", "lanes", "waterway", "ford", "covered",
+    "name",
+    "ref",
+    "highway",
+    "tunnel",
+    "bridge",
+    "layer",
+    "maxheight",
+    "flood_prone",
+    "oneway",
+    "surface",
+    "lanes",
+    "waterway",
+    "ford",
+    "covered",
 )
 CELL = 200.0  # grid cell for the waterway index, metres
 
@@ -114,8 +135,11 @@ def read_pbf(pbf, cities):
             continue  # footways, steps, cycleways: not vehicle passability
         # ponytail: the three kinds are exclusive; a way tagged highway and waterway counts as highway
         # railway=rail only: Namma Metro viaducts are railway=subway, roads pass under them at grade
-        if hw is None and t.get("flood_prone") != "yes" and ww not in WATER and not (
-            rl == "rail" and has(w.tags, "bridge")
+        if (
+            hw is None
+            and t.get("flood_prone") != "yes"
+            and ww not in WATER
+            and not (rl == "rail" and has(w.tags, "bridge"))
         ):
             continue
         try:
@@ -201,12 +225,20 @@ def candidates(data, proj):
         if bridged and any(k == "water" for *_, k, _ in crossings):
             reasons.append("bridge_over_water")
         props = {
-            "osm_way_id": hw["id"], "name": t.get("name", ""), "highway": h or "",
-            "tags": t, "length_m": round(length_m(xy)),
+            "osm_way_id": hw["id"],
+            "name": t.get("name", ""),
+            "highway": h or "",
+            "tags": t,
+            "length_m": round(length_m(xy)),
         }
         if reasons:
-            yield {**props, "candidate_id": str(hw["id"]), "reasons": reasons,
-                   "structure": structure(t), "pts": hw["pts"]}
+            yield {
+                **props,
+                "candidate_id": str(hw["id"]),
+                "reasons": reasons,
+                "structure": structure(t),
+                "pts": hw["pts"],
+            }
         if bridged or tunneled:
             continue  # their water crossings are the structure itself
         done = set()
@@ -217,47 +249,102 @@ def candidates(data, proj):
             sa, sb = clip(a, b, p)
             ot = other["tags"]
             culvert = kind == "water" and ot.get("tunnel") == "culvert"
-            yield {**props, "candidate_id": f"{hw['id']}-x{len(done)}",
-                   "reasons": ["under_rail_bridge" if kind == "rail" else "waterway_crossing"],
-                   "structure": "underpass" if kind == "rail" else structure(t, culvert),
-                   "crossing": (ot.get("waterway") or "railway") + (":" + ot["name"] if "name" in ot else "")
-                   + f"#{other['id']}",
-                   "pts": [(sa[0] / proj.kx, sa[1] / proj.ky), (sb[0] / proj.kx, sb[1] / proj.ky)]}
+            yield {
+                **props,
+                "candidate_id": f"{hw['id']}-x{len(done)}",
+                "reasons": ["under_rail_bridge" if kind == "rail" else "waterway_crossing"],
+                "structure": "underpass" if kind == "rail" else structure(t, culvert),
+                "crossing": (ot.get("waterway") or "railway")
+                + (":" + ot["name"] if "name" in ot else "")
+                + f"#{other['id']}",
+                "pts": [(sa[0] / proj.kx, sa[1] / proj.ky), (sb[0] / proj.kx, sb[1] / proj.ky)],
+            }
 
 
 def write(city, feats, out_dir, meta):
     out = Path(out_dir)
     gj = {
-        "type": "FeatureCollection", "name": f"{city}_candidates",
+        "type": "FeatureCollection",
+        "name": f"{city}_candidates",
         "attribution": "Contains data (c) OpenStreetMap contributors, ODbL 1.0, openstreetmap.org/copyright",
         "extract": meta,
         "features": [
-            {"type": "Feature", "id": f["candidate_id"],
-             "geometry": {"type": "LineString", "coordinates": [[round(x, 6), round(y, 6)] for x, y in f["pts"]]},
-             "properties": {k: f[k] for k in ("candidate_id", "osm_way_id", "name", "highway", "structure",
-                                              "reasons", "length_m", "tags", "crossing") if k in f}}
+            {
+                "type": "Feature",
+                "id": f["candidate_id"],
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [[round(x, 6), round(y, 6)] for x, y in f["pts"]],
+                },
+                "properties": {
+                    k: f[k]
+                    for k in (
+                        "candidate_id",
+                        "osm_way_id",
+                        "name",
+                        "highway",
+                        "structure",
+                        "reasons",
+                        "length_m",
+                        "tags",
+                        "crossing",
+                    )
+                    if k in f
+                },
+            }
             for f in feats
         ],
     }
     (out / f"{city}_candidates.geojson").write_text(json.dumps(gj, separators=(",", ":")) + "\n")
-    cols = ["candidate_id", "osm_way_id", "name", "highway", "structure", "reasons", "length_m", "lat", "lon",
-            "tunnel", "bridge", "layer", "flood_prone", "crossing"]
+    cols = [
+        "candidate_id",
+        "osm_way_id",
+        "name",
+        "highway",
+        "structure",
+        "reasons",
+        "length_m",
+        "lat",
+        "lon",
+        "tunnel",
+        "bridge",
+        "layer",
+        "flood_prone",
+        "crossing",
+    ]
     with open(out / f"{city}_candidates.csv", "w", newline="") as fh:
         wr = csv.writer(fh)
         wr.writerow(cols)
         for f in feats:
             mid = f["pts"][len(f["pts"]) // 2]
             t = f["tags"]
-            wr.writerow([f["candidate_id"], f["osm_way_id"], f["name"], f["highway"], f["structure"],
-                         ";".join(f["reasons"]), f["length_m"], round(mid[1], 6), round(mid[0], 6),
-                         t.get("tunnel", ""), t.get("bridge", ""), t.get("layer", ""), t.get("flood_prone", ""),
-                         f.get("crossing", "")])
+            wr.writerow(
+                [
+                    f["candidate_id"],
+                    f["osm_way_id"],
+                    f["name"],
+                    f["highway"],
+                    f["structure"],
+                    ";".join(f["reasons"]),
+                    f["length_m"],
+                    round(mid[1], 6),
+                    round(mid[0], 6),
+                    t.get("tunnel", ""),
+                    t.get("bridge", ""),
+                    t.get("layer", ""),
+                    t.get("flood_prone", ""),
+                    f.get("crossing", ""),
+                ]
+            )
 
 
 def main(pbf, out_dir, cities):
     hdr = osmium.io.Reader(pbf, osmium.osm.osm_entity_bits.NOTHING)
-    meta = {"pbf": Path(pbf).name, "pbf_timestamp": hdr.header().get("osmosis_replication_timestamp"),
-            "source": "https://download.bbbike.org/osm/pbf/region/asia/india/southern-zone.osm.pbf"}
+    meta = {
+        "pbf": Path(pbf).name,
+        "pbf_timestamp": hdr.header().get("osmosis_replication_timestamp"),
+        "source": "https://download.bbbike.org/osm/pbf/region/asia/india/southern-zone.osm.pbf",
+    }
     hdr.close()
     data = read_pbf(pbf, cities)
     for c in cities:
@@ -269,8 +356,16 @@ def main(pbf, out_dir, cities):
         for f in feats:
             for r in f["reasons"]:
                 by[r.split("=")[0]] = by.get(r.split("=")[0], 0) + 1
-        print(c, {"highways": len(data[c]["hw"]), "waterways": len(data[c]["ww"]),
-                  "rail_bridges": len(data[c]["rail"]), "candidates": len(feats), "by_reason": by})
+        print(
+            c,
+            {
+                "highways": len(data[c]["hw"]),
+                "waterways": len(data[c]["ww"]),
+                "rail_bridges": len(data[c]["rail"]),
+                "candidates": len(feats),
+                "by_reason": by,
+            },
+        )
 
 
 if __name__ == "__main__":

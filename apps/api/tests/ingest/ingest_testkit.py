@@ -81,13 +81,21 @@ class FakeConn:
             return Cur([(True,)])
         if s == norm(sachet.SEEN_SQL):
             keys = set(params[1])
-            return Cur((a[-1].obj["rss_key"],) for a in self.alerts.values()
-                       if a[-1].obj["rss_key"] in keys)
+            return Cur(
+                (a[-1].obj["rss_key"],)
+                for a in self.alerts.values()
+                if a[-1].obj["rss_key"] in keys
+            )
         if s == norm(sachet.NO_AREA_SQL):
-            n = sum(1 for a in self.alerts.values()
-                    if a[6] is not None and a[6] > params[0] and a[7] is None
-                    and a[-1].obj["cap"]["status"] == "Actual"
-                    and a[-1].obj["cap"]["msgType"] in ("Alert", "Update"))
+            n = sum(
+                1
+                for a in self.alerts.values()
+                if a[6] is not None
+                and a[6] > params[0]
+                and a[7] is None
+                and a[-1].obj["cap"]["status"] == "Actual"
+                and a[-1].obj["cap"]["msgType"] in ("Alert", "Update")
+            )
             return Cur([(n,)])
         if s == norm(metno.POINTS_SQL):
             return Cur(self.zones)
@@ -100,7 +108,9 @@ class FakeConn:
             self.health[source] = {"last_ok": last_ok, "last_error": err, "lag_s": lag}
         elif s == norm(common.FAIL_SQL):
             source, err = params
-            row = self.health.setdefault(source, {"last_ok": None, "last_error": None, "lag_s": None})
+            row = self.health.setdefault(
+                source, {"last_ok": None, "last_error": None, "lag_s": None}
+            )
             row.update(last_error=err, lag_s=None)
         else:
             raise AssertionError(f"FakeConn does not know {s!r}")
@@ -160,30 +170,69 @@ def sachet_routes(rss: bytes | None = None, polygons: dict | None = None) -> dic
 
 
 def rss_one(guid: str, pub: str = "Mon, 05 Oct 2026 19:00:00 GMT") -> bytes:
-    return (f"<rss version='2.0'><channel><item><guid isPermaLink='false'>{guid}</guid>"
-            f"<pubDate>{pub}</pubDate></item></channel></rss>").encode()
+    return (
+        f"<rss version='2.0'><channel><item><guid isPermaLink='false'>{guid}</guid>"
+        f"<pubDate>{pub}</pubDate></item></channel></rss>"
+    ).encode()
 
 
-def cap_xml(*, infos=None, identifier="IN-1_1", sender="Test-SDMA", sent="2026-10-05T18:00:00+05:30",
-            status="Actual", msg_type="Alert", scope="Public", references=None) -> bytes:
+def cap_xml(
+    *,
+    infos=None,
+    identifier="IN-1_1",
+    sender="Test-SDMA",
+    sent="2026-10-05T18:00:00+05:30",
+    status="Actual",
+    msg_type="Alert",
+    scope="Public",
+    references=None,
+) -> bytes:
     """A small CAP 1.2 alert. A None value drops the element; `area` and `extra` are raw XML."""
     base = dict(
-        language="en-IN", category="Met", event="Heavy Rain", urgency="Expected", severity="Severe",
-        certainty="Likely", effective="2026-10-05T18:00:00+05:30", onset="2026-10-05T18:10:00+05:30",
-        expires="2026-10-05T21:00:00+05:30", headline="Heavy rain likely", description="d",
-        instruction="i", area="<cap:area><cap:areaDesc>Somewhere</cap:areaDesc></cap:area>", extra="",
+        language="en-IN",
+        category="Met",
+        event="Heavy Rain",
+        urgency="Expected",
+        severity="Severe",
+        certainty="Likely",
+        effective="2026-10-05T18:00:00+05:30",
+        onset="2026-10-05T18:10:00+05:30",
+        expires="2026-10-05T21:00:00+05:30",
+        headline="Heavy rain likely",
+        description="d",
+        instruction="i",
+        area="<cap:area><cap:areaDesc>Somewhere</cap:areaDesc></cap:area>",
+        extra="",
     )
     out = ['<cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">']
-    for tag, value in (("identifier", identifier), ("sender", sender), ("sent", sent),
-                       ("status", status), ("msgType", msg_type), ("scope", scope),
-                       ("references", references)):
+    for tag, value in (
+        ("identifier", identifier),
+        ("sender", sender),
+        ("sent", sent),
+        ("status", status),
+        ("msgType", msg_type),
+        ("scope", scope),
+        ("references", references),
+    ):
         if value is not None:
             out.append(f"<cap:{tag}>{value}</cap:{tag}>")
     for override in [{}] if infos is None else infos:
         info = {**base, **override}
         out.append("<cap:info>")
-        for tag in ("language", "category", "event", "urgency", "severity", "certainty", "effective",
-                    "onset", "expires", "headline", "description", "instruction"):
+        for tag in (
+            "language",
+            "category",
+            "event",
+            "urgency",
+            "severity",
+            "certainty",
+            "effective",
+            "onset",
+            "expires",
+            "headline",
+            "description",
+            "instruction",
+        ):
             if info[tag] is not None:
                 out.append(f"<cap:{tag}>{info[tag]}</cap:{tag}>")
         out.append(info["extra"] + info["area"] + "</cap:info>")

@@ -26,19 +26,69 @@ NAME_MIN, NAME_ONLY, NAME_R, NAME_FAR_R = 0.5, 0.67, 300.0, 800.0
 DIST_R = {"high": 50.0, "medium": 100.0}
 COMMON_DF = 30  # a token in this many candidate names or more carries no identity
 STRUCTURES = {"underpass", "low_bridge", "culvert"}
-STRUCT_NAME = re.compile(r"under ?pass|under ?bridge|subway|bridge|flyover|culvert|tunnel|\bvents?\b")
+STRUCT_NAME = re.compile(
+    r"under ?pass|under ?bridge|subway|bridge|flyover|culvert|tunnel|\bvents?\b"
+)
 HINTS = [  # words in a hotspot name that say what kind of structure it is
     (re.compile(r"under ?pass|under ?bridge|subway"), {"underpass"}),
     (re.compile(r"bridge|culvert|\bvents?\b|nala|drain"), {"low_bridge", "culvert"}),
 ]
 GENERIC = {
-    "road", "rd", "main", "cross", "junction", "jn", "circle", "cir", "underpass", "underbridge",
-    "flyover", "bridge", "railway", "rail", "vehicle", "layout", "near", "the", "of", "in", "at",
-    "on", "to", "and", "ward", "no", "opp", "behind", "beside", "back", "side", "area", "front",
-    "stretch", "between", "from", "below", "signal", "service", "highway", "street", "st", "lane", "nh",
-    "bengaluru", "bangalore", "chennai",
+    "road",
+    "rd",
+    "main",
+    "cross",
+    "junction",
+    "jn",
+    "circle",
+    "cir",
+    "underpass",
+    "underbridge",
+    "flyover",
+    "bridge",
+    "railway",
+    "rail",
+    "vehicle",
+    "layout",
+    "near",
+    "the",
+    "of",
+    "in",
+    "at",
+    "on",
+    "to",
+    "and",
+    "ward",
+    "no",
+    "opp",
+    "behind",
+    "beside",
+    "back",
+    "side",
+    "area",
+    "front",
+    "stretch",
+    "between",
+    "from",
+    "below",
+    "signal",
+    "service",
+    "highway",
+    "street",
+    "st",
+    "lane",
+    "nh",
+    "bengaluru",
+    "bangalore",
+    "chennai",
 }
-SPELL = {"mehkri": "mekhri", "mekri": "mekhri", "nagara": "nagar", "lyt": "layout", "lout": "layout"}
+SPELL = {
+    "mehkri": "mekhri",
+    "mekri": "mekhri",
+    "nagara": "nagar",
+    "lyt": "layout",
+    "lout": "layout",
+}
 
 
 def tokens(name):
@@ -84,7 +134,11 @@ def prepare(cands):
     df = Counter(t for c in cands for t in tokens(c.get("name", "")))
     common = {t for t, n in df.items() if n >= COMMON_DF}
     return [
-        {**c, "toks": tokens(c.get("name", "")) - common, "names_structure": bool(STRUCT_NAME.search(c.get("name", "").lower()))}
+        {
+            **c,
+            "toks": tokens(c.get("name", "")) - common,
+            "names_structure": bool(STRUCT_NAME.search(c.get("name", "").lower())),
+        }
         for c in cands
     ], common
 
@@ -111,8 +165,11 @@ def match(h, cands, common=frozenset()):
     kinds = next((k for rx, k in HINTS if rx.search(h["name"].lower())), STRUCTURES)
     hit = [x for x in near if x[0] >= NAME_MIN and x[1] <= NAME_R]
     named = [
-        x for x in scored
-        if x[0] >= NAME_ONLY and x[2]["structure"] in kinds and x[2]["names_structure"]
+        x
+        for x in scored
+        if x[0] >= NAME_ONLY
+        and x[2]["structure"] in kinds
+        and x[2]["names_structure"]
         and (x[1] is not None and x[1] <= NAME_FAR_R if has_xy else True)
     ]
     close = [x for x in near if conf in DIST_R and x[1] <= DIST_R[conf]]
@@ -123,21 +180,44 @@ def match(h, cands, common=frozenset()):
     elif close:
         best, mtype = min(close, key=lambda x: x[1]), "distance"
     else:
-        return {"match_type": "none", "needs_review": True, "n_in_radius": len([x for x in near if x[1] <= NAME_R])}
+        return {
+            "match_type": "none",
+            "needs_review": True,
+            "n_in_radius": len([x for x in near if x[1] <= NAME_R]),
+        }
     s, d, c = best
     # how many candidates compete: same-named ones for a name hit (two carriageways = 2), else those in radius
     n_in = len(hit) if mtype == "name+distance" else len(named) if mtype == "name" else len(close)
     clean = mtype == "name+distance" and s >= 0.8 and d <= 150 and conf in DIST_R and n_in <= 2
     return {
-        "match_type": mtype, "candidate_id": c["candidate_id"], "osm_way_id": c["osm_way_id"],
-        "way_name": c.get("name", ""), "structure": c["structure"], "dist_m": None if d is None else round(d),
-        "name_score": round(s, 2), "n_in_radius": n_in, "needs_review": not clean,
+        "match_type": mtype,
+        "candidate_id": c["candidate_id"],
+        "osm_way_id": c["osm_way_id"],
+        "way_name": c.get("name", ""),
+        "structure": c["structure"],
+        "dist_m": None if d is None else round(d),
+        "name_score": round(s, 2),
+        "n_in_radius": n_in,
+        "needs_review": not clean,
     }
 
 
 OUT_COLS = [
-    "hotspot_row", "name", "list_kind", "lat", "lon", "geocode_confidence", "match_type", "candidate_id",
-    "osm_way_id", "way_name", "structure", "dist_m", "name_score", "n_in_radius", "needs_review",
+    "hotspot_row",
+    "name",
+    "list_kind",
+    "lat",
+    "lon",
+    "geocode_confidence",
+    "match_type",
+    "candidate_id",
+    "osm_way_id",
+    "way_name",
+    "structure",
+    "dist_m",
+    "name_score",
+    "n_in_radius",
+    "needs_review",
 ]
 
 
@@ -147,7 +227,10 @@ def main(hotspots_csv, candidates_geojson, out_csv):
     import json
 
     with open(candidates_geojson, encoding="utf-8") as fh:
-        raw = [{**f["properties"], "pts": f["geometry"]["coordinates"]} for f in json.load(fh)["features"]]
+        raw = [
+            {**f["properties"], "pts": f["geometry"]["coordinates"]}
+            for f in json.load(fh)["features"]
+        ]
     cands, common = prepare(raw)
     with open(hotspots_csv, newline="", encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
@@ -156,8 +239,14 @@ def main(hotspots_csv, candidates_geojson, out_csv):
         w.writeheader()
         for i, r in enumerate(rows, 1):
             m = match(r, cands, common)
-            m.update(hotspot_row=i, name=r["name"], list_kind=r["list_kind"], lat=r["lat"], lon=r["lon"],
-                     geocode_confidence=r["geocode_confidence"])
+            m.update(
+                hotspot_row=i,
+                name=r["name"],
+                list_kind=r["list_kind"],
+                lat=r["lat"],
+                lon=r["lon"],
+                geocode_confidence=r["geocode_confidence"],
+            )
             w.writerow(m)
 
 

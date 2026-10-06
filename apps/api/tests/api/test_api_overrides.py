@@ -10,9 +10,7 @@ SEG_LINE = "SRID=4326;LINESTRING(77.58 12.97, 77.59 12.98)"
 
 def test_override_validation_errors(client, app_db):
     now = datetime.now(UTC)
-    app_db.execute(
-        "insert into tenant (tenant_id, name, kind) values (1, 'Admin', 'admin')"
-    )
+    app_db.execute("insert into tenant (tenant_id, name, kind) values (1, 'Admin', 'admin')")
     app_db.execute(
         "insert into zone (zone_id, city_id, geom, params) values (1, 1, %s, '{}')",
         (ZONE_GEOM,),
@@ -71,9 +69,7 @@ def test_override_validation_errors(client, app_db):
 
 def test_override_success_and_audit_log(client, app_db):
     now = datetime.now(UTC)
-    app_db.execute(
-        "insert into tenant (tenant_id, name, kind) values (1, 'Admin', 'admin')"
-    )
+    app_db.execute("insert into tenant (tenant_id, name, kind) values (1, 'Admin', 'admin')")
     app_db.execute(
         "insert into zone (zone_id, city_id, geom, params) values (1, 1, %s, '{}')",
         (ZONE_GEOM,),

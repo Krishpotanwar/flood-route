@@ -233,5 +233,40 @@ This document tracks local execution, verification, fixes, and ongoing progress 
     - All WCAG 2.x contrast and color-vision token checks pass (`pnpm --filter @floodroute/ui check`).
     - Zero em-dashes and strict safety invariant maintained.
 
+### Checkpoint 17: Performance Benchmark Suite, Connection Pooling & Vehicle Stalling Calibration
+- **Status**: Completed
+- **Actions & Findings**:
+  - **Performance Benchmark Harness (`tools/benchmark.py`)**:
+    - Created asynchronous multi-scenario load testing suite with statistical percentiles (p50, p90, p95, p99, RPS).
+    - Benchmarked against TRD target SLOs: `/v1/health` (<50ms), `/v1/risk` (<100ms), `/v1/route` (<500ms car, <300ms ambulance), `/v1/route/reroute` (<200ms), `/v1/feed/closures.geojson` (<150ms).
+  - **Database Connection Pooling (`apps/api/floodroute/api/deps.py`)**:
+    - Replaced per-request connection creation with `psycopg_pool.ConnectionPool(min_size=10, max_size=50, open=True)`.
+    - Eliminated cold TCP/SSL setup latency under concurrency; dropped endpoint p50 latencies from 35ms+ down to 10-18ms.
+  - **Spatial Risk Indexing (`0004_perf_indexes.sql`)**:
+    - Added composite index `idx_segment_risk_query` on `segment_risk (vclass, horizon_min, segment_id)`.
+    - Eliminated sequential scans across 86k+ partition rows during bbox spatial joins, reducing `/v1/risk` query duration by over 50%.
+  - **Benchmark Validation Results (10 concurrent clients, 50 requests/scenario)**:
+    - `GET /v1/health`: 661.7 RPS, p50 = 12.82ms, p95 = 21.40ms (SLO: <50ms) -> PASS
+    - `GET /v1/risk (Central BBox)`: 254.6 RPS, p50 = 24.77ms, p95 = 91.02ms (SLO: <100ms) -> PASS
+    - `GET /v1/risk (Silk Board Corridor)`: 742.2 RPS, p50 = 11.75ms, p95 = 18.89ms (SLO: <100ms) -> PASS
+    - `POST /v1/route (Standard Car)`: 398.4 RPS, p50 = 18.45ms, p95 = 51.45ms (SLO: <500ms) -> PASS
+    - `POST /v1/route (Ambulance Profile)`: 519.1 RPS, p50 = 16.65ms, p95 = 26.68ms (SLO: <300ms) -> PASS
+    - `POST /v1/route/reroute (Tick)`: 562.5 RPS, p50 = 17.05ms, p95 = 19.11ms (SLO: <200ms) -> PASS
+    - `GET /v1/feed/closures.geojson`: 1036.8 RPS, p50 = 7.45ms, p95 = 15.45ms (SLO: <150ms) -> PASS
+  - **Vehicle Depth Stalling Research Catalog (`docs/research/07-vehicle-depth-stalling-thresholds.md`)**:
+    - Completed exhaustive engineering study on vehicle ground clearances, air intakes, exhaust heights, hydrostatic locking, and hydrodynamic drag instability ($D \cdot V$).
+    - Adapted Pregnolato speed-reduction curves for Indian heterogeneous traffic conditions.
+    - Compiled empirical flood observations from Bengaluru (2022/2025), Chennai (2015/2023), and Mumbai municipal subway closure protocols.
+  - **Ambulance Profile Threshold Calibration**:
+    - Calibrated `ambulance` vehicle profile in `data/config/scoring.v0.json` from `caution_cm: 15.0, unusable_cm: 20.0` to `caution_cm: 20.0, unusable_cm: 35.0` based on Indian 108 emergency fleet specifications (Force Traveller ladder-frame GC 210mm, air intake >680mm; Tata Winger GC 180mm).
+    - Resolved the inversion defect where small hatchbacks (30cm unusable) were routed through water that blocked emergency ambulances (20cm).
+    - Updated `apps/api/tests/score/test_score_config.py` and dynamic migration ordering in `apps/api/tests/db/test_db_roles.py`.
+  - **Verification**:
+    - 640 passing tests across `apps/api/tests/` (100% pass rate in 37.1s).
+    - 0 ruff lint errors across all Python code.
+    - Vite production bundle compiled in 654ms with 0 TypeScript errors.
+    - Zero em-dashes and strict safety invariant maintained.
+
 ---
+
 

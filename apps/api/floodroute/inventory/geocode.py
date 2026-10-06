@@ -27,7 +27,15 @@ URL = "https://nominatim.openstreetmap.org/search"
 USER_AGENT = "FloodRoute-S5-inventory/0.1 (one-off research spike; named-place lookups, cached)"
 MIN_GAP_S = 1.1  # policy ceiling is 1 request per second; keep a margin
 NAMESAKE_M = 1000.0
-STRUCTURE_WORDS = {"underpass", "underbridge", "railway", "vehicle", "flyover", "bridge", "junction"}
+STRUCTURE_WORDS = {
+    "underpass",
+    "underbridge",
+    "railway",
+    "vehicle",
+    "flyover",
+    "bridge",
+    "junction",
+}
 
 
 def diag_m(bbox):
@@ -55,7 +63,11 @@ def confidence(results, query_name, box):
     want = tokens(query_name)
     for other in results[1:]:
         far = dist_m(lat, lon, [(float(other["lon"]), float(other["lat"]))]) > NAMESAKE_M
-        if far and overlap(want, tokens(_name(other))) >= 0.5 and overlap(want, tokens(_name(res))) >= 0.5:
+        if (
+            far
+            and overlap(want, tokens(_name(other))) >= 0.5
+            and overlap(want, tokens(_name(res))) >= 0.5
+        ):
             return "low", "ambiguous_namesakes"
     ext = diag_m(res["boundingbox"])
     ov = overlap(want, tokens(_name(res)))
@@ -85,7 +97,9 @@ class Geocoder:
         self.requests = 0  # uncached requests actually sent
 
     def _http(self, url):
-        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept-Language": "en"})
+        req = urllib.request.Request(
+            url, headers={"User-Agent": USER_AGENT, "Accept-Language": "en"}
+        )
         with urllib.request.urlopen(req, timeout=30) as r:
             return json.load(r)
 
@@ -103,10 +117,16 @@ class Geocoder:
     def search(self, query):
         """Up to 3 results inside the city box (Nominatim 'bounded' viewbox), best first; [] if none."""
         west, south, east, north = self.box
-        qs = urllib.parse.urlencode({
-            "q": query, "format": "jsonv2", "limit": 3, "countrycodes": "in", "bounded": 1,
-            "viewbox": f"{west},{north},{east},{south}",
-        })
+        qs = urllib.parse.urlencode(
+            {
+                "q": query,
+                "format": "jsonv2",
+                "limit": 3,
+                "countrycodes": "in",
+                "bounded": 1,
+                "viewbox": f"{west},{north},{east},{south}",
+            }
+        )
         url = f"{URL}?{qs}"
         f = self.dir / (hashlib.sha1(url.encode()).hexdigest() + ".json")
         if f.exists():
@@ -117,5 +137,14 @@ class Geocoder:
             rows = self._get(url)
             self._last = self._clock()
             self.requests += 1
-            f.write_text(json.dumps({"query": query, "url": url, "fetched": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "response": rows}))
+            f.write_text(
+                json.dumps(
+                    {
+                        "query": query,
+                        "url": url,
+                        "fetched": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                        "response": rows,
+                    }
+                )
+            )
         return rows

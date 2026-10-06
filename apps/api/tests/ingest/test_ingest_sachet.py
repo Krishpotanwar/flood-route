@@ -40,48 +40,101 @@ def utc(s: str) -> datetime:
 # Expected values were read off the fixture files by hand, not produced by the parser.
 REAL = {
     "cap_karnataka_en.xml": dict(
-        ident="IN-1791229078945019_19", sender="Karnataka-SNDMC", msg="Update", langs=["en-IN"],
-        event="Thunderstorm with Lightning", severity="Moderate", certainty="Possible",
-        onset="2026-10-05T19:55:04+00:00", expires="2026-10-05T22:37:00+00:00", geocodes=10,
+        ident="IN-1791229078945019_19",
+        sender="Karnataka-SNDMC",
+        msg="Update",
+        langs=["en-IN"],
+        event="Thunderstorm with Lightning",
+        severity="Moderate",
+        certainty="Possible",
+        onset="2026-10-05T19:55:04+00:00",
+        expires="2026-10-05T22:37:00+00:00",
+        geocodes=10,
         references=[("IMD-Bengaluru", "IN-1791229078945019_51", "2026-10-06T01:07:41+05:30")],
     ),
     "cap_uttarakhand_en_hi.xml": dict(
-        ident="IN-1791229518905009_9", sender="Uttarakhand-SDMA", msg="Update",
-        langs=["en-IN", "HI"], event="Thunderstorm with Lightning", severity="Moderate",
-        certainty="Likely", onset="2026-10-05T19:48:19+00:00",
-        expires="2026-10-05T22:42:00+00:00", geocodes=0,
+        ident="IN-1791229518905009_9",
+        sender="Uttarakhand-SDMA",
+        msg="Update",
+        langs=["en-IN", "HI"],
+        event="Thunderstorm with Lightning",
+        severity="Moderate",
+        certainty="Likely",
+        onset="2026-10-05T19:48:19+00:00",
+        expires="2026-10-05T22:42:00+00:00",
+        geocodes=0,
     ),
     "cap_andhra_en_te.xml": dict(
-        ident="IN-1791227005191008_8", sender="Andhra-Pradesh-SDMA", msg="Alert",
-        langs=["en-IN", "TL"], event="Lightning", severity="Severe", certainty="Likely",
-        onset="2026-10-05T19:04:07+00:00", expires="2026-10-05T21:00:00+00:00", geocodes=0,
+        ident="IN-1791227005191008_8",
+        sender="Andhra-Pradesh-SDMA",
+        msg="Alert",
+        langs=["en-IN", "TL"],
+        event="Lightning",
+        severity="Severe",
+        certainty="Likely",
+        onset="2026-10-05T19:04:07+00:00",
+        expires="2026-10-05T21:00:00+00:00",
+        geocodes=0,
     ),
     "cap_cwc_flood_en.xml": dict(
-        ident="IN-1791205725481016_5", sender="CWC", msg="Alert", langs=["en-IN"], event="Flood",
-        severity="Severe", certainty="Possible", onset="2026-10-05T13:08:45+00:00",
-        expires="2026-10-06T00:30:00+00:00", geocodes=0,
+        ident="IN-1791205725481016_5",
+        sender="CWC",
+        msg="Alert",
+        langs=["en-IN"],
+        event="Flood",
+        severity="Severe",
+        certainty="Possible",
+        onset="2026-10-05T13:08:45+00:00",
+        expires="2026-10-06T00:30:00+00:00",
+        geocodes=0,
     ),
     "cap_maharashtra_en_mr.xml": dict(
-        ident="IN-1791207808206029_29", sender="Maharashtra-SDMA", msg="Update",
-        langs=["en-IN", "MR"], event="Low Cloud to Ground Lightning", severity="Moderate",
-        certainty="Likely", onset="2026-10-05T13:47:53+00:00",
-        expires="2026-10-05T16:30:00+00:00", geocodes=6,
+        ident="IN-1791207808206029_29",
+        sender="Maharashtra-SDMA",
+        msg="Update",
+        langs=["en-IN", "MR"],
+        event="Low Cloud to Ground Lightning",
+        severity="Moderate",
+        certainty="Likely",
+        onset="2026-10-05T13:47:53+00:00",
+        expires="2026-10-05T16:30:00+00:00",
+        geocodes=6,
     ),
     "cap_kerala_ml_en.xml": dict(  # Malayalam block first: the English event must still win
-        ident="IN-1791201232335006_6", sender="Kerala-SDMA", msg="Update", langs=["ML", "en-IN"],
-        event="Moderate Thunderstorms with surface wind", severity="Severe", certainty="Likely",
-        onset="2026-10-05T11:59:59+00:00", expires="2026-10-05T14:30:00+00:00", geocodes=1,
+        ident="IN-1791201232335006_6",
+        sender="Kerala-SDMA",
+        msg="Update",
+        langs=["ML", "en-IN"],
+        event="Moderate Thunderstorms with surface wind",
+        severity="Severe",
+        certainty="Likely",
+        onset="2026-10-05T11:59:59+00:00",
+        expires="2026-10-05T14:30:00+00:00",
+        geocodes=1,
     ),
     "cap_karnataka_en_kn.xml": dict(
-        ident="IN-1791194123192019_19", sender="Karnataka-SNDMC", msg="Update",
-        langs=["en-IN", "KN"], event="Thunder shower", severity="Moderate",
-        certainty="Possible", onset="2026-10-05T10:03:13+00:00",
-        expires="2026-10-05T12:54:00+00:00", geocodes=1,
+        ident="IN-1791194123192019_19",
+        sender="Karnataka-SNDMC",
+        msg="Update",
+        langs=["en-IN", "KN"],
+        event="Thunder shower",
+        severity="Moderate",
+        certainty="Possible",
+        onset="2026-10-05T10:03:13+00:00",
+        expires="2026-10-05T12:54:00+00:00",
+        geocodes=1,
     ),
     "cap_westbengal_en_bn.xml": dict(
-        ident="IN-1791204453036017_17", sender="West-Bengal-SDMA", msg="Update",
-        langs=["en-IN", "BN"], event="Flood", severity="Severe", certainty="Likely",
-        onset="2026-10-05T13:00:08+00:00", expires="2026-10-07T02:30:00+00:00", geocodes=0,
+        ident="IN-1791204453036017_17",
+        sender="West-Bengal-SDMA",
+        msg="Update",
+        langs=["en-IN", "BN"],
+        event="Flood",
+        severity="Severe",
+        certainty="Likely",
+        onset="2026-10-05T13:00:08+00:00",
+        expires="2026-10-07T02:30:00+00:00",
+        geocodes=0,
     ),
 }
 
@@ -91,11 +144,17 @@ def test_real_caps_parse(name):
     want = REAL[name]
     alert = sachet.parse_cap(fixture(f"sachet/{name}"))
     assert (alert.identifier, alert.sender, alert.msg_type) == (
-        want["ident"], want["sender"], want["msg"])
+        want["ident"],
+        want["sender"],
+        want["msg"],
+    )
     assert alert.status == "Actual" and alert.scope == "Public"
     assert [i["language"] for i in alert.infos] == want["langs"]
     assert (alert.event, alert.severity, alert.certainty) == (
-        want["event"], want["severity"], want["certainty"])
+        want["event"],
+        want["severity"],
+        want["certainty"],
+    )
     assert alert.onset == utc(want["onset"]) and alert.expires == utc(want["expires"])
     assert sum(len(a["geocodes"]) for a in alert.infos[0]["areas"]) == want["geocodes"]  # per info
     assert alert.polygon_urls == [polygon_url(GUIDS[name])]  # real CAPs carry a URL, no polygon
@@ -116,14 +175,16 @@ def test_languages_survive_verbatim():
 
 def test_polygon_documents_swap_lat_lon_and_drop_repeated_rings():
     rings, errors = sachet.parse_polygon_doc(
-        fixture("sachet/polygon_cwc_circle.xml"), "IN-1791205725481016_5")
+        fixture("sachet/polygon_cwc_circle.xml"), "IN-1791205725481016_5"
+    )
     assert errors == [] and len(rings) == 1 and len(rings[0]) == 33 and rings[0][0] == rings[0][-1]
     assert rings[0][0] == (85.892431, 26.32156)  # the file says 26.32156,85.892431 (lat,lon)
     lon = sum(x for x, _ in rings[0][:-1]) / 32
     lat = sum(y for _, y in rings[0][:-1]) / 32
     assert (round(lon, 2), round(lat, 2)) == (85.85, 26.33)  # the gauge: CAP altitude, ceiling
     rings, _ = sachet.parse_polygon_doc(
-        fixture("sachet/polygon_uttarakhand.xml"), "IN-1791229518905009_9")
+        fixture("sachet/polygon_uttarakhand.xml"), "IN-1791229518905009_9"
+    )
     assert len(rings) == 4  # the document repeats two of its rings
     wkt = sachet.to_wkt(rings)
     assert wkt.startswith("MULTIPOLYGON(((79.32219 28.998644,")
@@ -143,11 +204,20 @@ def test_swapped_polygon_is_not_accepted():
     assert ring[0] == (77.5, 12.9) and ring[-1] == ring[0] and len(ring) == 4
 
 
-@pytest.mark.parametrize("text", [
-    "", "1,2", "12.9,77.5 12.9,77.6", "12.9,77.5 13.0,77.6 13.1,77.7 12.9,77.5",
-    "12.9,77.5 12.9,77.5 12.9,77.5 12.9,77.5", "a,b c,d e,f", "12.9,77.5,3 12.9,77.6 13,77.6",
-    "nan,77.5 12.9,77.6 13,77.6", "12.9,inf 12.9,77.6 13,77.6",
-])
+@pytest.mark.parametrize(
+    "text",
+    [
+        "",
+        "1,2",
+        "12.9,77.5 12.9,77.6",
+        "12.9,77.5 13.0,77.6 13.1,77.7 12.9,77.5",
+        "12.9,77.5 12.9,77.5 12.9,77.5 12.9,77.5",
+        "a,b c,d e,f",
+        "12.9,77.5,3 12.9,77.6 13,77.6",
+        "nan,77.5 12.9,77.6 13,77.6",
+        "12.9,inf 12.9,77.6 13,77.6",
+    ],
+)
 def test_bad_rings_are_refused(text):
     with pytest.raises(Rejected):
         sachet.ring_from_text(text)
@@ -175,10 +245,22 @@ def test_inline_polygons_circles_and_several_areas():
 
 def test_languages_are_merged_towards_the_cautious_side():
     infos = [
-        dict(language="HI", severity="Severe", certainty="Possible", event="Hindi event",
-             onset="2026-10-05T18:05:00+05:30", expires="2026-10-05T22:00:00+05:30"),
-        dict(language="en-IN", severity="Minor", certainty="Observed", event="English event",
-             onset="2026-10-05T18:20:00+05:30", expires="2026-10-05T21:00:00+05:30"),
+        dict(
+            language="HI",
+            severity="Severe",
+            certainty="Possible",
+            event="Hindi event",
+            onset="2026-10-05T18:05:00+05:30",
+            expires="2026-10-05T22:00:00+05:30",
+        ),
+        dict(
+            language="en-IN",
+            severity="Minor",
+            certainty="Observed",
+            event="English event",
+            onset="2026-10-05T18:20:00+05:30",
+            expires="2026-10-05T21:00:00+05:30",
+        ),
     ]
     alert = sachet.parse_cap(cap_xml(infos=infos))
     assert (alert.event, alert.severity, alert.certainty) == ("English event", "Severe", "Observed")
@@ -187,19 +269,36 @@ def test_languages_are_merged_towards_the_cautious_side():
 
 
 def test_missing_optional_fields():
-    alert = sachet.parse_cap(cap_xml(infos=[dict(
-        language=None, onset=None, effective=None, expires=None, description=None,
-        instruction=None, headline=None, urgency=None, area="")]))
+    alert = sachet.parse_cap(
+        cap_xml(
+            infos=[
+                dict(
+                    language=None,
+                    onset=None,
+                    effective=None,
+                    expires=None,
+                    description=None,
+                    instruction=None,
+                    headline=None,
+                    urgency=None,
+                    area="",
+                )
+            ]
+        )
+    )
     assert alert.onset == alert.sent == utc("2026-10-05T12:30:00+00:00")  # falls back to sent
     assert alert.expires is None and alert.infos[0]["language"] is None
     assert alert.infos[0]["areas"] == [] and alert.references == []
-    alert = sachet.parse_cap(cap_xml(infos=[dict(onset=None, effective="2026-10-05T18:05:00+05:30")]))
+    alert = sachet.parse_cap(
+        cap_xml(infos=[dict(onset=None, effective="2026-10-05T18:05:00+05:30")])
+    )
     assert alert.onset == utc("2026-10-05T12:35:00+00:00")  # falls back to effective
 
 
 def test_cancel_without_info_is_kept_and_alert_without_info_is_refused():
-    cancel = sachet.parse_cap(cap_xml(
-        infos=[], msg_type="Cancel", references="S,IN-1_1,2026-10-05T17:00:00+05:30"))
+    cancel = sachet.parse_cap(
+        cap_xml(infos=[], msg_type="Cancel", references="S,IN-1_1,2026-10-05T17:00:00+05:30")
+    )
     assert (cancel.event, cancel.severity, cancel.expires) == (None, None, None)
     assert cancel.references[0]["identifier"] == "IN-1_1"
     with pytest.raises(Rejected, match="without an info block"):
@@ -217,24 +316,27 @@ def test_non_actual_messages_never_carry_a_severity():
     assert sachet.build_row(actual, item, "<xml/>", [], [])[3] == "Extreme"
 
 
-@pytest.mark.parametrize("kwargs, message", [
-    (dict(infos=[dict(severity="Catastrophic")]), "severity"),
-    (dict(infos=[dict(certainty="Maybe")]), "certainty"),
-    (dict(infos=[dict(severity=None)]), "severity"),
-    (dict(infos=[dict(event=None)]), "event missing"),
-    (dict(infos=[dict(expires="2026-10-05T21:00:00")]), "no UTC offset"),
-    (dict(infos=[dict(onset="yesterday")]), "ISO 8601"),
-    (dict(infos=[dict(expires="2026-12-31T00:00:00+05:30")]), "31 days"),
-    (dict(sent="2026-10-05"), "no UTC offset"),
-    (dict(sent=None), "sent missing"),
-    (dict(identifier="IN 1 1"), "identifier"),
-    (dict(identifier="a,b"), "identifier"),
-    (dict(sender=None), "sender missing"),
-    (dict(status="Real"), "status"),
-    (dict(msg_type="Delete"), "msgType"),
-    (dict(scope=None), "scope"),
-    (dict(infos=[{}] * 33), "info blocks"),
-])
+@pytest.mark.parametrize(
+    "kwargs, message",
+    [
+        (dict(infos=[dict(severity="Catastrophic")]), "severity"),
+        (dict(infos=[dict(certainty="Maybe")]), "certainty"),
+        (dict(infos=[dict(severity=None)]), "severity"),
+        (dict(infos=[dict(event=None)]), "event missing"),
+        (dict(infos=[dict(expires="2026-10-05T21:00:00")]), "no UTC offset"),
+        (dict(infos=[dict(onset="yesterday")]), "ISO 8601"),
+        (dict(infos=[dict(expires="2026-12-31T00:00:00+05:30")]), "31 days"),
+        (dict(sent="2026-10-05"), "no UTC offset"),
+        (dict(sent=None), "sent missing"),
+        (dict(identifier="IN 1 1"), "identifier"),
+        (dict(identifier="a,b"), "identifier"),
+        (dict(sender=None), "sender missing"),
+        (dict(status="Real"), "status"),
+        (dict(msg_type="Delete"), "msgType"),
+        (dict(scope=None), "scope"),
+        (dict(infos=[{}] * 33), "info blocks"),
+    ],
+)
 def test_invalid_alerts_are_refused(kwargs, message):
     with pytest.raises(Rejected, match=message):
         sachet.parse_cap(cap_xml(**kwargs))
@@ -249,8 +351,10 @@ def test_other_cap_versions_and_documents_are_refused():
 
 def test_untrusted_polygon_urls_are_ignored():
     def alert_with(url):
-        extra = ("<cap:parameter><cap:valueName>Polygon URL</cap:valueName>"
-                 f"<cap:value>{url}</cap:value></cap:parameter>")
+        extra = (
+            "<cap:parameter><cap:valueName>Polygon URL</cap:valueName>"
+            f"<cap:value>{url}</cap:value></cap:parameter>"
+        )
         return sachet.parse_cap(cap_xml(infos=[dict(extra=extra)]))
 
     good = f"{sachet.BASE}FetchPolygonXMLFile?identifier=1791229078945019"
@@ -270,6 +374,7 @@ def test_untrusted_polygon_urls_are_ignored():
 
 # ---------------------------------------------------------------- hostile XML
 
+
 def _laughs() -> bytes:
     entities = [b'<!ENTITY lol "lol">']
     for i in range(1, 10):
@@ -281,8 +386,11 @@ def _laughs() -> bytes:
 HOSTILE = {
     "xxe": b'<?xml version="1.0"?><!DOCTYPE a [<!ENTITY x SYSTEM "file:///etc/passwd">]><a>&x;</a>',
     "billion laughs": _laughs(),
-    "quadratic blowup": b'<!DOCTYPE a [<!ENTITY x "' + b"A" * 50_000 + b'">]><a>'
-    + b"&x;" * 2_000 + b"</a>",
+    "quadratic blowup": b'<!DOCTYPE a [<!ENTITY x "'
+    + b"A" * 50_000
+    + b'">]><a>'
+    + b"&x;" * 2_000
+    + b"</a>",
     "external dtd": b'<!DOCTYPE a SYSTEM "http://127.0.0.1:9/x.dtd"><a/>',
     "parameter entity": b'<!DOCTYPE a [<!ENTITY % p SYSTEM "http://127.0.0.1:9/p.dtd"> %p;]><a/>',
     "lowercase doctype": b"<!doctype a><a/>",
@@ -326,6 +434,7 @@ def test_hostile_rss_and_cap_documents_are_refused():
 
 # ---------------------------------------------------------------- RSS
 
+
 def test_rss_real_subset():
     items, bad = sachet.parse_rss(fixture("sachet/rss_india_subset.xml"))
     assert bad == 0 and len(items) == 8
@@ -340,17 +449,24 @@ def test_rss_bad_items_are_skipped_and_counted_and_duplicates_collapse():
         return f"<item><guid>{guid}</guid>{f'<pubDate>{pub}</pubDate>' if pub else ''}</item>"
 
     ok = "Mon, 05 Oct 2026 19:55:05 GMT"
-    feed = ("<rss><channel>" + item("1791229078945019", ok)
-            + item("1791229078945019", "Mon, 05 Oct 2026 19:58:00 GMT")  # reissued: newest wins
-            + item("abc", ok) + item("1" * 30, ok) + item("../../etc/passwd", ok)
-            + item("1791229518905009", None) + item("1791229518905010", "not a date")
-            + "</channel></rss>").encode()
+    feed = (
+        "<rss><channel>"
+        + item("1791229078945019", ok)
+        + item("1791229078945019", "Mon, 05 Oct 2026 19:58:00 GMT")  # reissued: newest wins
+        + item("abc", ok)
+        + item("1" * 30, ok)
+        + item("../../etc/passwd", ok)
+        + item("1791229518905009", None)
+        + item("1791229518905010", "not a date")
+        + "</channel></rss>"
+    ).encode()
     items, bad = sachet.parse_rss(feed)
     assert [i.guid for i in items] == ["1791229078945019"] and bad == 5
     assert items[0].pub == utc("2026-10-05T19:58:00+00:00")
 
 
 # ---------------------------------------------------------------- ingest loop on fakes
+
 
 def run_ingest(conn, http, **kw):
     return sachet.ingest(conn, http, now=NOW, **kw)
@@ -360,8 +476,14 @@ def test_ingest_stores_every_real_alert_and_is_idempotent():
     conn, http = FakeConn(), FakeHttp(sachet_routes())
     out = run_ingest(conn, http, max_new=50)
     assert set(conn.alerts) == {r["ident"] for r in REAL.values()}
-    assert out.summary == {"items": 8, "new": 8, "stored": 8, "refused": 0,
-                           "stored_without_area": 6, "bad_rss_items": 0}  # 2 polygon fixtures
+    assert out.summary == {
+        "items": 8,
+        "new": 8,
+        "stored": 8,
+        "refused": 0,
+        "stored_without_area": 6,
+        "bad_rss_items": 0,
+    }  # 2 polygon fixtures
     snapshot, first_calls = dict(conn.alerts), len(http.calls)
     assert first_calls == 1 + 8 + 8  # feed, every CAP, every polygon URL
 
@@ -392,9 +514,11 @@ def test_a_reissued_item_is_fetched_again_and_the_old_alert_stays():
     conn = FakeConn()
     run_ingest(conn, FakeHttp(sachet_routes()), max_new=50)
     rss = fixture("sachet/rss_india_subset.xml").replace(
-        b"Mon, 05 Oct 2026 19:55:05 GMT", b"Mon, 05 Oct 2026 20:10:00 GMT")
+        b"Mon, 05 Oct 2026 19:55:05 GMT", b"Mon, 05 Oct 2026 20:10:00 GMT"
+    )
     update = fixture("sachet/cap_karnataka_en.xml").replace(
-        b"IN-1791229078945019_19", b"IN-1791229078945019_20")
+        b"IN-1791229078945019_19", b"IN-1791229078945019_20"
+    )
     http = FakeHttp(sachet_routes(rss=rss))
     http.routes[sachet.CAP_URL.format("1791229078945019")] = update
     out = run_ingest(conn, http, max_new=50)
@@ -408,7 +532,10 @@ def test_per_run_budget_takes_the_newest_first_and_says_it_is_catching_up():
     out = run_ingest(conn, FakeHttp(sachet_routes()), max_new=3)
     assert out.summary["stored"] == 3 and "catching up, 5 new item(s)" in out.warn
     assert set(conn.alerts) == {
-        "IN-1791229078945019_19", "IN-1791229518905009_9", "IN-1791227005191008_8"}
+        "IN-1791229078945019_19",
+        "IN-1791229518905009_9",
+        "IN-1791227005191008_8",
+    }
 
 
 def test_active_alerts_without_an_area_stay_in_the_health_note_on_quiet_runs():
@@ -452,9 +579,11 @@ def test_a_run_where_everything_new_is_refused_fails():
 def test_two_refused_items_are_a_warning_not_a_failure():
     conn = FakeConn()
     run_ingest(conn, FakeHttp(sachet_routes()), max_new=50)  # everything stored
-    rss = fixture("sachet/rss_india_subset.xml").replace(
-        b"Mon, 05 Oct 2026 19:55:05 GMT", b"Mon, 05 Oct 2026 20:11:00 GMT").replace(
-        b"Mon, 05 Oct 2026 19:48:21 GMT", b"Mon, 05 Oct 2026 20:12:00 GMT")
+    rss = (
+        fixture("sachet/rss_india_subset.xml")
+        .replace(b"Mon, 05 Oct 2026 19:55:05 GMT", b"Mon, 05 Oct 2026 20:11:00 GMT")
+        .replace(b"Mon, 05 Oct 2026 19:48:21 GMT", b"Mon, 05 Oct 2026 20:12:00 GMT")
+    )
     routes = sachet_routes(rss=rss)
     routes[sachet.CAP_URL.format("1791229078945019")] = HOSTILE["xxe"]
     routes[sachet.CAP_URL.format("1791229518905009")] = HOSTILE["malformed"]
@@ -507,8 +636,10 @@ def test_empty_or_unusable_feed_fails():
 
 
 def test_a_polygon_for_the_wrong_alert_or_with_swapped_coordinates_leaves_the_area_empty():
-    swapped = (b"<alert><identifier>IN-1791205725481016_5</identifier>"
-               b"<polygon>85.89,26.32 85.80,26.32 85.80,26.40 85.89,26.32</polygon></alert>")
+    swapped = (
+        b"<alert><identifier>IN-1791205725481016_5</identifier>"
+        b"<polygon>85.89,26.32 85.80,26.32 85.80,26.40 85.89,26.32</polygon></alert>"
+    )
     wrong = fixture("sachet/polygon_uttarakhand.xml")
     for body, reason in ((swapped, "outside India"), (wrong, "not for this alert")):
         conn = FakeConn()
@@ -529,8 +660,12 @@ def test_rate_limit_holds_across_feed_cap_and_polygon_requests():
         clock[0] += 0.2  # a fast server: pacing, not latency, has to create the gaps
         return httpx.Response(200, content=body)
 
-    http = Http(sachet.HOSTS, transport=httpx.MockTransport(handler),
-                sleep=lambda s: clock.__setitem__(0, clock[0] + s), clock=lambda: clock[0])
+    http = Http(
+        sachet.HOSTS,
+        transport=httpx.MockTransport(handler),
+        sleep=lambda s: clock.__setitem__(0, clock[0] + s),
+        clock=lambda: clock[0],
+    )
     sachet.ingest(FakeConn(), http, now=NOW, max_new=3)
     assert len(stamps) == 1 + 3 * 2
     assert all(b - a >= 1.0 - 1e-9 for a, b in itertools.pairwise(stamps))
