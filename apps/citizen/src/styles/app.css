@@ -328,3 +328,113 @@ body {
   flex-direction: column;
   gap: var(--fr-space-4);
 }
+
+/* Map View & Container */
+.map-viewport {
+  position: relative;
+  width: 100%;
+  height: calc(100dvh - 3.75rem);
+  min-height: 20rem;
+  overflow: hidden;
+  background: var(--fr-surface-sunken);
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+}
+
+.map-controls-floating {
+  position: absolute;
+  top: var(--fr-space-3);
+  right: var(--fr-space-3);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fr-space-2);
+}
+
+.map-ctrl-btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--fr-radius-control);
+  background: var(--fr-surface-elevated);
+  color: var(--fr-ink);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fr-text-base);
+  cursor: pointer;
+  transition: transform var(--fr-dur-press) var(--fr-ease-out);
+}
+
+.map-ctrl-btn:active {
+  transform: scale(var(--fr-press-scale));
+}
+
+.map-ctrl-btn[data-active="true"] {
+  background: var(--fr-accent);
+  color: var(--fr-canvas);
+}
+
+/* Custom Marker Pins */
+.marker-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: var(--fr-text-xs);
+  color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  border: 2px solid #ffffff;
+}
+
+.marker-pin.origin {
+  background: #059669;
+}
+
+.marker-pin.destination {
+  background: #2563eb;
+}
+
+.marker-pin.hotspot {
+  background: #dc2626;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.65rem;
+}
+
+.vehicle-sim-marker {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35), 0 3px 6px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Fallback SVG Map */
+.map-fallback {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, var(--fr-surface) 0%, var(--fr-surface-sunken) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.map-fallback-svg {
+  width: 100%;
+  height: 100%;
+}
+

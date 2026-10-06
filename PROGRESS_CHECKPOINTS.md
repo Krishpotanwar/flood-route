@@ -267,6 +267,36 @@ This document tracks local execution, verification, fixes, and ongoing progress 
     - Vite production bundle compiled in 654ms with 0 TypeScript errors.
     - Zero em-dashes and strict safety invariant maintained.
 
+### Checkpoint 18: MapLibre Interactive Map View, Polyline Engine & Real-Time Closures Feed
+- **Status**: Completed
+- **Actions & Findings**:
+  - **Valhalla Polyline Engine & Interpolation (`apps/citizen/src/utils/polyline.ts`)**:
+    - Implemented high-precision (factor 1e6) polyline encoder and decoder mapping Valhalla geometry strings directly to GeoJSON `[lon, lat]` coordinates.
+    - Added bounding box calculator (`calculateBounds`) for automatic viewport framing with bottom-sheet-aware padding.
+    - Implemented linear distance path interpolator (`sampleCoordinateAlongLine`) mapping fractional navigation progress (0.0 to 1.0) to smooth vehicle coordinates.
+    - Created unit test suite in `apps/citizen/src/utils/polyline.test.ts` with 5 passing tests under Node 22 native runner.
+  - **MapLibre Interactive Map Component (`apps/citizen/src/components/MapView.tsx`)**:
+    - Integrated MapLibre GL JS with theme-reactive base styles (Carto Dark for dark and high-contrast modes; OpenStreetMap / Carto Voyager for light modes).
+    - Added multi-layer GeoJSON route visualization with contrast dark casing and foreground line colored by risk band (clear: emerald, watch: amber, risky: orange, impassable: crimson).
+    - Rendered dashed polyline overlay for suggested detour alternatives (`rerouteData.suggested_route`).
+    - Added custom HTML pin markers for Origin (A, emerald) and Destination (B, blue).
+    - Added pulsing vehicle location marker (`📍`) that animates smoothly along the route during live trip simulation.
+    - Integrated live road closures overlay querying `GET /v1/feed/closures.geojson?vclass=car`, rendering active impassable road closures directly on the map canvas.
+    - Added floating touch action controls: Recenter (targeting route bounds), Hotspots / Closures toggle, and Zoom (+ / -).
+    - Built comprehensive SVG vector fallback that renders road grid, route polyline, origin/dest pins, and vehicle marker if WebGL context is unavailable.
+  - **Layout & BottomSheet Integration (`apps/citizen/src/App.tsx` & `apps/citizen/vite.config.ts`)**:
+    - Placed `MapView` as the primary hero canvas behind the gesture-driven `BottomSheet`.
+    - Maintained 3 ergonomic snap points (collapsed 96px, half 50dvh, expanded 90dvh).
+    - Configured manual vendor chunking for `maplibre-gl` in Vite build (`maplibre-vendor.js`), keeping core application bundle compact (245 KB minified, 76 KB gzipped).
+  - **Verification**:
+    - All 5 TypeScript polyline tests pass (`npm test` in `apps/citizen`).
+    - Production bundle compiled with Vite in 1.78s with 0 errors.
+    - All 640 API tests pass (`uv run pytest` in `apps/api`, 100% pass rate).
+    - 0 ruff lint errors across all Python modules.
+    - All WCAG 2.x contrast and color-vision token checks pass (`pnpm --filter @floodroute/ui check`).
+    - Zero em-dashes and strict safety invariant maintained.
+
 ---
+
 
 

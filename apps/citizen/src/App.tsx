@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { BottomSheet, SnapPoint } from "./components/BottomSheet";
 import { Header } from "./components/Header";
 import { LiveSimulator } from "./components/LiveSimulator";
+import { MapView } from "./components/MapView";
 import { ReportModal } from "./components/ReportModal";
 import { RouteCard } from "./components/RouteCard";
 import { RouteForm } from "./components/RouteForm";
@@ -377,9 +378,31 @@ export const App: React.FC = () => {
         isOnline={isOnline}
       />
 
-      <main className="main-view">
+      <div style={{ position: "relative", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <MapView
+          theme={theme}
+          origin={currentOrigin}
+          destination={currentDest}
+          activeRoute={activeRoute}
+          rerouteData={rerouteData}
+          isSimulating={isSimulating}
+          simStep={simStep}
+          totalSimSteps={activeRoute?.segments.length || 8}
+        />
+
         {!isOnline && (
-          <div className="warning-banner" role="status">
+          <div
+            className="warning-banner"
+            role="status"
+            style={{
+              position: "absolute",
+              top: "var(--fr-space-2)",
+              left: "var(--fr-space-3)",
+              right: "var(--fr-space-3)",
+              zIndex: 10,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+            }}
+          >
             <span>⚡</span>
             <div>
               <strong>Offline Mode Active</strong>
@@ -391,7 +414,18 @@ export const App: React.FC = () => {
         )}
 
         {guidanceMessage && (
-          <div className="hold-banner" role="alert">
+          <div
+            className="hold-banner"
+            role="alert"
+            style={{
+              position: "absolute",
+              top: isOnline ? "var(--fr-space-2)" : "4.5rem",
+              left: "var(--fr-space-3)",
+              right: "var(--fr-space-3)",
+              zIndex: 10,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+            }}
+          >
             <span>ℹ️</span>
             <div>
               <strong>Travel Advisory</strong>
@@ -401,83 +435,7 @@ export const App: React.FC = () => {
             </div>
           </div>
         )}
-
-        <section className="card" aria-labelledby="corridor-heading">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h2 id="corridor-heading" style={{ margin: 0, fontSize: "var(--fr-text-base)" }}>
-              Bangalore Flood Risk Corridors
-            </h2>
-            <span style={{ fontSize: "var(--fr-text-xs)", color: "var(--fr-ink-2)" }}>
-              Live Telemetry
-            </span>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            {BANGALORE_CORRIDORS.map((corridor) => (
-              <div
-                key={corridor.name}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "0.5rem 0",
-                  borderBottom: "1px solid var(--hairline)",
-                }}
-              >
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: "var(--fr-text-sm)" }}>
-                    {corridor.name}
-                  </div>
-                  <div style={{ fontSize: "var(--fr-text-xs)", color: "var(--fr-ink-2)" }}>
-                    {corridor.note}
-                  </div>
-                </div>
-                <span className="risk-badge" data-state={corridor.state}>
-                  {corridor.state === "clear"
-                    ? "Clear"
-                    : corridor.state === "watch"
-                      ? "Watch"
-                      : corridor.state === "risky"
-                        ? "Risky"
-                        : "Impassable"}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {activeRoute && (
-          <section className="card">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ margin: 0, fontSize: "var(--fr-text-base)" }}>
-                Selected Route Corridor
-              </h3>
-              <span className="risk-badge" data-state={activeRoute.worst_state}>
-                Worst: {activeRoute.worst_state.toUpperCase()}
-              </span>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <div style={{ fontSize: "var(--fr-text-sm)", color: "var(--fr-ink-2)" }}>
-                Monitored road segments ({activeRoute.segments.length}):
-              </div>
-
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
-                {activeRoute.segments.map((seg, idx) => (
-                  <span
-                    key={seg.segment_id || idx}
-                    className="risk-badge"
-                    data-state={seg.state || "unknown"}
-                    style={{ fontSize: "var(--fr-text-xs)", padding: "0.15rem 0.5rem" }}
-                  >
-                    #{idx + 1} {seg.state || "assessing"}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-      </main>
+      </div>
 
       <BottomSheet
         snap={sheetSnap}
@@ -500,7 +458,53 @@ export const App: React.FC = () => {
         }
       >
         {!activeRoute && (
-          <RouteForm onPlanRoute={handlePlanRoute} isLoading={isRouteLoading} />
+          <>
+            <RouteForm onPlanRoute={handlePlanRoute} isLoading={isRouteLoading} />
+
+            <section className="card" aria-labelledby="corridor-heading">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h2 id="corridor-heading" style={{ margin: 0, fontSize: "var(--fr-text-base)" }}>
+                  Bangalore Flood Risk Corridors
+                </h2>
+                <span style={{ fontSize: "var(--fr-text-xs)", color: "var(--fr-ink-2)" }}>
+                  Live Telemetry
+                </span>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {BANGALORE_CORRIDORS.map((corridor) => (
+                  <div
+                    key={corridor.name}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "0.5rem 0",
+                      borderBottom: "1px solid var(--hairline)",
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: "var(--fr-text-sm)" }}>
+                        {corridor.name}
+                      </div>
+                      <div style={{ fontSize: "var(--fr-text-xs)", color: "var(--fr-ink-2)" }}>
+                        {corridor.note}
+                      </div>
+                    </div>
+                    <span className="risk-badge" data-state={corridor.state}>
+                      {corridor.state === "clear"
+                        ? "Clear"
+                        : corridor.state === "watch"
+                          ? "Watch"
+                          : corridor.state === "risky"
+                            ? "Risky"
+                            : "Impassable"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
         )}
 
         {activeRoute && (
@@ -520,6 +524,36 @@ export const App: React.FC = () => {
               onStartTrip={handleToggleSimulation}
               isSimulating={isSimulating}
             />
+
+            <section className="card">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h3 style={{ margin: 0, fontSize: "var(--fr-text-base)" }}>
+                  Monitored Route Segments
+                </h3>
+                <span className="risk-badge" data-state={activeRoute.worst_state}>
+                  Worst: {activeRoute.worst_state.toUpperCase()}
+                </span>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <div style={{ fontSize: "var(--fr-text-sm)", color: "var(--fr-ink-2)" }}>
+                  Corridor breakdown ({activeRoute.segments.length} segments):
+                </div>
+
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
+                  {activeRoute.segments.map((seg, idx) => (
+                    <span
+                      key={seg.segment_id || idx}
+                      className="risk-badge"
+                      data-state={seg.state || "unknown"}
+                      style={{ fontSize: "var(--fr-text-xs)", padding: "0.15rem 0.5rem" }}
+                    >
+                      #{idx + 1} {seg.state || "assessing"}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </section>
           </>
         )}
       </BottomSheet>
