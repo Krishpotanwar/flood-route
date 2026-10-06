@@ -20,9 +20,11 @@ from typing import Any
 import psycopg
 
 from floodroute.db.conn import database_url
+from floodroute.feed.snapshot import generate_city_closure_snapshot
 from floodroute.ingest import metno, sachet
 from floodroute.ingest.common import Http
 from floodroute.ingest.common import run as run_ingest
+from floodroute.metrics.collector import METRICS
 from floodroute.route.watch import evaluate_route_watches
 from floodroute.score.config import Config as ScoreConfig
 from floodroute.score.config import load_config
@@ -30,7 +32,6 @@ from floodroute.score.db import execute_score_run
 from floodroute.webhook import WebhookEvent, dispatch_event
 
 logger = logging.getLogger(__name__)
-
 
 
 @dataclass
@@ -50,6 +51,7 @@ class WorkerConfig:
     sachet_interval_s: float = 300.0  # 5 min
     metno_interval_s: float = 3600.0  # 1 hour
     score_interval_s: float = 300.0  # 5 min
+    snapshot_interval_s: float = 120.0  # 2 min (TRD 11)
     retention_interval_s: float = 86400.0  # 24 hours
     route_decision_retention_days: int = 365  # TRD 13: 1 year retention
     report_retention_days: int = 90  # DPDP Act 2023: 90 days retention
@@ -116,6 +118,7 @@ class Worker:
         self.last_metno: datetime | None = None
         self.last_score: datetime | None = None
         self.last_retention: datetime | None = None
+        self.last_snapshot: datetime | None = None
 
     @property
     def db_url(self) -> str:
@@ -180,6 +183,7 @@ class Worker:
             if force_all or self.is_due(
                 self.last_score, self.config.score_interval_s, current_time
             ):
+                score_start = time.perf_counter()
                 try:
                     run_id, result = execute_score_run(
                         conn,
@@ -187,6 +191,8 @@ class Worker:
                         now=current_time,
                         notes="worker:scheduled",
                     )
+                    METRICS.score_runs_total.inc(labels={"status": "success"})
+                    METRICS.score_duration_seconds.observe(time.perf_counter() - score_start)
                     # Evaluate route watch alerts on risk changes
                     alerts = evaluate_route_watches(conn)
                     if result.changes:
@@ -208,6 +214,7 @@ class Worker:
                     }
                     self.last_score = current_time
                 except (psycopg.Error, RuntimeError, ValueError) as e:
+                    METRICS.score_runs_total.inc(labels={"status": "failed"})
                     logger.exception("Worker error running scoring cycle")
                     summary["tasks"]["score"] = {"error": str(e)}
 
@@ -232,6 +239,21 @@ class Worker:
                 except (psycopg.Error, RuntimeError) as e:
                     logger.exception("Worker error running retention prune")
                     summary["tasks"]["retention"] = {"error": str(e)}
+
+            # Task 5: Pre-generate CDN offline closure snapshots (TRD 11)
+            if force_all or self.is_due(
+                self.last_snapshot, self.config.snapshot_interval_s, current_time
+            ):
+                snapshot_cities = ["bengaluru", "mumbai", "gurugram"]
+                snapshots_done = []
+                for c_name in snapshot_cities:
+                    try:
+                        res = generate_city_closure_snapshot(conn, city_name=c_name, vclass="car")
+                        snapshots_done.append({"city": c_name, "features": res["feature_count"]})
+                    except (psycopg.Error, OSError) as e:
+                        logger.warning("Failed to generate closure snapshot for %s: %s", c_name, e)
+                summary["tasks"]["snapshot"] = {"cities": snapshots_done}
+                self.last_snapshot = current_time
 
         return summary
 

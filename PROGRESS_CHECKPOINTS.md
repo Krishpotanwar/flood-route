@@ -418,9 +418,37 @@ This document tracks local execution, verification, fixes, and ongoing progress 
   - **Verification & Testing**:
     - Added 4 tests in `apps/api/tests/inventory/test_inventory_multicity.py`.
     - Added 4 tests in `apps/api/tests/api/test_api_cities.py`.
-    - Full API test suite expanded to 681 passing tests (100% pass rate in 47.0s).
+### Checkpoint 24: Production Observability, Prometheus Metrics Exporter & Offline CDN Snapshot Engine (TRD 11 & 13)
+- **Status**: Completed
+- **Actions & Findings**:
+  - **Pure-Python Prometheus Metrics Collector (`apps/api/floodroute/metrics/collector.py`)**:
+    - Thread-safe zero-dependency metrics collector implementing `Counter`, `Gauge`, and `Histogram` types.
+    - Standard Prometheus text format exposition (`# HELP`, `# TYPE`, formatted labels, and bucket histograms).
+    - Core operational metrics registered in `METRICS` singleton: `floodroute_api_requests_total`, `floodroute_api_request_duration_seconds`, `floodroute_score_runs_total`, `floodroute_score_duration_seconds`, `floodroute_active_overrides`, `floodroute_active_watches`, `floodroute_ingest_events_total`.
+  - **Telemetry HTTP Middleware (`apps/api/floodroute/metrics/middleware.py`)**:
+    - `PrometheusMetricsMiddleware` records request counts and execution durations per normalized endpoint pattern (normalizing numeric segment IDs and path slugs to prevent high-cardinality metric label explosions).
+    - Tracks HTTP status code, method, and latency buckets.
+  - **Prometheus Metrics Exposition Endpoint (`apps/api/floodroute/api/routes/metrics.py`)**:
+    - `GET /metrics`: serves Prometheus text exposition for direct scraping by Prometheus, VictoriaMetrics, or monitoring agents.
+  - **Offline CDN Snapshot Generator (`apps/api/floodroute/feed/snapshot.py`)**:
+    - Implements TRD 11 edge CDN snapshot caching and network outage resilience.
+    - Queries active human overrides and impassable segments per city and vehicle class.
+    - Exports standard GeoJSON `FeatureCollection` with `conditions_as_of`, `feature_count`, and SHA-256 ETag.
+    - Atomic write via temporary files (`.tmp.<timestamp>`) and rename to prevent partial reads by web servers.
+    - Status introspection (`list_snapshot_status`) tracking file age, stale detection (>5 min), and byte size.
+  - **Snapshot API Endpoints (`apps/api/floodroute/api/routes/snapshot.py`)**:
+    - `GET /v1/feed/snapshot/closures`: returns pre-generated snapshot with HTTP caching headers (`Cache-Control: public, max-age=120, stale-while-revalidate=600`, `ETag`) and full HTTP 304 Not Modified conditional GET support (`If-None-Match`).
+    - `POST /v1/feed/snapshot/generate`: on-demand snapshot generation trigger.
+    - `GET /v1/feed/snapshot/status`: status monitor of all cached snapshots.
+  - **Worker Integration (`apps/api/floodroute/worker.py`)**:
+    - Added Task 5 running every 2 minutes (`snapshot_interval_s = 120.0`) to pre-generate CDN closure snapshots for Bengaluru, Mumbai, and Gurugram.
+    - Telemetry hooks recording scoring run count and duration metrics.
+  - **Verification & Testing**:
+    - Added 3 unit tests in `apps/api/tests/test_metrics.py`.
+    - Added 1 integration test in `apps/api/tests/api/test_api_metrics.py`.
+    - Added 3 integration tests in `apps/api/tests/api/test_api_snapshot.py`.
+    - Full test suite: 688 passing tests (100% pass rate in 44.8s).
     - 0 ruff lint errors across all Python code.
     - Zero em-dashes and strict safety invariant maintained.
 
 ---
-

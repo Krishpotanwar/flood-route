@@ -14,12 +14,15 @@ from floodroute.api.routes import (
     cities,
     feed,
     health,
+    metrics,
     overrides,
     reports,
     risk,
     route,
+    snapshot,
     webhooks,
 )
+from floodroute.metrics.middleware import PrometheusMetricsMiddleware
 
 
 def create_app() -> FastAPI:
@@ -32,6 +35,7 @@ def create_app() -> FastAPI:
         docs_url="/docs",
     )
 
+    app.add_middleware(PrometheusMetricsMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -49,6 +53,8 @@ def create_app() -> FastAPI:
     app.include_router(webhooks.router)
     app.include_router(bot.router)
     app.include_router(cities.router)
+    app.include_router(snapshot.router)
+    app.include_router(metrics.router)
 
 
 
