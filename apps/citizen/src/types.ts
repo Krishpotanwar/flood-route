@@ -99,6 +99,7 @@ export interface ClosureFeature {
 
 export interface ClosureSnapshot {
   type: "FeatureCollection";
+  stale?: boolean;
   snapshot_version: string;
   city: string;
   city_id: number;

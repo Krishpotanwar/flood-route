@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert";
 import {
+  apiUrl,
   clearQueuedOfflineReports,
   fetchClosureSnapshot,
   flushOfflineReports,
@@ -12,6 +13,7 @@ import {
   queueOfflineReport,
   removeQueuedOfflineReport,
   saveCachedSnapshot,
+  tryRegisterBackgroundSync,
 } from "./offline.ts";
 import type { ClosureSnapshot, OfflineReportPayload } from "../types.ts";
 
@@ -186,6 +188,7 @@ test("fetchClosureSnapshot handles 200, 304, and network failure fallback", asyn
     feature_count: 0,
     features: [],
     etag: '"etag_initial"',
+    stale: true,
   };
 
   // 1. Initial successful fetch (200 OK)
@@ -199,6 +202,7 @@ test("fetchClosureSnapshot handles 200, 304, and network failure fallback", asyn
 
   const res1 = await fetchClosureSnapshot("bengaluru", "car", fetch200, storage);
   assert.strictEqual(res1.fromCache, false);
+  assert.strictEqual(res1.isStale, true);
   assert.strictEqual(res1.snapshot?.etag, '"etag_initial"');
 
   // 2. Conditional fetch returning 304 Not Modified
@@ -211,6 +215,7 @@ test("fetchClosureSnapshot handles 200, 304, and network failure fallback", asyn
 
   const res2 = await fetchClosureSnapshot("bengaluru", "car", fetch304, storage);
   assert.strictEqual(res2.fromCache, true);
+  assert.strictEqual(res2.isStale, true);
   assert.strictEqual(res2.snapshot?.etag, '"etag_initial"');
 
   // 3. Network outage (offline fetch throws)
@@ -220,5 +225,33 @@ test("fetchClosureSnapshot handles 200, 304, and network failure fallback", asyn
 
   const res3 = await fetchClosureSnapshot("bengaluru", "car", fetchError, storage);
   assert.strictEqual(res3.fromCache, true);
+  assert.strictEqual(res3.isStale, true);
   assert.strictEqual(res3.snapshot?.etag, '"etag_initial"');
+});
+
+test("apiUrl falls back to same-origin relative paths without a configured base", () => {
+  assert.strictEqual(apiUrl("/v1/health"), "/v1/health");
+  assert.strictEqual(apiUrl("v1/health"), "/v1/health");
+});
+
+test("tryRegisterBackgroundSync is a no-op without a service worker", () => {
+  assert.doesNotThrow(() => tryRegisterBackgroundSync());
+});
+
+test("report flushing serializes sends and preserves reports queued during a send", async () => {
+  const storage = new MockStorage();
+  const payload = { lat: 12.9, lon: 77.6, depth_class: "knee", reporter_id: "test" };
+  queueOfflineReport({ ...payload, id: "first" }, storage);
+  let release!: () => void;
+  const paused = new Promise<void>((resolve) => { release = resolve; });
+  let calls = 0;
+  const pending = flushOfflineReports(async () => { calls += 1; await paused; return true; }, storage);
+  assert.deepStrictEqual(await flushOfflineReports(async () => { calls += 1; return true; }, storage), { sent: 0, failed: 0 });
+  queueOfflineReport({ ...payload, id: "new" }, storage);
+  release();
+  assert.deepStrictEqual(await pending, { sent: 1, failed: 0 });
+  assert.strictEqual(calls, 1);
+  assert.deepStrictEqual(getQueuedOfflineReports(storage).map((report) => report.id), ["new"]);
+  storage.setItem = () => { throw new Error("Storage full"); };
+  assert.throws(() => queueOfflineReport(payload, storage), /Storage full/);
 });

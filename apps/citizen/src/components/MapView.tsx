@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
-import type { Feature, LineString } from "geojson";
-import { ClosureSnapshot, LatLon, PlannedRoute, RerouteResponse, RiskState, Theme } from "../types";
+import mapWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+import type { Feature, FeatureCollection, LineString } from "geojson";
+import { ClosureSnapshot, LatLon, PlannedRoute, RerouteResponse, RiskState, Theme, VehicleClass } from "../types";
 import {
   calculateBounds,
   decodePolyline,
@@ -20,7 +21,9 @@ export interface MapViewProps {
   totalSimSteps?: number;
   onSelectLocation?: (type: "origin" | "destination", coords: LatLon) => void;
   city?: string;
+  vclass?: VehicleClass;
   snapshot?: ClosureSnapshot | null;
+  demoMode?: boolean;
 }
 
 interface Hotspot {
@@ -30,27 +33,30 @@ interface Hotspot {
   severity: RiskState;
 }
 
-const CITY_HOTSPOTS: Record<string, Hotspot[]> = {
+maplibregl.setWorkerUrl(mapWorkerUrl);
+export const STATUS_SYMBOLS: Record<RiskState, string> = { clear: "✓", watch: "◷", risky: "!", impassable: "⊘", unknown: "?" };
+
+export const CITY_HOTSPOTS: Record<string, Hotspot[]> = {
   bengaluru: [
     { id: "silk_board", name: "Silk Board Junction", coords: [77.6228, 12.9172], severity: "watch" },
     { id: "bellandur", name: "Bellandur EcoSpace ORR", coords: [77.6848, 12.926], severity: "risky" },
     { id: "windsor", name: "Windsor Manor Underpass", coords: [77.5873, 12.9965], severity: "impassable" },
     { id: "indiranagar", name: "Indiranagar 100ft Rd", coords: [77.6412, 12.9719], severity: "clear" },
-    { id: "domlur", name: "Domlur Flyover", coords: [77.638, 12.961], severity: "clear" },
+    { id: "domlur", name: "Domlur Flyover", coords: [77.638, 12.961], severity: "unknown" },
   ],
   mumbai: [
     { id: "milan_subway", name: "Milan Subway Santacruz", coords: [72.8425, 19.0833], severity: "impassable" },
     { id: "andheri_subway", name: "Andheri Subway", coords: [72.8444, 19.1197], severity: "impassable" },
     { id: "kings_circle", name: "King's Circle / Gandhi Market", coords: [72.8575, 19.0303], severity: "risky" },
     { id: "hindmata", name: "Hindmata Junction Dadar", coords: [72.8433, 19.0117], severity: "watch" },
-    { id: "bkc_mithi", name: "BKC Mithi River Outfall", coords: [72.8681, 19.0656], severity: "watch" },
+    { id: "bkc_mithi", name: "BKC Mithi River Outfall", coords: [72.8681, 19.0656], severity: "unknown" },
   ],
   gurugram: [
     { id: "subhash_chowk", name: "Subhash Chowk Sohna Rd", coords: [77.0422, 28.4311], severity: "risky" },
     { id: "rajiv_chowk", name: "Rajiv Chowk Underpass NH48", coords: [77.0319, 28.4556], severity: "impassable" },
     { id: "hero_honda", name: "Hero Honda Chowk Underpass", coords: [77.0017, 28.4389], severity: "impassable" },
     { id: "narsinghpur", name: "Narsinghpur Express Corridor", coords: [76.9833, 28.4167], severity: "watch" },
-    { id: "khandsa", name: "Khandsa Badshahpur Drain Breach", coords: [76.9944, 28.4278], severity: "watch" },
+    { id: "khandsa", name: "Khandsa Badshahpur Drain Breach", coords: [76.9944, 28.4278], severity: "unknown" },
   ],
 };
 
@@ -64,34 +70,13 @@ const CITY_COORDS: Record<string, [number, number]> = {
 function isWebGLSupported(): boolean {
   try {
     const canvas = document.createElement("canvas");
-    return Boolean(
-      window.WebGLRenderingContext &&
-        (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
-    );
+    return Boolean(canvas.getContext("webgl2") || canvas.getContext("webgl"));
   } catch {
     return false;
   }
 }
 
-function getRouteColor(state: RiskState): string {
-  switch (state) {
-    case "clear":
-      return "#059669";
-    case "watch":
-      return "#d97706";
-    case "risky":
-      return "#ea580c";
-    case "impassable":
-      return "#dc2626";
-    default:
-      return "#2563eb";
-  }
-}
-
-function getTileUrl(theme: Theme): string {
-  if (theme === "dark" || theme === "hc-dark") {
-    return "https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}@2x.png";
-  }
+function getTileUrl(): string {
   return "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 }
 
@@ -105,10 +90,13 @@ export const MapView: React.FC<MapViewProps> = ({
   simStep = 0,
   totalSimSteps = 10,
   city = "bengaluru",
+  vclass = "car",
   snapshot = null,
+  demoMode = false,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<maplibregl.Map | null>(null);
+  const loadedMapRef = useRef<maplibregl.Map | null>(null);
   const originMarkerRef = useRef<maplibregl.Marker | null>(null);
   const destMarkerRef = useRef<maplibregl.Marker | null>(null);
   const vehicleMarkerRef = useRef<maplibregl.Marker | null>(null);
@@ -117,11 +105,32 @@ export const MapView: React.FC<MapViewProps> = ({
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [useFallback, setUseFallback] = useState<boolean>(false);
   const [showHotspots, setShowHotspots] = useState<boolean>(true);
+  const [mapError, setMapError] = useState<string | null>(null);
+  const dark = theme === "dark" || theme === "hc-dark";
+  const routeColor = dark ? "#f4f4f0" : "#111111";
+  const routeCasing = dark ? "#111111" : "#ffffff";
+  const hotspots = demoMode ? CITY_HOTSPOTS[city] || CITY_HOTSPOTS.bengaluru : [];
+  const closures = !demoMode && snapshot?.city === city && snapshot.vclass === vclass
+    ? snapshot
+    : null;
+  const closureLines = useMemo(() => (closures?.features || []).flatMap((feature) => {
+    const coordinates: unknown = feature.geometry.coordinates;
+    const lines = feature.geometry.type === "LineString"
+      ? [coordinates]
+      : feature.geometry.type === "MultiLineString" && Array.isArray(coordinates)
+        ? coordinates
+        : [];
+    return lines.filter((line): line is Array<[number, number]> =>
+      Array.isArray(line) && line.length > 1 && line.every((point) =>
+        Array.isArray(point) && point.length >= 2 && Number.isFinite(point[0]) && Number.isFinite(point[1])
+      )
+    );
+  }), [closures]);
 
   // Reposition map when city changes and no active route
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !mapLoaded || activeRoute) return;
+    if (!map || !mapLoaded || loadedMapRef.current !== map || activeRoute) return;
     const center = CITY_COORDS[city] || CITY_COORDS.bengaluru;
     map.flyTo({ center, zoom: 12 });
   }, [city, mapLoaded, activeRoute]);
@@ -147,6 +156,7 @@ export const MapView: React.FC<MapViewProps> = ({
 
   // Check WebGL support and initialize MapLibre
   useEffect(() => {
+    if (useFallback) return;
     if (!mapContainerRef.current) return;
 
     if (!isWebGLSupported()) {
@@ -155,7 +165,9 @@ export const MapView: React.FC<MapViewProps> = ({
     }
 
     try {
-      const tileUrl = getTileUrl(theme);
+      setMapLoaded(false);
+      setMapError(null);
+      const tileUrl = getTileUrl();
       const map = new maplibregl.Map({
         container: mapContainerRef.current,
         style: {
@@ -165,7 +177,7 @@ export const MapView: React.FC<MapViewProps> = ({
               type: "raster",
               tiles: [tileUrl],
               tileSize: 256,
-              attribution: "OpenStreetMap contributors",
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             },
           },
           layers: [
@@ -175,10 +187,11 @@ export const MapView: React.FC<MapViewProps> = ({
               source: "raster-tiles",
               minzoom: 0,
               maxzoom: 19,
+              paint: { "raster-saturation": -1, "raster-brightness-max": dark ? 0.45 : 1 },
             },
           ],
         },
-        center: [77.62, 12.95],
+        center: CITY_COORDS[city] || CITY_COORDS.bengaluru,
         zoom: 12,
         attributionControl: false,
       });
@@ -186,31 +199,59 @@ export const MapView: React.FC<MapViewProps> = ({
       map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-left");
 
       map.on("load", () => {
-        setMapLoaded(true);
+        if (mapInstanceRef.current === map) {
+          loadedMapRef.current = map;
+          setMapLoaded(true);
+        }
       });
+      map.on("error", () => {
+        if (mapInstanceRef.current === map) {
+          setMapError("Map tiles unavailable. Use the schematic view to continue.");
+        }
+      });
+
+      const loadTimer = window.setTimeout(() => {
+        if (!map.loaded()) setMapError("Map loading slowly. Schematic view is available.");
+      }, 8000);
+      const observer = new ResizeObserver(() => map.resize());
+      observer.observe(mapContainerRef.current);
 
       mapInstanceRef.current = map;
 
       return () => {
+        window.clearTimeout(loadTimer);
+        observer.disconnect();
+        originMarkerRef.current?.remove();
+        destMarkerRef.current?.remove();
+        vehicleMarkerRef.current?.remove();
+        hotspotMarkersRef.current.forEach((marker) => marker.remove());
+        originMarkerRef.current = null;
+        destMarkerRef.current = null;
+        vehicleMarkerRef.current = null;
+        hotspotMarkersRef.current = [];
         map.remove();
         mapInstanceRef.current = null;
+        loadedMapRef.current = null;
         setMapLoaded(false);
       };
     } catch {
       setUseFallback(true);
     }
-  }, [theme]);
+  }, [theme, useFallback]);
 
   // Manage Origin and Destination Markers
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !mapLoaded) return;
+    if (!map || !mapLoaded || loadedMapRef.current !== map) return;
 
     // Origin marker
     if (!originMarkerRef.current) {
       const el = document.createElement("div");
       el.className = "marker-pin origin";
       el.textContent = "A";
+      el.style.background = routeColor;
+      el.style.color = routeCasing;
+      el.style.borderColor = routeCasing;
       el.setAttribute("aria-label", "Route Origin");
       originMarkerRef.current = new maplibregl.Marker({ element: el })
         .setLngLat([origin.lon, origin.lat])
@@ -224,6 +265,9 @@ export const MapView: React.FC<MapViewProps> = ({
       const el = document.createElement("div");
       el.className = "marker-pin destination";
       el.textContent = "B";
+      el.style.background = routeColor;
+      el.style.color = routeCasing;
+      el.style.borderColor = routeCasing;
       el.setAttribute("aria-label", "Route Destination");
       destMarkerRef.current = new maplibregl.Marker({ element: el })
         .setLngLat([destination.lon, destination.lat])
@@ -231,18 +275,22 @@ export const MapView: React.FC<MapViewProps> = ({
     } else {
       destMarkerRef.current.setLngLat([destination.lon, destination.lat]);
     }
-  }, [destination.lat, destination.lon, mapLoaded, origin.lat, origin.lon]);
+  }, [destination.lat, destination.lon, mapLoaded, origin.lat, origin.lon, routeColor, routeCasing]);
 
   // Manage Vehicle Simulation Marker
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !mapLoaded) return;
+    if (!map || !mapLoaded || loadedMapRef.current !== map) return;
 
     if (isSimulating && vehiclePosition) {
       if (!vehicleMarkerRef.current) {
         const el = document.createElement("div");
         el.className = "vehicle-sim-marker";
-        el.textContent = "📍";
+        el.textContent = "●";
+        el.style.background = routeColor;
+        el.style.color = routeCasing;
+        el.style.borderColor = routeCasing;
+        el.style.boxShadow = "none";
         el.setAttribute("aria-label", "Current Vehicle Location");
         vehicleMarkerRef.current = new maplibregl.Marker({ element: el })
           .setLngLat(vehiclePosition)
@@ -254,25 +302,29 @@ export const MapView: React.FC<MapViewProps> = ({
       vehicleMarkerRef.current.remove();
       vehicleMarkerRef.current = null;
     }
-  }, [isSimulating, mapLoaded, vehiclePosition]);
+  }, [isSimulating, mapLoaded, vehiclePosition, routeColor, routeCasing]);
 
   // Manage Hotspot Markers
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !mapLoaded) return;
+    if (!map || !mapLoaded || loadedMapRef.current !== map) return;
 
     // Clear old hotspot markers
     hotspotMarkersRef.current.forEach((m) => m.remove());
     hotspotMarkersRef.current = [];
 
-    if (showHotspots) {
+    if (showHotspots && demoMode) {
       const spots = CITY_HOTSPOTS[city] || CITY_HOTSPOTS.bengaluru;
       spots.forEach((spot) => {
         const el = document.createElement("div");
         el.className = "marker-pin hotspot";
         el.setAttribute("data-state", spot.severity);
-        el.title = `${spot.name} (${spot.severity.toUpperCase()})`;
-        el.textContent = "!";
+        el.title = `${spot.name}: ${spot.severity} (demo scenario)`;
+        el.setAttribute("aria-label", el.title);
+        const hazard = spot.severity === "risky" || spot.severity === "impassable";
+        el.style.background = hazard ? "#e61919" : routeColor;
+        el.style.color = hazard ? "#ffffff" : routeCasing;
+        el.textContent = STATUS_SYMBOLS[spot.severity];
 
         const marker = new maplibregl.Marker({ element: el })
           .setLngLat(spot.coords)
@@ -280,37 +332,34 @@ export const MapView: React.FC<MapViewProps> = ({
         hotspotMarkersRef.current.push(marker);
       });
     }
-  }, [mapLoaded, showHotspots, city]);
+  }, [mapLoaded, showHotspots, city, demoMode, routeColor, routeCasing]);
 
   // Manage Live/Snapshot Closures GeoJSON Layer
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !mapLoaded) return;
+    if (!map || !mapLoaded || loadedMapRef.current !== map) return;
 
     const closuresSourceId = "closures-geojson";
     const closuresLayerId = "closures-line-layer";
 
-    if (!showHotspots) {
+    if (!showHotspots || !closures || closureLines.length === 0) {
       if (map.getLayer(closuresLayerId)) map.removeLayer(closuresLayerId);
       if (map.getSource(closuresSourceId)) map.removeSource(closuresSourceId);
       return;
     }
 
-    const currentMap = mapInstanceRef.current;
-    if (!currentMap) return;
-
-    const applyData = (data: any) => {
-      const existing = currentMap.getSource(closuresSourceId) as
+    const applyData = (data: FeatureCollection<LineString>) => {
+      const existing = map.getSource(closuresSourceId) as
         | maplibregl.GeoJSONSource
         | undefined;
       if (existing) {
         existing.setData(data);
       } else {
-        currentMap.addSource(closuresSourceId, {
+        map.addSource(closuresSourceId, {
           type: "geojson",
           data,
         });
-        currentMap.addLayer({
+        map.addLayer({
           id: closuresLayerId,
           type: "line",
           source: closuresSourceId,
@@ -319,7 +368,7 @@ export const MapView: React.FC<MapViewProps> = ({
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#dc2626",
+            "line-color": "#e61919",
             "line-width": 4,
             "line-opacity": 0.85,
           },
@@ -327,31 +376,20 @@ export const MapView: React.FC<MapViewProps> = ({
       }
     };
 
-    if (snapshot) {
-      applyData(snapshot);
-      return;
-    }
-
-    let isSubscribed = true;
-    fetch(`/v1/feed/snapshot/closures?city=${encodeURIComponent(city)}&vclass=car`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (!isSubscribed || !data || !mapInstanceRef.current) return;
-        applyData(data);
-      })
-      .catch(() => {
-        // Ignore offline network failure for live closures
-      });
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, [mapLoaded, showHotspots, snapshot, city]);
+    applyData({
+      type: "FeatureCollection",
+      features: closureLines.map((line) => ({
+        type: "Feature",
+        properties: {},
+        geometry: { type: "LineString", coordinates: line },
+      })),
+    });
+  }, [mapLoaded, showHotspots, closures, closureLines]);
 
   // Update Route Polyline Layers
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !mapLoaded) return;
+    if (!map || !mapLoaded || loadedMapRef.current !== map) return;
 
     const sourceId = "route-geojson";
     const casingLayerId = "route-casing-layer";
@@ -390,7 +428,7 @@ export const MapView: React.FC<MapViewProps> = ({
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#0f172a",
+            "line-color": routeCasing,
             "line-width": 8,
             "line-opacity": 0.8,
           },
@@ -406,7 +444,7 @@ export const MapView: React.FC<MapViewProps> = ({
             "line-cap": "round",
           },
           paint: {
-            "line-color": getRouteColor(activeRoute?.worst_state || "clear"),
+            "line-color": routeColor,
             "line-width": 5,
           },
         });
@@ -417,15 +455,16 @@ export const MapView: React.FC<MapViewProps> = ({
         map.setPaintProperty(
           lineLayerId,
           "line-color",
-          getRouteColor(activeRoute?.worst_state || "clear")
+          routeColor
         );
       }
 
       // Fit bounds to active route
       const bounds = calculateBounds(routeCoords);
       if (bounds) {
+        map.resize();
         map.fitBounds(bounds, {
-          padding: { top: 60, bottom: 220, left: 40, right: 40 },
+          padding: { top: 80, bottom: 110, left: 55, right: 80 },
           maxZoom: 15,
           duration: 1000,
         });
@@ -467,7 +506,7 @@ export const MapView: React.FC<MapViewProps> = ({
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#2563eb",
+            "line-color": routeColor,
             "line-width": 4,
             "line-dasharray": [2, 2],
           },
@@ -477,18 +516,18 @@ export const MapView: React.FC<MapViewProps> = ({
       if (map.getLayer(detourLayerId)) map.removeLayer(detourLayerId);
       if (map.getSource(detourSourceId)) map.removeSource(detourSourceId);
     }
-  }, [activeRoute?.worst_state, detourCoords, mapLoaded, routeCoords]);
+  }, [detourCoords, mapLoaded, routeCoords, routeColor, routeCasing]);
 
   // Recenter Handler
   const handleRecenter = useCallback(() => {
     const map = mapInstanceRef.current;
-    if (!map) return;
+    if (!map || loadedMapRef.current !== map) return;
 
     if (routeCoords.length > 0) {
       const bounds = calculateBounds(routeCoords);
       if (bounds) {
         map.fitBounds(bounds, {
-          padding: { top: 60, bottom: 220, left: 40, right: 40 },
+          padding: { top: 80, bottom: 110, left: 55, right: 80 },
           maxZoom: 15,
           duration: 600,
         });
@@ -513,152 +552,117 @@ export const MapView: React.FC<MapViewProps> = ({
     mapInstanceRef.current?.zoomOut();
   };
 
-  // Graceful SVG Vector Fallback when WebGL is unavailable
-  if (useFallback) {
-    const bMinLon = 77.52;
-    const bMaxLon = 77.72;
-    const bMinLat = 12.86;
-    const bMaxLat = 13.04;
+  const center = CITY_COORDS[city] || CITY_COORDS.bengaluru;
+  const bounds = calculateBounds([
+    [center[0] - 0.025, center[1] - 0.025],
+    [center[0] + 0.025, center[1] + 0.025],
+    latLonToCoords(origin), latLonToCoords(destination),
+    ...routeCoords, ...detourCoords,
+    ...hotspots.map((spot) => spot.coords), ...closureLines.flat(),
+  ])!;
+  const lonSpan = bounds[1][0] - bounds[0][0];
+  const latSpan = bounds[1][1] - bounds[0][1];
+  const project = (coord: [number, number]): [number, number] => [
+    75 + ((coord[0] - bounds[0][0]) / lonSpan) * 750,
+    65 + (1 - (coord[1] - bounds[0][1]) / latSpan) * 470,
+  ];
+  const path = (coords: Array<[number, number]>) => coords.map((coord, index) => {
+    const point = project(coord);
+    return `${index === 0 ? "M" : "L"} ${point[0]} ${point[1]}`;
+  }).join(" ");
+  const originSvg = project(latLonToCoords(origin));
+  const destinationSvg = project(latLonToCoords(destination));
+  const vehicleSvg = vehiclePosition ? project(vehiclePosition) : null;
 
-    const project = (coord: [number, number]): [number, number] => {
-      const x = ((coord[0] - bMinLon) / (bMaxLon - bMinLon)) * 600;
-      const y = (1 - (coord[1] - bMinLat) / (bMaxLat - bMinLat)) * 500;
-      return [x, y];
-    };
-
-    const originSvg = project(latLonToCoords(origin));
-    const destSvg = project(latLonToCoords(destination));
-    const pathD =
-      routeCoords.length > 0
-        ? routeCoords
-            .map((c, i) => {
-              const pt = project(c);
-              return `${i === 0 ? "M" : "L"} ${pt[0]} ${pt[1]}`;
-            })
-            .join(" ")
-        : `M ${originSvg[0]} ${originSvg[1]} L ${destSvg[0]} ${destSvg[1]}`;
-
-    const vehicleSvg = vehiclePosition ? project(vehiclePosition) : null;
-
-    return (
-      <div className="map-viewport">
+  return (
+    <div className="map-viewport">
+      {useFallback ? (
         <div className="map-fallback">
-          <svg className="map-fallback-svg" viewBox="0 0 600 500">
-            {/* Base grid */}
+          <svg className="map-fallback-svg" viewBox="0 0 900 600" role="img" aria-label={`${city} schematic showing trip endpoints${activeRoute ? ", planned route" : ""}${detourCoords.length ? " and suggested detour" : ""}`}>
             <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="var(--hairline)" strokeWidth="0.5" />
+              <pattern id="map-grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="var(--hairline)" strokeWidth="0.5" />
               </pattern>
             </defs>
-            <rect width="600" height="500" fill="url(#grid)" />
-
-            {/* City Hotspots */}
-            {showHotspots &&
-              (CITY_HOTSPOTS[city] || CITY_HOTSPOTS.bengaluru).map((spot) => {
-                const pt = project(spot.coords);
-                return (
-                  <g key={spot.id} transform={`translate(${pt[0]}, ${pt[1]})`}>
-                    <circle r="8" fill={getRouteColor(spot.severity)} opacity="0.8" />
-                    <text
-                      y="16"
-                      textAnchor="middle"
-                      fontSize="9"
-                      fill="var(--fr-ink-2)"
-                      fontWeight="bold"
-                    >
-                      {spot.name.split(" ")[0]}
-                    </text>
-                  </g>
-                );
-              })}
-
-            {/* Route Polyline */}
-            <path
-              d={pathD}
-              fill="none"
-              stroke="#0f172a"
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              opacity="0.7"
-            />
-            <path
-              d={pathD}
-              fill="none"
-              stroke={getRouteColor(activeRoute?.worst_state || "clear")}
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-
-            {/* Origin Pin */}
-            <g transform={`translate(${originSvg[0]}, ${originSvg[1]})`}>
-              <circle r="12" fill="#059669" stroke="#ffffff" strokeWidth="2" />
-              <text y="4" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
-                A
-              </text>
-            </g>
-
-            {/* Destination Pin */}
-            <g transform={`translate(${destSvg[0]}, ${destSvg[1]})`}>
-              <circle r="12" fill="#2563eb" stroke="#ffffff" strokeWidth="2" />
-              <text y="4" textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="bold">
-                B
-              </text>
-            </g>
-
-            {/* Vehicle Simulation Dot */}
+            <rect width="900" height="600" fill="var(--fr-canvas)" />
+            <rect width="900" height="600" fill="url(#map-grid)" />
+            <text x="32" y="568" fontSize="11" fill="var(--fr-ink-2)">{bounds[0][0].toFixed(3)}° E / {bounds[0][1].toFixed(3)}° N</text>
+            {showHotspots && closureLines.map((line, index) => (
+              <path key={index} d={path(line)} fill="none" stroke="#e61919" strokeWidth="5" />
+            ))}
+            {routeCoords.length > 1 && (
+              <>
+                <path d={path(routeCoords)} fill="none" stroke={routeCasing} strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d={path(routeCoords)} fill="none" stroke={routeColor} strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+              </>
+            )}
+            {detourCoords.length > 1 && <path d={path(detourCoords)} fill="none" stroke={routeColor} strokeWidth="4" strokeDasharray="9 7" />}
+            {showHotspots && hotspots.map((spot) => {
+              const point = project(spot.coords);
+              return (
+                <g key={spot.id} transform={`translate(${point[0]}, ${point[1]})`}>
+                  <title>{`${spot.name}: ${spot.severity} (demo scenario)`}</title>
+                  <circle r="9" fill={spot.severity === "risky" || spot.severity === "impassable" ? "#e61919" : routeColor} stroke={routeCasing} strokeWidth="2" />
+                  <text y="4" textAnchor="middle" fontSize="12" fill={spot.severity === "risky" || spot.severity === "impassable" ? "#ffffff" : routeCasing}>{STATUS_SYMBOLS[spot.severity]}</text>
+                  <text y="27" textAnchor="middle" fontSize="12" fill="var(--fr-ink)">{spot.name.split(" ").slice(0, 2).join(" ")}</text>
+                </g>
+              );
+            })}
+            {([["A", originSvg], ["B", destinationSvg]] as const).map(([label, point]) => (
+                <g key={label} transform={`translate(${point[0]}, ${point[1]})`}>
+                  <circle r="16" fill={routeColor} stroke={routeCasing} strokeWidth="3" />
+                  <text y="5" textAnchor="middle" fill={routeCasing} fontSize="13" fontWeight="700">{label}</text>
+                </g>
+            ))}
             {vehicleSvg && (
               <g transform={`translate(${vehicleSvg[0]}, ${vehicleSvg[1]})`}>
-                <circle r="14" fill="#2563eb" opacity="0.35" />
-                <circle r="7" fill="#2563eb" stroke="#ffffff" strokeWidth="2" />
+                <circle r="18" fill={routeColor} opacity="0.2" />
+                <circle r="8" fill={routeColor} stroke={routeCasing} strokeWidth="3" />
               </g>
             )}
           </svg>
         </div>
+      ) : <div ref={mapContainerRef} className="map-container" />}
 
-        <div className="map-controls-floating">
-          <button
-            type="button"
-            className="map-ctrl-btn"
-            onClick={() => setShowHotspots(!showHotspots)}
-            data-active={showHotspots}
-            title="Toggle Flood Hotspots"
-            aria-label="Toggle Flood Hotspots"
-          >
-            ⚠️
-          </button>
-        </div>
+      <div className="map-status">
+        <span>{useFallback ? "Schematic view" : "Street map"}</span>
+        <span>{demoMode ? "Demo scenario" : closures ? "Closure snapshot" : "No closure data"}</span>
       </div>
-    );
-  }
-
-  return (
-    <div className="map-viewport">
-      <div ref={mapContainerRef} className="map-container" />
+      {useFallback && <p className="map-empty-status">Schematic only. Not a street navigation map.</p>}
+      {mapError && !useFallback && (
+        <div className="map-empty-status" role="status">
+          {mapError} <button type="button" className="select-btn" onClick={() => setUseFallback(true)}>Use schematic</button>
+        </div>
+      )}
+      <div className="map-legend">
+        <span>A Start</span><span>B Destination</span>
+        <span>{demoMode ? "Red: demo conditions" : "Red: reported closures"}</span>
+        {detourCoords.length > 0 && <span>Dashed: suggested detour</span>}
+      </div>
 
       {/* Floating Action Controls */}
       <div className="map-controls-floating">
-        <button
+        {!useFallback && <button
           type="button"
           className="map-ctrl-btn"
           onClick={handleRecenter}
           title="Recenter Map"
           aria-label="Recenter Map"
         >
-          🎯
-        </button>
+          ◎
+        </button>}
         <button
           type="button"
           className="map-ctrl-btn"
           onClick={() => setShowHotspots(!showHotspots)}
           data-active={showHotspots}
-          title="Toggle Flood Hotspots"
-          aria-label="Toggle Flood Hotspots"
+          aria-pressed={showHotspots}
+          title="Toggle road conditions"
+          aria-label="Toggle road conditions"
         >
-          ⚠️
+          !
         </button>
-        <button
+        {!useFallback && <button
           type="button"
           className="map-ctrl-btn"
           onClick={handleZoomIn}
@@ -666,15 +670,18 @@ export const MapView: React.FC<MapViewProps> = ({
           aria-label="Zoom In"
         >
           +
-        </button>
-        <button
+        </button>}
+        {!useFallback && <button
           type="button"
           className="map-ctrl-btn"
           onClick={handleZoomOut}
           title="Zoom Out"
           aria-label="Zoom Out"
         >
-          -
+          −
+        </button>}
+        <button type="button" className="map-ctrl-btn" onClick={() => setUseFallback((current) => !current)} title={useFallback ? "Switch to street map" : "Switch to schematic view"} aria-label={useFallback ? "Switch to street map" : "Switch to schematic view"}>
+          {useFallback ? "Map" : "⌗"}
         </button>
       </div>
     </div>

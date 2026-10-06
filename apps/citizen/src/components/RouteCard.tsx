@@ -5,34 +5,40 @@ interface RouteCardProps {
   route: PlannedRoute;
   onStartTrip: () => void;
   isSimulating: boolean;
+  demoMode?: boolean;
 }
 
-const STATE_LABELS: Record<RiskState, string> = {
+export const STATE_LABELS: Record<RiskState, string> = {
   clear: "Clear",
   watch: "Watch",
-  risky: "Risky",
+  risky: "High risk",
   impassable: "Impassable",
-  unknown: "Unknown",
+  unknown: "Unassessed",
 };
 
 export const RouteCard: React.FC<RouteCardProps> = ({
   route,
   onStartTrip,
   isSimulating,
+  demoMode = false,
 }) => {
   const worstState = route.worst_state;
+  const assessedCount = route.segments.filter((segment) => segment.assessed).length;
+  const age = route.data_age_s;
+  const dataAge = age !== undefined && Number.isFinite(age) && age >= 0
+    ? `${age < 60 ? Math.round(age) + "s" : Math.ceil(age / 60) + " min"} old`
+    : "Age unavailable";
 
   return (
-    <div className="card">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div className="card route-card" aria-live="polite">
+      <p className="eyebrow">{demoMode ? "Sample journey" : "Route assessment"}</p>
+      <div className="route-summary">
         <div>
-          <span style={{ fontSize: "var(--fr-text-2xl)", fontWeight: 700 }}>
-            {route.eta_min} min
+          <span className="route-time">
+            {route.eta_min} <span>min</span>
           </span>
           {route.delta_min !== undefined && route.delta_min > 0 && (
-            <span style={{ marginLeft: "0.5rem", color: "var(--fr-ink-2)" }}>
-              (+{route.delta_min} min detour)
-            </span>
+            <p className="field-hint">+{route.delta_min} min to avoid higher risk</p>
           )}
         </div>
 
@@ -42,28 +48,28 @@ export const RouteCard: React.FC<RouteCardProps> = ({
       </div>
 
       {route.reasons.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+        <div className="route-reasons">
           {route.reasons.map((reason, idx) => (
-            <p key={idx} style={{ margin: 0, fontSize: "var(--fr-text-sm)", color: "var(--fr-ink)" }}>
+            <p key={idx}>
               {reason}
             </p>
           ))}
         </div>
       )}
 
-      <div style={{ borderTop: "1px solid var(--hairline)", paddingTop: "0.75rem" }}>
-        <span style={{ fontSize: "var(--fr-text-xs)", color: "var(--fr-ink-2)" }}>
-          {route.segments.length} road segments monitored
-        </span>
+      <div className="route-meta">
+        <span>{assessedCount} / {route.segments.length} segments assessed</span>
+        <span>{demoMode ? "Illustrative conditions" : `Data: ${dataAge}`}</span>
       </div>
 
       <button
         type="button"
         className="btn-primary"
         onClick={onStartTrip}
-        style={{ marginTop: "0.5rem" }}
+        aria-pressed={isSimulating}
       >
-        {isSimulating ? "Stop Navigation Simulation" : "Start Navigation Simulation"}
+        {isSimulating ? "Stop journey simulation" : "Preview journey simulation"}
+        <span aria-hidden="true">{isSimulating ? "×" : "→"}</span>
       </button>
     </div>
   );

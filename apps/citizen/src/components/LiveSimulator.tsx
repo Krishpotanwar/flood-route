@@ -1,5 +1,6 @@
 import React from "react";
 import { PlannedRoute, RerouteResponse } from "../types";
+import { STATE_LABELS } from "./RouteCard";
 
 interface LiveSimulatorProps {
   rerouteData: RerouteResponse | null;
@@ -7,6 +8,7 @@ interface LiveSimulatorProps {
   onStepTick: () => void;
   onStop: () => void;
   isLoading: boolean;
+  demoMode?: boolean;
 }
 
 export const LiveSimulator: React.FC<LiveSimulatorProps> = ({
@@ -15,32 +17,36 @@ export const LiveSimulator: React.FC<LiveSimulatorProps> = ({
   onStepTick,
   onStop,
   isLoading,
+  demoMode = false,
 }) => {
   if (!rerouteData) return null;
 
   const isHold = rerouteData.action === "hold";
   const isSuggest = rerouteData.action === "suggest";
+  const state = rerouteData.current_worst_state || "unknown";
 
   return (
-    <div className="card" style={{ borderLeft: "4px solid var(--fr-accent)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h3 style={{ margin: 0, fontSize: "var(--fr-text-base)" }}>Live Navigation Active</h3>
+    <div className="card simulator-card" aria-busy={isLoading}>
+      <div className="route-summary">
+        <div>
+          <p className="eyebrow">{demoMode ? "Demo scenario" : "Journey preview"}</p>
+          <h3>Simulation active</h3>
+        </div>
         <button
           type="button"
-          className="select-btn"
+          className="text-link"
           onClick={onStop}
-          style={{ height: "2rem", padding: "0 0.5rem" }}
+          disabled={isLoading}
         >
-          End Trip
+          End preview
         </button>
       </div>
 
       {isHold && (
-        <div className="hold-banner">
-          <span>🛑</span>
+        <div className="hold-banner" role="status">
           <div>
-            <strong>Water Immediately Ahead</strong>
-            <p style={{ margin: "0.25rem 0 0", fontSize: "var(--fr-text-sm)" }}>
+            <strong>Stop: high water ahead</strong>
+            <p>
               {rerouteData.reasons[0] ||
                 "Water is just ahead and there is no turn-off. Slow down and be ready to stop."}
             </p>
@@ -49,11 +55,10 @@ export const LiveSimulator: React.FC<LiveSimulatorProps> = ({
       )}
 
       {isSuggest && (
-        <div className="warning-banner">
-          <span>⚠️</span>
-          <div style={{ flex: 1 }}>
-            <strong>Detour Recommended</strong>
-            <p style={{ margin: "0.25rem 0 0.5rem", fontSize: "var(--fr-text-sm)" }}>
+        <div className="warning-banner" role="status">
+          <div>
+            <strong>A lower-risk detour is available</strong>
+            <p>
               {rerouteData.reasons[0] ||
                 "A road ahead may be flooded. Switch to the new route?"}
             </p>
@@ -62,9 +67,9 @@ export const LiveSimulator: React.FC<LiveSimulatorProps> = ({
                 type="button"
                 className="btn-primary"
                 onClick={() => onAcceptDetour(rerouteData.suggested_route!)}
-                style={{ minHeight: "2.5rem", width: "100%", fontSize: "var(--fr-text-sm)" }}
+                disabled={isLoading}
               >
-                Accept Detour ({rerouteData.suggested_route.eta_min} min)
+                Accept detour · {rerouteData.suggested_route.eta_min} min <span aria-hidden="true">↗</span>
               </button>
             )}
           </div>
@@ -72,11 +77,10 @@ export const LiveSimulator: React.FC<LiveSimulatorProps> = ({
       )}
 
       {!isHold && !isSuggest && rerouteData.warn && (
-        <div className="warning-banner">
-          <span>⚠️</span>
+        <div className="warning-banner" role="status">
           <div>
-            <strong>Caution Ahead</strong>
-            <p style={{ margin: "0.25rem 0 0", fontSize: "var(--fr-text-sm)" }}>
+            <strong>Use caution ahead</strong>
+            <p>
               {rerouteData.reasons[0] ||
                 "A road ahead may be flooded. Slow down and stay alert."}
             </p>
@@ -85,25 +89,29 @@ export const LiveSimulator: React.FC<LiveSimulatorProps> = ({
       )}
 
       {!isHold && !isSuggest && !rerouteData.warn && (
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span className="risk-badge" data-state={rerouteData.current_worst_state || "clear"}>
-            Route Clear
+        <div className="route-meta" role="status">
+          <span className="risk-badge" data-state={state}>
+            {STATE_LABELS[state]}
           </span>
-          <span style={{ fontSize: "var(--fr-text-sm)", color: "var(--fr-ink-2)" }}>
-            No flooding detected on upcoming road segments.
+          <span>
+            {rerouteData.reasons[0] || (state === "clear"
+              ? "No current warning on assessed upcoming segments."
+              : "Check the assessed road conditions before continuing.")}
           </span>
         </div>
       )}
 
-      <button
-        type="button"
-        className="btn-secondary"
-        onClick={onStepTick}
-        disabled={isLoading}
-        style={{ marginTop: "0.5rem" }}
-      >
-        {isLoading ? "Checking Next Segment..." : "Simulate Next Position Tick"}
-      </button>
+      <div className="simulator-actions">
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={onStepTick}
+          disabled={isLoading}
+        >
+          {isLoading ? "Checking next position…" : demoMode ? "Next demo scenario →" : "Check next simulated position →"}
+        </button>
+        <p className="field-hint">A preview of warnings and rerouting; verify local conditions before travel.</p>
+      </div>
     </div>
   );
 };

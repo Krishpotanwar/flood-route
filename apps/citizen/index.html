@@ -3,13 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#1C2024" />
+    <meta name="theme-color" content="#FFFFFF" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="description" content="FloodRoute: Live urban flood-aware routing for Indian cities" />
+    <meta name="description" content="FloodRoute: vehicle-aware route planning, road conditions, and flood reports for Indian cities." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <title>FloodRoute</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="icon" type="image/svg+xml" href="./icons/floodroute.svg" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <title>FloodRoute | Flood-aware route planning</title>
   </head>
   <body>
     <div id="root"></div>
@@ -17,7 +18,7 @@
     <script>
       if ("serviceWorker" in navigator && !window.location.host.includes("localhost")) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/sw.js").catch(() => {});
+          navigator.serviceWorker.register("./sw.js").catch(() => {});
         });
       }
     </script>

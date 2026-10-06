@@ -75,10 +75,6 @@ def create_app() -> FastAPI:
     if citizen_dist.exists() and (citizen_dist / "index.html").exists():
         app.mount("/app", StaticFiles(directory=str(citizen_dist), html=True), name="citizen_app")
 
-        @app.get("/app", include_in_schema=False)
-        def get_citizen_app() -> FileResponse:
-            return FileResponse(citizen_dist / "index.html")
-
     return app
 
 

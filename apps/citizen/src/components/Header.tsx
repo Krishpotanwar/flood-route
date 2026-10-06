@@ -15,8 +15,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   theme,
   onThemeChange,
-  lang,
-  onLangChange,
   city,
   onCityChange,
   onOpenReport,
@@ -24,13 +22,20 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <header className="top-bar">
-      <div className="brand">
+      <a className="brand brand-wordmark" href="#top" aria-label="FloodRoute home">
         <span
           className={`health-dot ${isOnline ? "" : "offline"}`}
-          title={isOnline ? "Connected to FloodRoute API" : "Offline"}
+          role="img"
+          aria-label={isOnline ? "Routing service connected" : "Routing service unavailable"}
         />
-        <h1>FloodRoute</h1>
-      </div>
+        <span>FloodRoute<span aria-hidden="true">.</span></span>
+      </a>
+
+      <nav className="top-nav" aria-label="Main navigation">
+        <a href="#planner">Route planner</a>
+        <a href="#conditions">Road conditions</a>
+        <a href="#how-it-works">How it works</a>
+      </nav>
 
       <div className="top-controls">
         <select
@@ -48,22 +53,19 @@ export const Header: React.FC<HeaderProps> = ({
           type="button"
           className="select-btn"
           onClick={onOpenReport}
-          title="Report waterlogged road"
+          aria-label="Report a waterlogged road"
         >
-          📷 Report
+          Report road <span aria-hidden="true">↗</span>
         </button>
 
         <select
           className="select-btn"
-          value={lang}
-          onChange={(e) => onLangChange(e.target.value as Language)}
+          value="en"
+          disabled
           aria-label="Language"
+          title="English preview"
         >
           <option value="en">EN</option>
-          <option value="hi">हिन्दी</option>
-          <option value="kn">ಕನ್ನಡ</option>
-          <option value="ta">தமிழ்</option>
-          <option value="te">తెలుగు</option>
         </select>
 
         <select
@@ -72,10 +74,8 @@ export const Header: React.FC<HeaderProps> = ({
           onChange={(e) => onThemeChange(e.target.value as Theme)}
           aria-label="Theme"
         >
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="sunlight">Sunlight</option>
-          <option value="hc">High Contrast</option>
+          <option value="light">White</option>
+          <option value="dark">Black</option>
         </select>
       </div>
     </header>

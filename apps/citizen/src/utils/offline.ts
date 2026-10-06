@@ -3,6 +3,41 @@ import type { ClosureSnapshot, OfflineReportPayload, VehicleClass } from "../typ
 export const QUEUE_KEY = "floodroute_offline_reports";
 export const SNAPSHOT_PREFIX = "floodroute_snapshot_";
 export const DEFAULT_STALE_SECONDS = 300; // 5 minutes (TRD 11)
+export const SYNC_TAG = "floodroute-sync-reports";
+
+const VITE_ENV =
+  typeof import.meta !== "undefined"
+    ? (import.meta as unknown as { env?: Record<string, string | undefined> }).env
+    : undefined;
+const API_BASE = (VITE_ENV?.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
+
+/**
+ * Prefix an API path with the configured base URL, falling back to
+ * same-origin relative paths when no base is configured.
+ */
+export function apiUrl(path: string): string {
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${API_BASE}${p}`;
+}
+
+/**
+ * Ask the service worker to flush queued reports via Background Sync.
+ * No-op where service workers or the SyncManager are unavailable: the
+ * online/offline window listeners flush the queue instead.
+ */
+export function tryRegisterBackgroundSync(): void {
+  try {
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.ready
+      .then((reg) => {
+        const r = reg as unknown as { sync?: { register: (tag: string) => Promise<void> } };
+        if (r.sync) r.sync.register(SYNC_TAG).catch(() => {});
+      })
+      .catch(() => {});
+  } catch {
+    // Background Sync unsupported: online/offline listeners flush the queue instead.
+  }
+}
 
 /**
  * Format conditions timestamp into standard TRD 11 banner string.
@@ -54,9 +89,9 @@ export function getSnapshotAgeMinutes(isoString: string, nowMs?: number): number
  */
 function getStorage(storage?: Storage): Storage | null {
   if (storage) return storage;
-  if (typeof window !== "undefined" && window.localStorage) {
-    return window.localStorage;
-  }
+  try {
+    if (typeof window !== "undefined") return window.localStorage;
+  } catch { /* Storage is blocked; callers decide whether it is required. */ }
   return null;
 }
 
@@ -74,15 +109,10 @@ export function queueOfflineReport(
   };
 
   const store = getStorage(storage);
-  if (store) {
-    try {
-      const existing = getQueuedOfflineReports(store);
-      existing.push(payload);
-      store.setItem(QUEUE_KEY, JSON.stringify(existing));
-    } catch {
-      // Storage quota or permission error
-    }
-  }
+  if (!store) throw new Error("Report could not be saved. Allow browser storage and try again.");
+  const existing = getQueuedOfflineReports(store);
+  existing.push(payload);
+  store.setItem(QUEUE_KEY, JSON.stringify(existing));
 
   return payload;
 }
@@ -136,44 +166,50 @@ export function clearQueuedOfflineReports(storage?: Storage): void {
 /**
  * Flush all queued offline reports to the server.
  */
+// ponytail: one queue flush per tab; use an IndexedDB lease for cross-tab sync.
+let reportsFlushing = false;
 export async function flushOfflineReports(
   sendFn: (report: OfflineReportPayload) => Promise<boolean>,
   storage?: Storage
 ): Promise<{ sent: number; failed: number }> {
-  const reports = getQueuedOfflineReports(storage);
-  if (reports.length === 0) {
-    return { sent: 0, failed: 0 };
-  }
+  if (reportsFlushing) return { sent: 0, failed: 0 };
+  reportsFlushing = true;
+  try {
+    const reports = getQueuedOfflineReports(storage);
+    if (reports.length === 0) {
+      return { sent: 0, failed: 0 };
+    }
 
-  let sent = 0;
-  let failed = 0;
-  const remaining: OfflineReportPayload[] = [];
+    let sent = 0;
+    let failed = 0;
+    const sentIds = new Set<string>();
 
-  for (const rep of reports) {
-    try {
-      const success = await sendFn(rep);
-      if (success) {
-        sent += 1;
-      } else {
+    for (const rep of reports) {
+      try {
+        const success = await sendFn(rep);
+        if (success) {
+          sent += 1;
+          sentIds.add(rep.id || rep.queued_at);
+        } else {
+          failed += 1;
+        }
+      } catch {
         failed += 1;
-        remaining.push(rep);
       }
-    } catch {
-      failed += 1;
-      remaining.push(rep);
     }
-  }
 
-  const store = getStorage(storage);
-  if (store) {
-    try {
-      store.setItem(QUEUE_KEY, JSON.stringify(remaining));
-    } catch {
-      // Storage write error
+    const store = getStorage(storage);
+    if (store) {
+      try {
+        const remaining = getQueuedOfflineReports(store).filter((report) => !sentIds.has(report.id || report.queued_at));
+        store.setItem(QUEUE_KEY, JSON.stringify(remaining));
+      } catch {
+        // Storage write error
+      }
     }
-  }
 
-  return { sent, failed };
+    return { sent, failed };
+  } finally { reportsFlushing = false; }
 }
 
 /**
@@ -233,7 +269,7 @@ export async function fetchClosureSnapshot(
     return {
       snapshot: cached,
       fromCache: true,
-      isStale: cached ? isSnapshotStale(cached.conditions_as_of) : true,
+      isStale: cached ? Boolean(cached.stale) || isSnapshotStale(cached.conditions_as_of) : true,
     };
   }
 
@@ -244,15 +280,15 @@ export async function fetchClosureSnapshot(
     }
 
     const res = await runner(
-      `/v1/feed/snapshot/closures?city=${encodeURIComponent(city)}&vclass=${encodeURIComponent(vclass)}`,
-      { headers }
+      apiUrl(`/v1/feed/snapshot/closures?city=${encodeURIComponent(city)}&vclass=${encodeURIComponent(vclass)}`),
+      { headers, signal: AbortSignal.timeout(7000) }
     );
 
     if (res.status === 304 && cached) {
       return {
         snapshot: cached,
         fromCache: true,
-        isStale: isSnapshotStale(cached.conditions_as_of),
+        isStale: Boolean(cached.stale) || isSnapshotStale(cached.conditions_as_of),
       };
     }
 
@@ -262,7 +298,7 @@ export async function fetchClosureSnapshot(
       return {
         snapshot: data,
         fromCache: false,
-        isStale: isSnapshotStale(data.conditions_as_of),
+        isStale: Boolean(data.stale) || isSnapshotStale(data.conditions_as_of),
       };
     }
 
@@ -270,14 +306,14 @@ export async function fetchClosureSnapshot(
     return {
       snapshot: cached,
       fromCache: true,
-      isStale: cached ? isSnapshotStale(cached.conditions_as_of) : true,
+      isStale: cached ? Boolean(cached.stale) || isSnapshotStale(cached.conditions_as_of) : true,
     };
   } catch {
     // Network failure (offline)
     return {
       snapshot: cached,
       fromCache: true,
-      isStale: cached ? isSnapshotStale(cached.conditions_as_of) : true,
+      isStale: cached ? Boolean(cached.stale) || isSnapshotStale(cached.conditions_as_of) : true,
     };
   }
 }

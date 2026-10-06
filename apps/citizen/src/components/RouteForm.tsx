@@ -7,7 +7,7 @@ interface RouteFormProps {
   isLoading: boolean;
 }
 
-const CITY_PRESETS: Record<string, Record<string, LatLon>> = {
+export const CITY_PRESETS: Record<string, Record<string, LatLon>> = {
   bengaluru: {
     "Indiranagar 100ft Rd": { lat: 12.9719, lon: 77.6412 },
     "MG Road Metro": { lat: 12.9756, lon: 77.6066 },
@@ -56,39 +56,51 @@ export const RouteForm: React.FC<RouteFormProps> = ({
     e.preventDefault();
     const origin = currentPresets[originKey];
     const dest = currentPresets[destKey];
-    if (origin && dest) {
+    if (origin && dest && originKey !== destKey && !isLoading) {
       onPlanRoute(origin, dest, vclass);
     }
   };
 
   return (
-    <form className="card" onSubmit={handleSubmit}>
-      <div className="segmented-row">
-        <button
-          type="button"
-          className={`segmented-btn ${vclass === "two_wheeler" ? "active" : ""}`}
-          onClick={() => setVclass("two_wheeler")}
-        >
-          🛵 Two-Wheeler
-        </button>
-        <button
-          type="button"
-          className={`segmented-btn ${vclass === "car" ? "active" : ""}`}
-          onClick={() => setVclass("car")}
-        >
-          🚗 Car
-        </button>
+    <form className="card route-form" onSubmit={handleSubmit} aria-busy={isLoading}>
+      <div>
+        <p className="eyebrow">Your journey</p>
+        <h3>Choose your route.</h3>
+      </div>
+      <div className="field-group">
+        <span className="field-label" id="vehicle-label">Travel mode</span>
+        <div className="segmented-row" role="group" aria-labelledby="vehicle-label">
+          <button
+            type="button"
+            className={`segmented-btn ${vclass === "two_wheeler" ? "active" : ""}`}
+            onClick={() => setVclass("two_wheeler")}
+            aria-pressed={vclass === "two_wheeler"}
+            disabled={isLoading}
+          >
+            Two-wheeler
+          </button>
+          <button
+            type="button"
+            className={`segmented-btn ${vclass === "car" ? "active" : ""}`}
+            onClick={() => setVclass("car")}
+            aria-pressed={vclass === "car"}
+            disabled={isLoading}
+          >
+            Car
+          </button>
+        </div>
       </div>
 
       <div className="field-group">
         <label className="field-label" htmlFor="origin-select">
-          Start Location
+          From
         </label>
         <select
           id="origin-select"
           className="text-input"
           value={originKey}
           onChange={(e) => setOriginKey(e.target.value)}
+          disabled={isLoading}
         >
           {presetKeys.map((name) => (
             <option key={name} value={name}>
@@ -107,6 +119,8 @@ export const RouteForm: React.FC<RouteFormProps> = ({
           className="text-input"
           value={destKey}
           onChange={(e) => setDestKey(e.target.value)}
+          disabled={isLoading}
+          aria-describedby="journey-hint"
         >
           {presetKeys.map((name) => (
             <option key={name} value={name}>
@@ -116,8 +130,14 @@ export const RouteForm: React.FC<RouteFormProps> = ({
         </select>
       </div>
 
-      <button type="submit" className="btn-primary" disabled={isLoading}>
-        {isLoading ? "Checking Route..." : "Check Flood-Aware Route"}
+      <p className="field-hint" id="journey-hint" role={originKey === destKey ? "alert" : undefined}>
+        {originKey === destKey
+          ? "Choose a different destination to plan your route."
+          : "Select a city corridor. Road risk is assessed for your vehicle."}
+      </p>
+      <button type="submit" className="btn-primary" disabled={isLoading || originKey === destKey}>
+        {isLoading ? "Checking road conditions…" : "Find a flood-aware route"}
+        {!isLoading && <span aria-hidden="true">↗</span>}
       </button>
     </form>
   );

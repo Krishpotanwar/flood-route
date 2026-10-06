@@ -12,15 +12,19 @@ def test_citizen_app_serving():
     app = create_app()
     client = TestClient(app)
 
+    redirect = client.get("/app?live=1", follow_redirects=False)
+    assert redirect.status_code == 307
+    assert redirect.headers["location"].endswith("/app/?live=1")
+
     res_app = client.get("/app")
     assert res_app.status_code == 200
-    assert "<title>FloodRoute</title>" in res_app.text
+    assert "<title>FloodRoute | Flood-aware route planning</title>" in res_app.text
     assert '<div id="root"></div>' in res_app.text
     assert "assets/index-" in res_app.text
 
     res_app_slash = client.get("/app/")
     assert res_app_slash.status_code == 200
-    assert "<title>FloodRoute</title>" in res_app_slash.text
+    assert "<title>FloodRoute | Flood-aware route planning</title>" in res_app_slash.text
 
 
 def test_citizen_app_assets_served():

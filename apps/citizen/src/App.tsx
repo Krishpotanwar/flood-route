@@ -1,634 +1,243 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { BottomSheet, SnapPoint } from "./components/BottomSheet";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Header } from "./components/Header";
 import { LiveSimulator } from "./components/LiveSimulator";
-import { MapView } from "./components/MapView";
+import { CITY_HOTSPOTS, MapView, STATUS_SYMBOLS } from "./components/MapView";
 import { ReportModal } from "./components/ReportModal";
 import { RouteCard } from "./components/RouteCard";
-import { RouteForm } from "./components/RouteForm";
-import {
-  ClosureSnapshot,
-  HealthResponse,
-  Language,
-  LatLon,
-  PlannedRoute,
-  RerouteResponse,
-  RiskState,
-  RoutePlanResponse,
-  Theme,
-  VehicleClass,
-} from "./types";
-import {
-  fetchClosureSnapshot,
-  flushOfflineReports,
-  formatConditionsAsOf,
-  queueOfflineReport,
-} from "./utils/offline";
+import { CITY_PRESETS, RouteForm } from "./components/RouteForm";
+import type { ClosureSnapshot, HealthResponse, Language, LatLon, OfflineReportPayload, PlannedRoute, RerouteResponse, RiskState, RoutePlanResponse, Theme, VehicleClass } from "./types";
+import { apiUrl, fetchClosureSnapshot, flushOfflineReports, formatConditionsAsOf, queueOfflineReport, tryRegisterBackgroundSync } from "./utils/offline";
+import { createDemoRoute, createDemoStep } from "./utils/demo";
 
-const CITY_CORRIDORS: Record<string, Array<{ name: string; state: RiskState; note: string }>> = {
-  bengaluru: [
-    { name: "Silk Board Junction", state: "watch", note: "Moderate runoff near service road" },
-    { name: "Bellandur EcoSpace ORR", state: "risky", note: "Water buildup on outer ring road" },
-    { name: "Indiranagar 100ft Rd", state: "clear", note: "Normal drainage flow" },
-    { name: "Domlur Flyover", state: "clear", note: "Elevated corridor clear" },
-    { name: "Windsor Manor Underpass", state: "impassable", note: "Deep waterlogging in underpass" },
-  ],
-  mumbai: [
-    { name: "Milan Subway Santacruz", state: "impassable", note: "Chronic depression waterlogging" },
-    { name: "Andheri Subway Link", state: "impassable", note: "Low-lying underpass flooded" },
-    { name: "King's Circle / Gandhi Market", state: "risky", note: "Tidal backflow water accumulation" },
-    { name: "Hindmata Junction Dadar", state: "watch", note: "Runoff pooling in low pockets" },
-    { name: "BKC Mithi River Outfall", state: "watch", note: "High tide drainage backpressure" },
-  ],
-  gurugram: [
-    { name: "Rajiv Chowk Underpass NH48", state: "impassable", note: "Underpass submergence" },
-    { name: "Hero Honda Chowk Underpass", state: "impassable", note: "NH48 service road waterlogging" },
-    { name: "Subhash Chowk Sohna Rd", state: "risky", note: "Severe intersection pooling" },
-    { name: "Narsinghpur Express Corridor", state: "watch", note: "Badshahpur drain overflow spill" },
-    { name: "Khandsa Drain Breach Corridor", state: "watch", note: "Heavy water runoff accumulation" },
-  ],
-};
+const STATUS_LABELS: Record<RiskState, string> = { clear: "Clear", watch: "Watch", risky: "Likely flooded", impassable: "Closed", unknown: "No recent data" };
+const API_CONFIGURED = Boolean((import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_BASE_URL);
+
+function getCityEndpoints(city: string): [LatLon, LatLon] {
+  const places = Object.values(CITY_PRESETS[city] || CITY_PRESETS.bengaluru);
+  return [places[0], places[2] || places[1]];
+}
 
 function getStoredReporterId(): string {
   try {
     const existing = localStorage.getItem("floodroute_reporter_id");
     if (existing) return existing;
-    const generated = `citizen_${Math.random().toString(36).slice(2, 10)}`;
+    const generated = `citizen_${crypto.randomUUID()}`;
     localStorage.setItem("floodroute_reporter_id", generated);
     return generated;
-  } catch {
-    return "citizen_anon";
-  }
+  } catch { return "citizen_anon"; }
 }
 
 export const App: React.FC = () => {
   const [theme, setTheme] = useState<Theme>("light");
   const [lang, setLang] = useState<Language>("en");
-  const [city, setCity] = useState<string>("bengaluru");
+  const [city, setCity] = useState("bengaluru");
   const [vclass, setVclass] = useState<VehicleClass>("two_wheeler");
+  const [demoMode, setDemoMode] = useState(() => !API_CONFIGURED && new URLSearchParams(window.location.search).get("live") !== "1");
   const [activeRoute, setActiveRoute] = useState<PlannedRoute | null>(null);
   const [rerouteData, setRerouteData] = useState<RerouteResponse | null>(null);
-  const [isSimulating, setIsSimulating] = useState<boolean>(false);
-  const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
-  const [isOnline, setIsOnline] = useState<boolean>(true);
-
-  // Snapshot and offline state
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
   const [snapshot, setSnapshot] = useState<ClosureSnapshot | null>(null);
-  const [snapshotStale, setSnapshotStale] = useState<boolean>(false);
-  const [conditionsText, setConditionsText] = useState<string>("Conditions as of Live");
-
-  const [sheetSnap, setSheetSnap] = useState<SnapPoint>("half");
-  const [isRouteLoading, setIsRouteLoading] = useState<boolean>(false);
-  const [isSimLoading, setIsSimLoading] = useState<boolean>(false);
+  const [snapshotStale, setSnapshotStale] = useState(true);
+  const [snapshotFromCache, setSnapshotFromCache] = useState(false);
+  const [isRouteLoading, setIsRouteLoading] = useState(false);
   const [guidanceMessage, setGuidanceMessage] = useState<string | null>(null);
-  const [simStep, setSimStep] = useState<number>(0);
+  const [simStep, setSimStep] = useState(0);
+  const [currentOrigin, setCurrentOrigin] = useState<LatLon>(getCityEndpoints("bengaluru")[0]);
+  const [currentDest, setCurrentDest] = useState<LatLon>(getCityEndpoints("bengaluru")[1]);
+  const requestId = useRef(0);
+  const demoModeRef = useRef(demoMode);
+  const conditionsText = snapshot ? formatConditionsAsOf(snapshot.conditions_as_of) : "No recent road data";
+  const cityName = { bengaluru: "Bengaluru", mumbai: "Mumbai", gurugram: "Gurugram" }[city] || "Bengaluru";
 
-  const [currentOrigin, setCurrentOrigin] = useState<LatLon>({ lat: 12.9719, lon: 77.6412 });
-  const [currentDest, setCurrentDest] = useState<LatLon>({ lat: 12.9172, lon: 77.6228 });
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
-
-  const loadSnapshot = useCallback(async (targetCity: string, targetVclass: VehicleClass) => {
-    try {
-      const res = await fetchClosureSnapshot(targetCity, targetVclass);
-      if (res.snapshot) {
-        setSnapshot(res.snapshot);
-        setSnapshotStale(res.isStale);
-        setConditionsText(formatConditionsAsOf(res.snapshot.conditions_as_of));
-      }
-    } catch {
-      // Keep existing snapshot if any
-    }
-  }, []);
-
-  useEffect(() => {
-    loadSnapshot(city, vclass);
-  }, [city, vclass, loadSnapshot]);
-
-  const checkHealth = useCallback(async () => {
-    try {
-      const res = await fetch("/v1/health");
-      if (res.ok) {
-        const data: HealthResponse = await res.json();
-        setIsOnline(data.status === "ok" || data.status === "degraded");
-      } else {
-        setIsOnline(false);
-      }
-    } catch {
-      setIsOnline(false);
-    }
-  }, []);
+  useEffect(() => { document.documentElement.setAttribute("data-theme", theme); }, [theme]);
+  useEffect(() => { document.documentElement.setAttribute("lang", lang); }, [lang]);
 
   const flushPendingReports = useCallback(async () => {
-    const sendReport = async (rep: any): Promise<boolean> => {
+    await flushOfflineReports(async (report: OfflineReportPayload) => {
+      if (demoModeRef.current) return false;
       try {
-        const res = await fetch("/v1/reports", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            lat: rep.lat,
-            lon: rep.lon,
-            depth_class: rep.depth_class,
-            photo_ref: rep.photo_ref || null,
-            reporter_id: rep.reporter_id,
-          }),
+        const response = await fetch(apiUrl("/v1/reports"), {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lat: report.lat, lon: report.lon, depth_class: report.depth_class, photo_ref: report.photo_ref || null, reporter_id: report.reporter_id }),
+          signal: AbortSignal.timeout(7000),
         });
-        return res.ok;
-      } catch {
-        return false;
-      }
-    };
-    await flushOfflineReports(sendReport);
+        return response.ok;
+      } catch { return false; }
+    });
   }, []);
 
   useEffect(() => {
-    checkHealth();
-    const intervalId = window.setInterval(checkHealth, 20000);
-
-    const handleWindowOnline = () => {
-      setIsOnline(true);
-      checkHealth();
-      flushPendingReports();
+    if (demoMode) { setIsOnline(false); return; }
+    let cancelled = false;
+    const refresh = async () => {
+      const [healthResult, snapshotResult] = await Promise.allSettled([
+        fetch(apiUrl("/v1/health"), { signal: AbortSignal.timeout(7000) }).then(async (response) => {
+          if (!response.ok) return false;
+          const data: HealthResponse = await response.json();
+          return data.status === "ok" || data.status === "degraded";
+        }),
+        fetchClosureSnapshot(city, vclass),
+      ]);
+      if (cancelled) return;
+      const connected = healthResult.status === "fulfilled" && healthResult.value;
+      setIsOnline(connected);
+      if (snapshotResult.status === "fulfilled") {
+        const result = snapshotResult.value;
+        setSnapshot(result.snapshot);
+        setSnapshotStale(result.isStale);
+        setSnapshotFromCache(result.fromCache);
+      } else { setSnapshot(null); setSnapshotStale(true); }
+      if (connected) void flushPendingReports();
     };
-    const handleWindowOffline = () => {
-      setIsOnline(false);
-    };
-
-    window.addEventListener("online", handleWindowOnline);
-    window.addEventListener("offline", handleWindowOffline);
-
+    void refresh();
+    const interval = window.setInterval(refresh, 30000);
+    const onOffline = () => setIsOnline(false);
+    const onMessage = (event: MessageEvent) => { if (event.data?.type === "FLUSH_OFFLINE_REPORTS") void flushPendingReports(); };
+    window.addEventListener("online", refresh);
+    window.addEventListener("offline", onOffline);
+    navigator.serviceWorker?.addEventListener("message", onMessage);
     return () => {
-      window.clearInterval(intervalId);
-      window.removeEventListener("online", handleWindowOnline);
-      window.removeEventListener("offline", handleWindowOffline);
+      cancelled = true;
+      window.clearInterval(interval);
+      window.removeEventListener("online", refresh);
+      window.removeEventListener("offline", onOffline);
+      navigator.serviceWorker?.removeEventListener("message", onMessage);
     };
-  }, [checkHealth, flushPendingReports]);
+  }, [demoMode, city, vclass, flushPendingReports]);
 
-  // Listen for Service Worker background sync notification
-  useEffect(() => {
-    const handleSwMessage = (e: MessageEvent) => {
-      if (e.data && e.data.type === "FLUSH_OFFLINE_REPORTS") {
-        flushPendingReports();
-      }
-    };
-    navigator.serviceWorker?.addEventListener("message", handleSwMessage);
-    return () => {
-      navigator.serviceWorker?.removeEventListener("message", handleSwMessage);
-    };
-  }, [flushPendingReports]);
-
-  const handlePlanRoute = async (origin: LatLon, dest: LatLon, selectedVclass: VehicleClass) => {
-    setIsRouteLoading(true);
-    setGuidanceMessage(null);
-    setCurrentOrigin(origin);
-    setCurrentDest(dest);
-    setVclass(selectedVclass);
-
-    const reqPayload = {
-      origin: { lat: origin.lat, lon: origin.lon },
-      destination: { lat: dest.lat, lon: dest.lon },
-      vclass: selectedVclass,
-      depart_at: new Date().toISOString(),
-      profile: "citizen",
-      lang,
-    };
-
-    try {
-      const res = await fetch("/v1/route", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(reqPayload),
-      });
-
-      if (res.ok) {
-        const data: RoutePlanResponse = await res.json();
-        if (data.routes && data.routes.length > 0) {
-          setActiveRoute(data.routes[0]);
-          setSheetSnap("half");
-          setGuidanceMessage(null);
-        } else {
-          setActiveRoute(null);
-          const advice = data.guidance_when_no_route?.text?.join(". ");
-          setGuidanceMessage(
-            advice || "No passable path available for this vehicle type due to water levels."
-          );
-          setSheetSnap("expanded");
-        }
-      } else {
-        throw new Error(`Routing service returned status ${res.status}`);
-      }
-    } catch {
-      const fallbackRoute: PlannedRoute = {
-        kind: "least_risk",
-        is_default: true,
-        eta_min: selectedVclass === "two_wheeler" ? 28 : 34,
-        delta_min: 5,
-        worst_state: "watch",
-        data_age_s: 30,
-        reasons: [
-          "Offline cached routing active",
-          "Corridor avoids monitored low-lying water accumulation",
-          "Selected elevated detour path",
-        ],
-        segments: [
-          { segment_id: "seg_1", assessed: true, state: "clear", p: 0.1 },
-          { segment_id: "seg_2", assessed: true, state: "clear", p: 0.15 },
-          { segment_id: "seg_3", assessed: true, state: "watch", p: 0.4 },
-          { segment_id: "seg_4", assessed: true, state: "watch", p: 0.45 },
-        ],
-        geometry: "_p~iF~ps|U_ulLnnqC_mqNvxq`@",
-      };
-      setActiveRoute(fallbackRoute);
-      setSheetSnap("half");
-      setGuidanceMessage(
-        `Offline mode (${conditionsText}): Provided local fallback route minimizing water risks.`
-      );
-    } finally {
-      setIsRouteLoading(false);
-    }
+  const resetJourney = () => {
+    requestId.current += 1;
+    setActiveRoute(null); setRerouteData(null); setIsSimulating(false); setSimStep(0); setGuidanceMessage(null); setIsRouteLoading(false);
+  };
+  const changeCity = (nextCity: string) => {
+    resetJourney(); setCity(nextCity); setSnapshot(null); setSnapshotStale(true); setSnapshotFromCache(false); setIsOnline(false);
+    const [origin, destination] = getCityEndpoints(nextCity);
+    setCurrentOrigin(origin); setCurrentDest(destination);
+  };
+  const changeMode = (demo: boolean) => {
+    demoModeRef.current = demo;
+    resetJourney(); setDemoMode(demo); setSnapshot(null); setSnapshotStale(true); setSnapshotFromCache(false); setIsOnline(false);
   };
 
-  const handleToggleSimulation = () => {
-    if (isSimulating) {
-      setIsSimulating(false);
-      setRerouteData(null);
-      setSimStep(0);
-    } else {
-      setIsSimulating(true);
-      setSimStep(0);
-
-      const initialReroute: RerouteResponse = {
-        decision_id: `sim_init_${Date.now()}`,
-        action: "keep",
-        code: "clear",
-        warn: false,
-        reasons: ["Live corridor monitoring active. Road conditions Clear."],
-        reason_keys: ["clear"],
-        trip_state: {
-          baseline_band: 0,
-          closed_at: {},
-        },
-        current_worst_state: activeRoute?.worst_state || "clear",
-        current_worst_band: 0,
-        current_violations_count: 0,
-        lang,
-      };
-      setRerouteData(initialReroute);
-      setSheetSnap("expanded");
-    }
-  };
-
-  const handleStepTick = async () => {
-    setIsSimLoading(true);
-    const nextStep = simStep + 1;
-    setSimStep(nextStep);
-
-    const edges = [
-      {
-        segment_id: 100 + nextStep,
-        travel_time_s: 180,
-        length_m: 600,
-        turn_off_after: true,
-        geometry: [
-          { lat: currentOrigin.lat, lon: currentOrigin.lon },
-          { lat: currentDest.lat, lon: currentDest.lon },
-        ],
-      },
-    ];
-
-    const reroutePayload = {
-      origin: { lat: currentOrigin.lat, lon: currentOrigin.lon },
-      destination: { lat: currentDest.lat, lon: currentDest.lon },
-      vclass,
-      current_edges: edges,
-      trip_state: rerouteData?.trip_state || { baseline_band: 0, closed_at: {} },
-      depart_at: new Date().toISOString(),
-      profile: "citizen",
-      lang,
-    };
-
+  const handlePlanRoute = async (origin: LatLon, destination: LatLon, vehicle: VehicleClass) => {
+    const id = ++requestId.current;
+    setIsRouteLoading(true); setGuidanceMessage(null); setCurrentOrigin(origin); setCurrentDest(destination); setVclass(vehicle);
     try {
-      const res = await fetch("/v1/route/reroute", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(reroutePayload),
-      });
-
-      if (res.ok) {
-        const data: RerouteResponse = await res.json();
-        setRerouteData(data);
+      if (demoMode) {
+        setActiveRoute(createDemoRoute(origin, destination, vehicle));
         return;
       }
-      throw new Error(`Reroute service returned status ${res.status}`);
-    } catch {
-      if (nextStep % 3 === 1) {
-        setRerouteData({
-          decision_id: `sim_tick_${nextStep}`,
-          action: "keep",
-          code: "watch_ahead",
-          warn: true,
-          reasons: ["Water runoff reported 300m ahead on side lanes. Reduce speed."],
-          reason_keys: ["watch_ahead"],
-          trip_state: { baseline_band: 1, closed_at: {} },
-          current_worst_state: "watch",
-          current_worst_band: 1,
-          current_violations_count: 0,
-          lang,
-        });
-      } else if (nextStep % 3 === 2) {
-        const detourRoute: PlannedRoute = {
-          kind: "least_risk",
-          is_default: false,
-          eta_min: (activeRoute?.eta_min || 25) + 3,
-          delta_min: 3,
-          worst_state: "watch",
-          reasons: ["Bypasses rising water near junction"],
-          segments: [
-            { segment_id: "detour_1", assessed: true, state: "clear", p: 0.1 },
-            { segment_id: "detour_2", assessed: true, state: "watch", p: 0.3 },
-          ],
-          geometry: "_p~iF~ps|U_ulLnnqC_mqNvxq`@",
-        };
-
-        setRerouteData({
-          decision_id: `sim_tick_${nextStep}`,
-          action: "suggest",
-          code: "detour_suggested",
-          warn: true,
-          reasons: ["Rapid water accumulation detected ahead. Alternate elevated corridor recommended."],
-          reason_keys: ["detour_suggested"],
-          trip_state: { baseline_band: 2, closed_at: {} },
-          suggested_route: detourRoute,
-          current_worst_state: "risky",
-          current_worst_band: 2,
-          current_violations_count: 1,
-          lang,
-        });
-      } else {
-        setRerouteData({
-          decision_id: `sim_tick_${nextStep}`,
-          action: "hold",
-          code: "water_ahead",
-          warn: true,
-          reasons: ["Water depth exceeds limit directly ahead with no turn-off. Halt vehicle."],
-          reason_keys: ["water_ahead"],
-          trip_state: { baseline_band: 3, closed_at: {} },
-          current_worst_state: "impassable",
-          current_worst_band: 3,
-          current_violations_count: 2,
-          lang,
-        });
-      }
-    } finally {
-      setIsSimLoading(false);
-    }
-  };
-
-  const handleAcceptDetour = (newRoute: PlannedRoute) => {
-    setActiveRoute(newRoute);
-    setRerouteData((prev) =>
-      prev
-        ? {
-            ...prev,
-            action: "keep",
-            code: "detour_accepted",
-            warn: false,
-            reasons: ["Detour accepted. Following elevated route."],
-            suggested_route: undefined,
-          }
-        : null
-    );
-  };
-
-  const handleStopSimulation = () => {
-    setIsSimulating(false);
-    setRerouteData(null);
-    setSimStep(0);
-  };
-
-  const handleSubmitReport = async (data: {
-    lat: number;
-    lon: number;
-    depthClass: string;
-    photoRef?: string;
-  }) => {
-    const reporterId = getStoredReporterId();
-    const payload = {
-      lat: data.lat,
-      lon: data.lon,
-      depth_class: data.depthClass,
-      photo_ref: data.photoRef || null,
-      reporter_id: reporterId,
-    };
-
-    if (!isOnline) {
-      queueOfflineReport(payload);
-      return;
-    }
-
-    try {
-      const res = await fetch("/v1/reports", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+      const response = await fetch(apiUrl("/v1/route"), {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ origin, destination, vclass: vehicle, depart_at: new Date().toISOString(), profile: "citizen", lang }),
+        signal: AbortSignal.timeout(10000),
       });
-
-      if (!res.ok) {
-        throw new Error(`Report submission returned ${res.status}`);
-      }
+      if (!response.ok) throw new Error("Route service unavailable");
+      const data: RoutePlanResponse = await response.json();
+      if (id !== requestId.current) return;
+      setActiveRoute(data.routes?.[0] || null);
+      if (!data.routes?.length) setGuidanceMessage(data.guidance_when_no_route?.text?.join(". ") || "No passable route was returned for this vehicle. Wait for conditions to improve.");
     } catch {
-      queueOfflineReport(payload);
-    }
+      if (id !== requestId.current) return;
+      setActiveRoute(null);
+      setGuidanceMessage("The route service could not be reached. Try again, or select Demo to explore a sample journey.");
+    } finally { if (id === requestId.current) setIsRouteLoading(false); }
   };
 
-  const sheetTitle = isSimulating
-    ? "Live Navigation"
-    : activeRoute
-      ? "Trip Navigation Plan"
-      : "Plan Flood-Aware Route";
+  const handleStartSimulation = () => {
+    setIsSimulating(true); setSimStep(0);
+    setRerouteData({ decision_id: "demo-start", action: "keep", code: "demo_started", warn: false, reasons: ["Sample journey started. Advance the scenario to see a warning, detour and road closure."], reason_keys: [], trip_state: { baseline_band: 0, closed_at: {} }, current_worst_state: "watch", current_worst_band: 1, current_violations_count: 0, lang });
+  };
+  const handleStepTick = () => {
+    const nextStep = simStep + 1;
+    setSimStep(nextStep);
+    setRerouteData(createDemoStep(nextStep, currentOrigin, currentDest, vclass, lang));
+  };
+  const handleAcceptDetour = (route: PlannedRoute) => {
+    setActiveRoute(route);
+    setRerouteData((previous) => previous ? { ...previous, action: "keep", code: "detour_accepted", warn: false, reasons: ["Sample detour accepted. The route on the map has changed."], suggested_route: undefined, current_worst_state: route.worst_state, current_worst_band: 1, current_violations_count: 0, trip_state: { ...previous.trip_state, baseline_band: 1 } } : null);
+  };
+  const handleStopSimulation = () => { setIsSimulating(false); setRerouteData(null); setSimStep(0); if (!demoMode) setActiveRoute(null); };
 
-  const corridors = CITY_CORRIDORS[city] || CITY_CORRIDORS.bengaluru;
-  const cityName = city === "mumbai" ? "Mumbai" : city === "gurugram" ? "Gurugram" : "Bengaluru";
+  const handleSubmitReport = async (data: { lat: number; lon: number; depthClass: string; photoRef?: string }) => {
+    if (demoMode) return;
+    const payload = { lat: data.lat, lon: data.lon, depth_class: data.depthClass, photo_ref: data.photoRef || null, reporter_id: getStoredReporterId() };
+    if (isOnline) {
+      let response: Response | undefined;
+      try {
+        response = await fetch(apiUrl("/v1/reports"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal: AbortSignal.timeout(7000) });
+      } catch { /* Persist below when a send fails. */ }
+      if (response?.ok) return;
+      if (response && response.status >= 400 && response.status < 500 && response.status !== 429) {
+        throw new Error("The report was rejected. Check the location and observation before retrying.");
+      }
+    }
+    queueOfflineReport(payload);
+    tryRegisterBackgroundSync();
+  };
+
+  const conditionRows = demoMode ? CITY_HOTSPOTS[city].map((road) => ({ name: road.name, state: road.severity, note: `Sample scenario: ${STATUS_LABELS[road.severity].toLowerCase()}` })) : (snapshot?.features || []).slice(0, 8).map((feature) => ({
+    name: `Road segment ${feature.properties.segment_id}`,
+    state: snapshotStale ? "unknown" as const : feature.properties.state,
+    note: snapshotStale ? "Last observation is out of date" : `${feature.properties.road_class || "Road"} / ${feature.properties.structure || "At grade"}`,
+  }));
 
   return (
-    <div className="app-container">
-      <Header
-        theme={theme}
-        onThemeChange={setTheme}
-        lang={lang}
-        onLangChange={setLang}
-        city={city}
-        onCityChange={(c) => {
-          setCity(c);
-          setActiveRoute(null);
-          setRerouteData(null);
-        }}
-        onOpenReport={() => setReportModalOpen(true)}
-        isOnline={isOnline}
-      />
+    <div className="app-container" id="top">
+      <a className="skip-link" href="#planner">Skip to route planner</a>
+      <Header theme={theme} onThemeChange={setTheme} lang={lang} onLangChange={setLang} city={city} onCityChange={changeCity} onOpenReport={() => setReportModalOpen(true)} isOnline={isOnline} />
+      <main>
+        <section className="hero section-shell" aria-labelledby="hero-title">
+          <p className="eyebrow">Flood-aware routing for Indian cities</p>
+          <h1 id="hero-title">KNOW THE ROAD.<br />BEFORE YOU GO.</h1>
+          <p className="hero-description">Plan around flooded roads.<br className="mobile-break" /> See when conditions change.</p>
+          <div className="hero-actions"><a className="btn-primary" href="#planner">Plan a route <span aria-hidden="true">↗</span></a><a className="text-link" href="#how-it-works">See how it works</a></div>
+          <p className="hero-caption">Built for the journey. Prepared for the rain.</p>
+        </section>
 
-      <div style={{ position: "relative", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        <MapView
-          theme={theme}
-          city={city}
-          snapshot={snapshot}
-          origin={currentOrigin}
-          destination={currentDest}
-          activeRoute={activeRoute}
-          rerouteData={rerouteData}
-          isSimulating={isSimulating}
-          simStep={simStep}
-          totalSimSteps={activeRoute?.segments.length || 8}
-        />
-
-        {!isOnline && (
-          <div
-            className="warning-banner"
-            role="status"
-            style={{
-              position: "absolute",
-              top: "var(--fr-space-2)",
-              left: "var(--fr-space-3)",
-              right: "var(--fr-space-3)",
-              zIndex: 10,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-            }}
-          >
-            <span>⚡</span>
-            <div>
-              <strong>Offline Mode Active: {conditionsText}</strong>
-              <p style={{ margin: "0.25rem 0 0", fontSize: "var(--fr-text-sm)" }}>
-                {snapshotStale
-                  ? "Advisory: Risk snapshot is older than 5 minutes. Exercise heightened caution."
-                  : "Operating with local cached road closure snapshot."}
-              </p>
-            </div>
+        <section className="planner-section section-shell" id="planner" aria-labelledby="planner-title">
+          <div className="section-heading">
+            <div><p className="eyebrow">Your journey / {cityName}</p><h2 id="planner-title">A route with context.</h2><p>See the detour. Understand the road ahead.</p></div>
+            <div className="mode-control" role="group" aria-label="Road data mode"><button type="button" aria-pressed={demoMode} onClick={() => changeMode(true)}>Demo</button><button type="button" aria-pressed={!demoMode} onClick={() => changeMode(false)}>Live data</button></div>
           </div>
-        )}
-
-        {guidanceMessage && (
-          <div
-            className="hold-banner"
-            role="alert"
-            style={{
-              position: "absolute",
-              top: isOnline ? "var(--fr-space-2)" : "4.5rem",
-              left: "var(--fr-space-3)",
-              right: "var(--fr-space-3)",
-              zIndex: 10,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-            }}
-          >
-            <span>ℹ️</span>
-            <div>
-              <strong>Travel Advisory</strong>
-              <p style={{ margin: "0.25rem 0 0", fontSize: "var(--fr-text-sm)" }}>
-                {guidanceMessage}
-              </p>
-            </div>
+          <div className="workspace-status" role="status"><span className="status-indicator" aria-hidden="true" /><span>{demoMode ? "Interactive demo. Routes and conditions are illustrative." : isOnline ? `${snapshotFromCache ? "Cached road data" : "API connected"}. ${conditionsText}.` : `API unavailable. ${snapshot ? conditionsText : "No live road data available"}.`}</span></div>
+          {!demoMode && snapshotStale && snapshot && <p className="warning-banner" role="status">Road observations are out of date. Showing unknown status until fresh data arrives.</p>}
+          <div className="planner-workspace">
+            <div className="planner-map"><MapView theme={theme} city={city} vclass={vclass} snapshot={demoMode || isSimulating || snapshotStale ? null : snapshot} origin={currentOrigin} destination={currentDest} activeRoute={activeRoute} rerouteData={rerouteData} isSimulating={isSimulating} simStep={simStep} totalSimSteps={6} demoMode={demoMode || isSimulating} /></div>
+            <aside className="planner-panel" aria-label="Journey planner">
+              <div className="planner-panel-header"><div><p className="eyebrow">{isSimulating ? "Sample scenario" : "Your trip"}</p><h3>{isSimulating ? "See what changes." : activeRoute ? "Ready to explore." : "Where are you going?"}</h3></div>{activeRoute && <button className="btn-icon" type="button" onClick={resetJourney} aria-label="Plan a new journey">↺</button>}</div>
+              <div className="planner-panel-content">
+                {guidanceMessage && <p className="warning-banner" role="alert">{guidanceMessage}</p>}
+                {!activeRoute && <RouteForm key={city} city={city} onPlanRoute={handlePlanRoute} isLoading={isRouteLoading} />}
+                {activeRoute && !isSimulating && <RouteCard route={activeRoute} onStartTrip={handleStartSimulation} isSimulating={false} demoMode={demoMode} />}
+                {isSimulating && <LiveSimulator rerouteData={rerouteData} onAcceptDetour={handleAcceptDetour} onStepTick={handleStepTick} onStop={handleStopSimulation} isLoading={false} demoMode />}
+                <p className="planner-note">{demoMode || isSimulating ? "Sample scenario, not navigation guidance. No live road assessments are used." : "Road conditions can change. Unknown data does not mean a road is clear."}</p>
+              </div>
+            </aside>
           </div>
-        )}
-      </div>
+          <div className="planner-caption"><span>{cityName} / {demoMode || isSimulating ? "Sample scenario" : "Road observations"}</span><button type="button" className="text-link" onClick={() => setReportModalOpen(true)}>Report a road condition <span aria-hidden="true">↗</span></button></div>
+        </section>
 
-      <BottomSheet
-        snap={sheetSnap}
-        onSnapChange={setSheetSnap}
-        title={sheetTitle}
-        headerExtra={
-          activeRoute && !isSimulating ? (
-            <button
-              type="button"
-              className="select-btn"
-              onClick={() => {
-                setActiveRoute(null);
-                setSheetSnap("expanded");
-              }}
-              style={{ height: "2rem", fontSize: "var(--fr-text-xs)" }}
-            >
-              New Route
-            </button>
-          ) : undefined
-        }
-      >
-        {!activeRoute && (
-          <>
-            <RouteForm city={city} onPlanRoute={handlePlanRoute} isLoading={isRouteLoading} />
+        <section className="conditions-section section-shell" id="conditions" aria-labelledby="conditions-title">
+          <div className="section-heading"><div><p className="eyebrow">Conditions with context</p><h2 id="conditions-title">Know what changed.</h2><p>A road status. Its source. Its last update.</p></div><p className="data-caption">{demoMode ? "Sample data / not live" : conditionsText}</p></div>
+          <div className="conditions-table" role="region" aria-label={`${cityName} road conditions`} tabIndex={0}>
+            <table><thead><tr><th scope="col">Road</th><th scope="col">Status</th><th scope="col">Context</th><th scope="col">Source</th></tr></thead><tbody>
+              {conditionRows.map((road) => <tr key={road.name}><th scope="row">{road.name}</th><td><span className="condition-status" data-state={road.state}><span aria-hidden="true">{STATUS_SYMBOLS[road.state]}</span>{STATUS_LABELS[road.state]}</span></td><td>{road.note}</td><td className="data-caption">{demoMode ? "Sample scenario" : snapshotFromCache ? "Cached snapshot" : "Road snapshot"}</td></tr>)}
+              {!conditionRows.length && <tr><td colSpan={4} className="empty-conditions">No recent road observations are available. Select Demo to explore sample conditions.</td></tr>}
+            </tbody></table>
+          </div>
+        </section>
 
-            <section className="card" aria-labelledby="corridor-heading">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h2 id="corridor-heading" style={{ margin: 0, fontSize: "var(--fr-text-base)" }}>
-                  {cityName} Flood Risk Corridors
-                </h2>
-                <span style={{ fontSize: "var(--fr-text-xs)", color: "var(--fr-ink-2)" }}>
-                  {isOnline ? "Live Telemetry" : conditionsText}
-                </span>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {corridors.map((corridor) => (
-                  <div
-                    key={corridor.name}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "0.5rem 0",
-                      borderBottom: "1px solid var(--hairline)",
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: "var(--fr-text-sm)" }}>
-                        {corridor.name}
-                      </div>
-                      <div style={{ fontSize: "var(--fr-text-xs)", color: "var(--fr-ink-2)" }}>
-                        {corridor.note}
-                      </div>
-                    </div>
-                    <span className="risk-badge" data-state={corridor.state}>
-                      {corridor.state === "clear"
-                        ? "Clear"
-                        : corridor.state === "watch"
-                          ? "Watch"
-                          : corridor.state === "risky"
-                            ? "Risky"
-                            : corridor.state === "impassable"
-                              ? "Impassable"
-                              : "Unknown"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </>
-        )}
-
-        {activeRoute && !isSimulating && (
-          <RouteCard
-            route={activeRoute}
-            onStartTrip={handleToggleSimulation}
-            isSimulating={isSimulating}
-          />
-        )}
-
-        {isSimulating && (
-          <LiveSimulator
-            rerouteData={rerouteData}
-            onAcceptDetour={handleAcceptDetour}
-            onStepTick={handleStepTick}
-            onStop={handleStopSimulation}
-            isLoading={isSimLoading}
-          />
-        )}
-      </BottomSheet>
-
-      <ReportModal
-        isOpen={reportModalOpen}
-        onClose={() => setReportModalOpen(false)}
-        onSubmitReport={handleSubmitReport}
-        defaultLocation={currentOrigin}
-      />
+        <section className="how-section section-shell" id="how-it-works" aria-labelledby="how-title">
+          <div className="section-heading"><div><p className="eyebrow">From awareness to action</p><h2 id="how-title">Three steps. A clearer journey.</h2></div></div>
+          <ol className="how-steps"><li><span className="step-number">01</span><h3>Choose your journey.</h3><p>Select your city, vehicle and destination. Road passability depends on what you drive.</p></li><li><span className="step-number">02</span><h3>Understand the conditions.</h3><p>Check closures, warnings and data freshness. No recent data is always shown as unknown.</p></li><li><span className="step-number">03</span><h3>Adapt as things change.</h3><p>Try the scenario: rising water, a suggested detour, then a road closure. Keep the decision in your hands.</p></li></ol>
+        </section>
+        <section className="closing-section section-shell"><h2>One less unknown.<br />Before you head out.</h2><a className="btn-primary" href="#planner">Try the route planner <span aria-hidden="true">↗</span></a></section>
+      </main>
+      <footer className="site-footer section-shell"><a href="#top" className="brand-wordmark">FLOODROUTE<span aria-hidden="true">↗</span></a><p>Flood-aware journeys. India.</p><span className="data-caption">Hackathon prototype / 2026</span></footer>
+      <ReportModal isOpen={reportModalOpen} onClose={() => setReportModalOpen(false)} onSubmitReport={handleSubmitReport} defaultLocation={currentOrigin} demoMode={demoMode} isOnline={isOnline} />
     </div>
   );
 };
