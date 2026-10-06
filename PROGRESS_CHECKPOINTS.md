@@ -397,3 +397,30 @@ This document tracks local execution, verification, fixes, and ongoing progress 
     - Zero em-dashes and strict safety invariant maintained.
 
 ---
+
+### Checkpoint 23: Multi-City Onboarding Pipeline - Mumbai & Gurugram Expansion
+- **Status**: Completed
+- **Actions & Findings**:
+  - **Multi-City Inventory Registry (`apps/api/floodroute/inventory/multicity.py` & `__init__.py`)**:
+    - Expanded `CITIES` spatial envelopes and `CITY_IDS` registry to include Mumbai (`city_id: 3`, bbox: `72.75, 18.88, 73.05, 19.30`) and Gurugram (`city_id: 4`, bbox: `76.85, 28.32, 77.15, 28.56`).
+    - Added `CityMetadata` cataloging municipal operational parameters: state, display name, center coordinates, bounding box, hydrology classification (`tidal_coastal` for Mumbai with Mithi river / Arabian Sea backwater interaction; `arid_ridge_catchment` for Gurugram with Badshahpur drain / Aravalli ridge runoff), and rainfall trigger thresholds (`r_low`).
+    - Implemented `load_city_hotspots` with automatic structure inference (`underpass`, `culvert`, `dip`, `low_bridge`) and coordinate bounds validation.
+    - Implemented `seed_city_hotspots_into_db`: automated PostGIS seeding ensuring base `zone`, creating assessed `segment` records, and populating `segment_static` with correct base logits and drain distances.
+  - **Municipal Hotspot Seed Catalogs**:
+    - **Mumbai** (`data/hotspots/mumbai_seed.csv` and `mumbai.csv`): 20 verified chronic flood locations authenticated against BMC Disaster Management Cell monsoon hotspots and Mumbai Traffic Police advisories (Milan Subway, Andheri Subway, Khar Subway, Malad Subway, Dahisar Subway, King's Circle / Gandhi Market, Hindmata, Kurla West / Mithi River bridge, Chunabhatti EEH, BKC Mithi outfall, Chembur Postal Colony, Tilak Nagar, Parel TT, Vidyavihar, Mankhurd, Mahalaxmi Dhobi Ghat, Wadala Bridge, Kalina).
+    - **Gurugram** (`data/hotspots/gurugram_seed.csv` and `gurugram.csv`): 20 verified chronic waterlogging locations authenticated against GMDA Flood Control Room and Gurugram Traffic Police monsoon advisories (Subhash Chowk, Rajiv Chowk underpass, Hero Honda Chowk underpass, IFFCO Chowk, Shankar Chowk, Genpact Chowk underpass, DLF Phase 1 underpass, Bristol Chowk, Signature Tower underpass, Medanta underpass, Narsinghpur express corridor, Khandsa / Badshahpur drain breach, Basai Road RUB, Sheetla Mata Road culvert, Old Delhi-Gurugram Road, Pataudi Road RUB, Rampura flyover underpass, Kherki Daula toll, Vatika Chowk SPR, Sector 29 underpass).
+    - Both datasets strictly verified against `hotspots.validate` trust boundaries (source URL regex, source date format, non-empty provenance).
+  - **Multi-City API Endpoints (`apps/api/floodroute/api/routes/cities.py`)**:
+    - `GET /v1/cities`: catalog of all supported municipal regions with bounding boxes, hydrology classifications, and rainfall triggers.
+    - `GET /v1/cities/{city}`: city-specific metadata and operational parameters.
+    - `GET /v1/cities/{city}/hotspots`: paginated municipal hotspot inventory query (`limit`, `offset`).
+    - `POST /v1/cities/{city}/seed`: triggers PostGIS infrastructure and segment seeding.
+  - **Verification & Testing**:
+    - Added 4 tests in `apps/api/tests/inventory/test_inventory_multicity.py`.
+    - Added 4 tests in `apps/api/tests/api/test_api_cities.py`.
+    - Full API test suite expanded to 681 passing tests (100% pass rate in 47.0s).
+    - 0 ruff lint errors across all Python code.
+    - Zero em-dashes and strict safety invariant maintained.
+
+---
+

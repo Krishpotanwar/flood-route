@@ -18,14 +18,10 @@ from typing import Any
 
 import psycopg
 
-from floodroute.inventory import CITIES
+from floodroute.inventory import CITIES, CITY_IDS
 
 logger = logging.getLogger(__name__)
 
-CITY_IDS: dict[str, int] = {
-    "bengaluru": 1,
-    "chennai": 2,
-}
 
 DEFAULT_STRUCTURE_LOGITS: dict[str, float] = {
     "underpass": -3.5,
