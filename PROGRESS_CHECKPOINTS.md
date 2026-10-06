@@ -373,3 +373,27 @@ This document tracks local execution, verification, fixes, and ongoing progress 
     - Zero em-dashes and strict safety invariant maintained.
 
 ---
+
+### Checkpoint 22: Dispatcher Control Room Suite - Impact Preview, Audit Log Export & Emergency Unit Assignment
+- **Status**: Completed
+- **Actions & Findings**:
+  - **Dispatcher Control Room API Subsystem (`apps/api/floodroute/api/routes/overrides.py`)**:
+    - Implemented `POST /v1/overrides/preview`: pre-submission impact evaluation analyzing road hierarchy classification, enforcing two-person verification for arterial roadways (`motorway`, `trunk`, `primary`), counting affected active route watches, and assessing operational impact tier (`low`, `moderate`, `high`).
+    - Implemented `GET /v1/overrides`: lists all currently active human overrides.
+    - Implemented `DELETE /v1/overrides/{override_id}`: early manual cancellation of active closure overrides, expiring the record and logging an audit event (`override_reverted_{action}`).
+    - Implemented `GET /v1/audit`: queries append-only compliance audit trail with filtering by actor and action patterns, supporting both JSON representation and streaming CSV export (`?format=csv`) for legal compliance and post-incident investigation.
+  - **Control Room Console UI Enhancements (`apps/api/floodroute/api/static/console.html`)**:
+    - Integrated keyboard navigation shortcuts (`J`/`K` to step through monitored incidents, `C` to open closure override modal on selected segment, `A` to open emergency unit assignment, `Esc` to dismiss all active modals).
+    - Added closure impact preview card within the override modal, automatically querying `/v1/overrides/preview` on segment input changes and displaying arterial co-signature warnings and impacted subscriber watch counts.
+    - Built emergency unit clearance and dispatch modal (`#emergency-modal`) supporting ambulance (Force Traveller) and heavy rescue (Fire Tender) profiles, preset hospital/station facilities, automated clearance corridor checks via `/v1/route`, and unit callsign dispatch confirmation.
+    - Built compliance audit log viewer (`#audit-modal`) with live actor/action filtering and direct CSV export download (`/v1/audit?format=csv`).
+    - Added forecast lead-time stepping buttons (`<` and `>`) navigating through horizons (0m, 30m, 60m, 120m).
+  - **Verification & Testing**:
+    - Added 4 new test cases to `apps/api/tests/api/test_api_overrides.py` (`test_override_arterial_requires_second_operator`, `test_list_and_revert_overrides`, `test_override_preview_impact`, `test_query_audit_log_json_and_csv`).
+    - Updated `apps/api/tests/api/test_api_console.py` verifying serving of control room console components.
+    - Total API test suite expanded to 673 passing tests (100% pass rate in 48.8s).
+    - 0 ruff lint errors across all Python code.
+    - Citizen frontend tests pass (5/5) and Vite bundle builds cleanly.
+    - Zero em-dashes and strict safety invariant maintained.
+
+---

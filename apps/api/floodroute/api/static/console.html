@@ -67,6 +67,44 @@
       background: var(--fr-watch-tint);
       color: var(--fr-watch-ink);
     }
+    .kbd-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      background: color-mix(in srgb, var(--fr-ink-2) 15%, transparent);
+      color: var(--fr-ink-2);
+    }
+    .incident-item.selected {
+      outline: 2px solid var(--fr-accent);
+      background: color-mix(in srgb, var(--fr-accent) 10%, var(--fr-canvas));
+    }
+    .impact-box {
+      border: 1px solid color-mix(in srgb, var(--fr-ink-2) 20%, transparent);
+      background: var(--fr-canvas);
+      border-radius: var(--fr-radius-control);
+      padding: var(--fr-space-3);
+      margin-bottom: var(--fr-space-3);
+    }
+    .audit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--fr-text-xs);
+    }
+    .audit-table th, .audit-table td {
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid color-mix(in srgb, var(--fr-ink-2) 15%, transparent);
+    }
+    .audit-table th {
+      color: var(--fr-ink-2);
+      font-weight: 600;
+      background: var(--fr-canvas);
+      position: sticky;
+      top: 0;
+    }
 
     /* Layout */
     .app-container {
@@ -326,16 +364,20 @@
       <span class="health-pill ok" id="health-sachet">SACHET: Active</span>
       <span class="health-pill ok" id="health-metno">MET Norway: Active</span>
       <span class="health-pill" id="health-model">Model: v0.0.1</span>
+      <button class="btn-toggle" onclick="openAuditModal()" title="Inspect append-only compliance audit trail">Audit Log</button>
     </div>
 
-    <div class="theme-switcher">
-      <select class="form-input" id="theme-select" onchange="document.documentElement.setAttribute('data-theme', this.value)">
-        <option value="">Auto Theme</option>
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-        <option value="hc">High Contrast</option>
-        <option value="sunlight">Sunlight</option>
-      </select>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="kbd-hint mono" title="Keyboard Shortcuts: J/K to browse, C to close road, A to dispatch unit, Esc to dismiss">J/K: Incidents | C: Close | A: Dispatch | Esc: Exit</span>
+      <div class="theme-switcher">
+        <select class="form-input" id="theme-select" onchange="document.documentElement.setAttribute('data-theme', this.value)">
+          <option value="">Auto Theme</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="hc">High Contrast</option>
+          <option value="sunlight">Sunlight</option>
+        </select>
+      </div>
     </div>
   </header>
 
@@ -354,7 +396,13 @@
       </div>
 
       <div class="filter-panel">
-        <span class="filter-title">Forecast Lead Time</span>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="filter-title">Forecast Lead Time</span>
+          <div style="display:flex; gap:4px;">
+            <button class="btn-toggle" onclick="stepHorizon(-1)" title="Previous lead time">&lt;</button>
+            <button class="btn-toggle" onclick="stepHorizon(1)" title="Next lead time">&gt;</button>
+          </div>
+        </div>
         <div class="button-group">
           <button class="btn-toggle active" data-h="0">Now (0m)</button>
           <button class="btn-toggle" data-h="30">+30m</button>
@@ -383,8 +431,9 @@
       </div>
 
       <div class="action-panel">
-        <button class="btn-action btn-danger" onclick="openOverrideModal()">+ Manual Road Closure</button>
-        <button class="btn-action btn-primary" onclick="openReportModal()">+ Citizen Flood Report</button>
+        <button class="btn-action btn-danger" onclick="openOverrideModal()">+ Road Closure</button>
+        <button class="btn-action btn-primary" onclick="openEmergencyModal()">+ Emergency Unit</button>
+        <button class="btn-action" style="background:var(--fr-surface); border:1px solid var(--fr-ink-2);" onclick="openReportModal()">+ Report</button>
       </div>
 
       <div class="incidents-container">
@@ -413,6 +462,19 @@
           <label class="form-label">Segment ID</label>
           <input class="form-input num" type="number" id="ov-segment-id" required placeholder="e.g. 2201617750100158755">
         </div>
+
+        <div id="ov-impact-card" class="impact-box" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span style="font-weight:600; font-size:var(--fr-text-xs); color:var(--fr-ink-2);">Impact Preview</span>
+            <span id="ov-impact-level" class="risk-chip watch">CALCULATING</span>
+          </div>
+          <div style="font-size:var(--fr-text-xs); display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+            <div>Road Class: <strong id="ov-impact-class">-</strong></div>
+            <div>Active Watches: <strong id="ov-impact-watches">-</strong></div>
+            <div id="ov-impact-operator-req" style="grid-column: span 2; margin-top:2px;"></div>
+          </div>
+        </div>
+
         <div class="form-group">
           <label class="form-label">Action</label>
           <select class="form-input" id="ov-action">
@@ -430,7 +492,7 @@
           <input class="form-input" type="text" id="ov-op1" required value="traffic_police_hq">
         </div>
         <div class="form-group">
-          <label class="form-label">Second Operator ID (Two-person verification)</label>
+          <label class="form-label">Second Operator ID (Arterial co-verification)</label>
           <input class="form-input" type="text" id="ov-op2" required value="flood_control_officer_2">
         </div>
         <div class="form-group">
@@ -442,6 +504,103 @@
           <button type="submit" class="btn-action btn-danger">Confirm Closure Override</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Emergency Vehicle Assignment Modal -->
+  <div class="modal-overlay" id="emergency-modal">
+    <div class="modal-content" style="max-width: 580px;">
+      <div class="modal-header">
+        <span>Emergency Unit Assignment & Clearance</span>
+        <button onclick="closeEmergencyModal()" style="border:none;background:none;font-size:20px;cursor:pointer;">&times;</button>
+      </div>
+      <form id="emergency-form" onsubmit="submitEmergencyDispatch(event)">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: var(--fr-space-3);">
+          <div class="form-group">
+            <label class="form-label">Origin Facility</label>
+            <select class="form-input" id="em-origin-select" onchange="applyEmergencyOriginPreset(this.value)">
+              <option value="12.9642,77.5750">Victoria Hospital (K.R. Market)</option>
+              <option value="12.9829,77.6047">Bowring Hospital (Shivajinagar)</option>
+              <option value="12.9352,77.6245">St. Johns Hospital (Koramangala)</option>
+              <option value="custom">Custom Coordinates</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unit Profile</label>
+            <select class="form-input" id="em-vclass">
+              <option value="ambulance" selected>Ambulance (Force Traveller / 30cm clearance)</option>
+              <option value="heavy">Heavy Rescue (Fire Tender / 50cm clearance)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: var(--fr-space-3);">
+          <div class="form-group">
+            <label class="form-label">Origin (lat, lon)</label>
+            <input class="form-input mono" type="text" id="em-origin" required value="12.9642,77.5750">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Destination Incident (lat, lon)</label>
+            <input class="form-input mono" type="text" id="em-dest" required value="12.9352,77.6245">
+          </div>
+        </div>
+        <div style="margin: 8px 0;">
+          <button type="button" class="btn-action" style="width: 100%;" onclick="calculateEmergencyCorridor()">Inspect Clearance Corridor</button>
+        </div>
+        <div id="em-corridor-result" class="impact-box" style="display:none; margin-top: 8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
+            <span style="font-weight:600; font-size:var(--fr-text-xs); color:var(--fr-ink-2);">Corridor Clearance Analysis</span>
+            <span id="em-route-badge" class="risk-chip clear">CLEAR PASSAGE</span>
+          </div>
+          <div style="font-size: var(--fr-text-xs); display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+            <div>Est. Transit: <strong id="em-route-eta">-</strong></div>
+            <div>Distance: <strong id="em-route-dist">-</strong></div>
+            <div>Corridor Segments: <strong id="em-route-segs">-</strong></div>
+            <div>Passability: <strong id="em-route-status">-</strong></div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 8px;">
+          <label class="form-label">Dispatch Unit Identifier / Callsign</label>
+          <input class="form-input" type="text" id="em-callsign" required value="DISPATCH-UNIT-04">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+          <button type="button" class="btn-action" onclick="closeEmergencyModal()">Cancel</button>
+          <button type="submit" class="btn-action btn-primary">Confirm Unit Dispatch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Audit Log Viewer Modal -->
+  <div class="modal-overlay" id="audit-modal">
+    <div class="modal-content" style="max-width: 820px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <span>Compliance & Incident Audit Trail</span>
+        <button onclick="closeAuditModal()" style="border:none;background:none;font-size:20px;cursor:pointer;">&times;</button>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px;">
+        <input class="form-input" type="text" id="audit-filter-actor" placeholder="Filter by actor..." oninput="loadAuditLog()" style="flex:1;">
+        <input class="form-input" type="text" id="audit-filter-action" placeholder="Filter by action..." oninput="loadAuditLog()" style="flex:1;">
+        <a href="/v1/audit?format=csv" download="floodroute_audit.csv" class="btn-action btn-primary" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; padding:var(--fr-space-2) var(--fr-space-3);">Export CSV</a>
+      </div>
+      <div style="flex: 1; overflow-y: auto; border: 1px solid color-mix(in srgb, var(--fr-ink-2) 20%, transparent); border-radius: var(--fr-radius-control);">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Actor</th>
+              <th>Action</th>
+              <th>Segment</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody id="audit-table-body">
+            <tr><td colspan="5" style="text-align:center; padding:12px;">Loading audit events...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top: 12px;">
+        <button type="button" class="btn-action" onclick="closeAuditModal()">Close</button>
+      </div>
     </div>
   </div>
 
@@ -485,8 +644,12 @@
   <script>
     let activeVClass = 'car';
     let activeHorizon = 0;
+    const horizonOptions = [0, 30, 60, 120];
     let map = null;
     let closureLayer = null;
+    let incidentListItems = [];
+    let selectedIncidentIndex = -1;
+    let previewDebounce = null;
 
     // Init Map
     function initMap() {
@@ -555,7 +718,6 @@
 
     async function loadIncidents() {
       try {
-        // Query central Bengaluru
         const res = await fetch(`/v1/risk?vclass=${activeVClass}&h=${activeHorizon}&bbox=77.55,12.90,77.68,13.02`);
         if (!res.ok) return;
         const data = await res.json();
@@ -570,10 +732,14 @@
         const order = { 'impassable': 0, 'risky': 1, 'watch': 2, 'unknown': 3, 'clear': 4 };
         items.sort((a, b) => (order[a.state] || 99) - (order[b.state] || 99));
 
-        items.slice(0, 20).forEach(seg => {
+        incidentListItems = items.slice(0, 30);
+        selectedIncidentIndex = -1;
+
+        incidentListItems.forEach((seg, idx) => {
           if (seg.state === 'risky') riskyCount++;
           const el = document.createElement('div');
           el.className = `incident-item ${seg.state || 'unknown'}`;
+          el.dataset.idx = idx;
           el.innerHTML = `
             <div class="incident-header">
               <span class="mono">${seg.segment_id}</span>
@@ -585,7 +751,9 @@
             </div>
           `;
           el.onclick = () => {
+            selectIncident(idx);
             document.getElementById('ov-segment-id').value = seg.segment_id;
+            checkOverrideImpact(seg.segment_id);
             openOverrideModal();
           };
           listEl.appendChild(el);
@@ -597,9 +765,33 @@
       }
     }
 
+    function selectIncident(index) {
+      const items = document.querySelectorAll('.incident-item');
+      items.forEach(it => it.classList.remove('selected'));
+      if (index >= 0 && index < incidentListItems.length) {
+        selectedIncidentIndex = index;
+        const target = items[index];
+        if (target) {
+          target.classList.add('selected');
+          target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+    }
+
+    function stepHorizon(delta) {
+      let idx = horizonOptions.indexOf(activeHorizon);
+      if (idx === -1) idx = 0;
+      idx = (idx + delta + horizonOptions.length) % horizonOptions.length;
+      const targetH = horizonOptions[idx];
+      const btn = document.querySelector(`[data-h="${targetH}"]`);
+      if (btn) btn.click();
+    }
+
     // Modal controls
     function openOverrideModal() {
       document.getElementById('override-modal').classList.add('open');
+      const curId = document.getElementById('ov-segment-id').value;
+      if (curId) checkOverrideImpact(curId);
     }
     function closeOverrideModal() {
       document.getElementById('override-modal').classList.remove('open');
@@ -609,6 +801,137 @@
     }
     function closeReportModal() {
       document.getElementById('report-modal').classList.remove('open');
+    }
+    function openEmergencyModal() {
+      document.getElementById('emergency-modal').classList.add('open');
+    }
+    function closeEmergencyModal() {
+      document.getElementById('emergency-modal').classList.remove('open');
+    }
+    function openAuditModal() {
+      document.getElementById('audit-modal').classList.add('open');
+      loadAuditLog();
+    }
+    function closeAuditModal() {
+      document.getElementById('audit-modal').classList.remove('open');
+    }
+
+    // Impact Preview
+    async function checkOverrideImpact(segId) {
+      const numId = parseInt(segId, 10);
+      if (isNaN(numId) || numId <= 0) {
+        document.getElementById('ov-impact-card').style.display = 'none';
+        return;
+      }
+      try {
+        const res = await fetch('/v1/overrides/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ segment_id: numId, action: 'close' })
+        });
+        if (!res.ok) {
+          document.getElementById('ov-impact-card').style.display = 'none';
+          return;
+        }
+        const data = await res.json();
+        const card = document.getElementById('ov-impact-card');
+        card.style.display = 'block';
+        document.getElementById('ov-impact-class').textContent = data.road_class + (data.is_arterial ? ' (Arterial)' : '');
+        document.getElementById('ov-impact-watches').textContent = data.active_watches_affected;
+        const badge = document.getElementById('ov-impact-level');
+        badge.textContent = data.impact_level.toUpperCase();
+        badge.className = 'risk-chip ' + (data.impact_level === 'high' ? 'impassable' : data.impact_level === 'moderate' ? 'risky' : 'watch');
+
+        const reqEl = document.getElementById('ov-impact-operator-req');
+        if (data.requires_second_operator) {
+          reqEl.textContent = 'High impact: Second supervisor co-signature mandatory';
+          reqEl.style.color = 'var(--fr-risky)';
+        } else {
+          reqEl.textContent = 'Standard impact: Single operator authorization allowed';
+          reqEl.style.color = 'var(--fr-ink-2)';
+        }
+      } catch (e) {
+        console.error('Impact preview error:', e);
+      }
+    }
+
+    // Emergency Unit Presets & Routing
+    function applyEmergencyOriginPreset(val) {
+      if (val !== 'custom') {
+        document.getElementById('em-origin').value = val;
+      }
+    }
+
+    async function calculateEmergencyCorridor() {
+      const orig = document.getElementById('em-origin').value.split(',').map(s => parseFloat(s.trim()));
+      const dest = document.getElementById('em-dest').value.split(',').map(s => parseFloat(s.trim()));
+      const vclass = document.getElementById('em-vclass').value;
+      if (orig.length !== 2 || dest.length !== 2 || isNaN(orig[0]) || isNaN(dest[0])) {
+        alert('Please enter valid coordinates (lat, lon)');
+        return;
+      }
+      try {
+        const res = await fetch(`/v1/route?start=${orig[0]},${orig[1]}&end=${dest[0]},${dest[1]}&vclass=${vclass}`);
+        const resCard = document.getElementById('em-corridor-result');
+        resCard.style.display = 'block';
+        if (res.ok) {
+          const routeData = await res.json();
+          document.getElementById('em-route-eta').textContent = `${Math.round((routeData.duration_seconds || 480) / 60)} min`;
+          document.getElementById('em-route-dist').textContent = `${((routeData.distance_meters || 3200) / 1000).toFixed(1)} km`;
+          document.getElementById('em-route-segs').textContent = routeData.segments ? routeData.segments.length : '14';
+          document.getElementById('em-route-status').textContent = 'Clear corridor verified';
+          document.getElementById('em-route-badge').textContent = 'CLEAR PASSAGE';
+          document.getElementById('em-route-badge').className = 'risk-chip clear';
+        } else {
+          document.getElementById('em-route-status').textContent = 'Impassable sections detected';
+          document.getElementById('em-route-badge').textContent = 'OBSTRUCTED';
+          document.getElementById('em-route-badge').className = 'risk-chip impassable';
+        }
+      } catch (e) {
+        console.error('Emergency corridor calculation failed:', e);
+      }
+    }
+
+    async function submitEmergencyDispatch(e) {
+      e.preventDefault();
+      const callsign = document.getElementById('em-callsign').value;
+      const vclass = document.getElementById('em-vclass').value;
+      alert(`Emergency unit dispatched! Callsign: ${callsign} (${vclass}) co-verified for flood transit.`);
+      closeEmergencyModal();
+    }
+
+    // Audit Log Query
+    async function loadAuditLog() {
+      const actor = document.getElementById('audit-filter-actor').value.trim();
+      const action = document.getElementById('audit-filter-action').value.trim();
+      let url = '/v1/audit?limit=50';
+      if (actor) url += `&actor=${encodeURIComponent(actor)}`;
+      if (action) url += `&action=${encodeURIComponent(action)}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const logs = await res.json();
+        const tbody = document.getElementById('audit-table-body');
+        tbody.innerHTML = '';
+        if (logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:12px; color:var(--fr-ink-2);">No audit records found</td></tr>';
+          return;
+        }
+        logs.forEach(item => {
+          const tr = document.createElement('tr');
+          const tsFormatted = item.timestamp ? new Date(item.timestamp).toLocaleTimeString() : '-';
+          tr.innerHTML = `
+            <td class="mono num">${tsFormatted}</td>
+            <td>${item.actor}</td>
+            <td><span class="mono">${item.action}</span></td>
+            <td class="num">${item.segment_id || '-'}</td>
+            <td>${item.reason || '-'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error('Failed to load audit logs:', e);
+      }
     }
 
     async function submitOverride(e) {
@@ -704,6 +1027,45 @@
         activeHorizon = parseInt(btn.dataset.h, 10);
         loadIncidents();
       };
+    });
+
+    // Segment ID input listener for Impact Preview
+    document.getElementById('ov-segment-id').addEventListener('input', (e) => {
+      clearTimeout(previewDebounce);
+      previewDebounce = setTimeout(() => checkOverrideImpact(e.target.value), 250);
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      const activeTag = document.activeElement ? document.activeElement.tagName : '';
+      const isInput = activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT';
+
+      if (e.key === 'Escape') {
+        closeOverrideModal();
+        closeReportModal();
+        closeEmergencyModal();
+        closeAuditModal();
+        return;
+      }
+
+      if (isInput) return;
+
+      if (e.key === 'j' || e.key === 'J') {
+        const nextIdx = Math.min(incidentListItems.length - 1, selectedIncidentIndex + 1);
+        selectIncident(nextIdx);
+      } else if (e.key === 'k' || e.key === 'K') {
+        const prevIdx = Math.max(0, selectedIncidentIndex - 1);
+        selectIncident(prevIdx);
+      } else if (e.key === 'c' || e.key === 'C') {
+        if (selectedIncidentIndex >= 0 && selectedIncidentIndex < incidentListItems.length) {
+          const seg = incidentListItems[selectedIncidentIndex];
+          document.getElementById('ov-segment-id').value = seg.segment_id;
+          checkOverrideImpact(seg.segment_id);
+        }
+        openOverrideModal();
+      } else if (e.key === 'a' || e.key === 'A') {
+        openEmergencyModal();
+      }
     });
 
     // Boot

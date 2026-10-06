@@ -18,6 +18,10 @@ def test_console_and_static_serving():
     res_console = client.get("/console")
     assert res_console.status_code == 200
     assert "FloodRoute Control Room Console" in res_console.text
+    assert "Audit Log" in res_console.text
+    assert "Impact Preview" in res_console.text
+    assert "Emergency Unit Assignment" in res_console.text
+    assert "Incident Audit Trail" in res_console.text
 
     res_css = client.get("/static/tokens.css")
     assert res_css.status_code == 200
