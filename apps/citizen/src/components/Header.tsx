@@ -6,6 +6,8 @@ interface HeaderProps {
   onThemeChange: (t: Theme) => void;
   lang: Language;
   onLangChange: (l: Language) => void;
+  city: string;
+  onCityChange: (c: string) => void;
   onOpenReport: () => void;
   isOnline: boolean;
 }
@@ -15,6 +17,8 @@ export const Header: React.FC<HeaderProps> = ({
   onThemeChange,
   lang,
   onLangChange,
+  city,
+  onCityChange,
   onOpenReport,
   isOnline,
 }) => {
@@ -29,6 +33,17 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div className="top-controls">
+        <select
+          className="select-btn"
+          value={city}
+          onChange={(e) => onCityChange(e.target.value)}
+          aria-label="Select City"
+        >
+          <option value="bengaluru">Bengaluru</option>
+          <option value="mumbai">Mumbai</option>
+          <option value="gurugram">Gurugram</option>
+        </select>
+
         <button
           type="button"
           className="select-btn"

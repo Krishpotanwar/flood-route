@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import type { Feature, LineString } from "geojson";
-import { LatLon, PlannedRoute, RerouteResponse, RiskState, Theme } from "../types";
+import { ClosureSnapshot, LatLon, PlannedRoute, RerouteResponse, RiskState, Theme } from "../types";
 import {
   calculateBounds,
   decodePolyline,
@@ -19,6 +19,8 @@ export interface MapViewProps {
   simStep?: number;
   totalSimSteps?: number;
   onSelectLocation?: (type: "origin" | "destination", coords: LatLon) => void;
+  city?: string;
+  snapshot?: ClosureSnapshot | null;
 }
 
 interface Hotspot {
@@ -28,13 +30,36 @@ interface Hotspot {
   severity: RiskState;
 }
 
-const BENGALURU_HOTSPOTS: Hotspot[] = [
-  { id: "silk_board", name: "Silk Board Junction", coords: [77.6228, 12.9172], severity: "watch" },
-  { id: "bellandur", name: "Bellandur EcoSpace ORR", coords: [77.6848, 12.926], severity: "risky" },
-  { id: "windsor", name: "Windsor Manor Underpass", coords: [77.5873, 12.9965], severity: "impassable" },
-  { id: "indiranagar", name: "Indiranagar 100ft Rd", coords: [77.6412, 12.9719], severity: "clear" },
-  { id: "domlur", name: "Domlur Flyover", coords: [77.638, 12.961], severity: "clear" },
-];
+const CITY_HOTSPOTS: Record<string, Hotspot[]> = {
+  bengaluru: [
+    { id: "silk_board", name: "Silk Board Junction", coords: [77.6228, 12.9172], severity: "watch" },
+    { id: "bellandur", name: "Bellandur EcoSpace ORR", coords: [77.6848, 12.926], severity: "risky" },
+    { id: "windsor", name: "Windsor Manor Underpass", coords: [77.5873, 12.9965], severity: "impassable" },
+    { id: "indiranagar", name: "Indiranagar 100ft Rd", coords: [77.6412, 12.9719], severity: "clear" },
+    { id: "domlur", name: "Domlur Flyover", coords: [77.638, 12.961], severity: "clear" },
+  ],
+  mumbai: [
+    { id: "milan_subway", name: "Milan Subway Santacruz", coords: [72.8425, 19.0833], severity: "impassable" },
+    { id: "andheri_subway", name: "Andheri Subway", coords: [72.8444, 19.1197], severity: "impassable" },
+    { id: "kings_circle", name: "King's Circle / Gandhi Market", coords: [72.8575, 19.0303], severity: "risky" },
+    { id: "hindmata", name: "Hindmata Junction Dadar", coords: [72.8433, 19.0117], severity: "watch" },
+    { id: "bkc_mithi", name: "BKC Mithi River Outfall", coords: [72.8681, 19.0656], severity: "watch" },
+  ],
+  gurugram: [
+    { id: "subhash_chowk", name: "Subhash Chowk Sohna Rd", coords: [77.0422, 28.4311], severity: "risky" },
+    { id: "rajiv_chowk", name: "Rajiv Chowk Underpass NH48", coords: [77.0319, 28.4556], severity: "impassable" },
+    { id: "hero_honda", name: "Hero Honda Chowk Underpass", coords: [77.0017, 28.4389], severity: "impassable" },
+    { id: "narsinghpur", name: "Narsinghpur Express Corridor", coords: [76.9833, 28.4167], severity: "watch" },
+    { id: "khandsa", name: "Khandsa Badshahpur Drain Breach", coords: [76.9944, 28.4278], severity: "watch" },
+  ],
+};
+
+const CITY_COORDS: Record<string, [number, number]> = {
+  bengaluru: [77.5946, 12.9716],
+  mumbai: [72.8777, 19.0760],
+  gurugram: [77.0266, 28.4595],
+};
+
 
 function isWebGLSupported(): boolean {
   try {
@@ -79,6 +104,8 @@ export const MapView: React.FC<MapViewProps> = ({
   isSimulating = false,
   simStep = 0,
   totalSimSteps = 10,
+  city = "bengaluru",
+  snapshot = null,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<maplibregl.Map | null>(null);
@@ -90,6 +117,14 @@ export const MapView: React.FC<MapViewProps> = ({
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [useFallback, setUseFallback] = useState<boolean>(false);
   const [showHotspots, setShowHotspots] = useState<boolean>(true);
+
+  // Reposition map when city changes and no active route
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !mapLoaded || activeRoute) return;
+    const center = CITY_COORDS[city] || CITY_COORDS.bengaluru;
+    map.flyTo({ center, zoom: 12 });
+  }, [city, mapLoaded, activeRoute]);
 
   // Decoded route coordinates [lon, lat]
   const routeCoords = useMemo<Array<[number, number]>>(() => {
@@ -231,7 +266,8 @@ export const MapView: React.FC<MapViewProps> = ({
     hotspotMarkersRef.current = [];
 
     if (showHotspots) {
-      BENGALURU_HOTSPOTS.forEach((spot) => {
+      const spots = CITY_HOTSPOTS[city] || CITY_HOTSPOTS.bengaluru;
+      spots.forEach((spot) => {
         const el = document.createElement("div");
         el.className = "marker-pin hotspot";
         el.setAttribute("data-state", spot.severity);
@@ -244,9 +280,9 @@ export const MapView: React.FC<MapViewProps> = ({
         hotspotMarkersRef.current.push(marker);
       });
     }
-  }, [mapLoaded, showHotspots]);
+  }, [mapLoaded, showHotspots, city]);
 
-  // Manage Live Closures GeoJSON Layer from API feed
+  // Manage Live/Snapshot Closures GeoJSON Layer
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map || !mapLoaded) return;
@@ -260,37 +296,48 @@ export const MapView: React.FC<MapViewProps> = ({
       return;
     }
 
+    const currentMap = mapInstanceRef.current;
+    if (!currentMap) return;
+
+    const applyData = (data: any) => {
+      const existing = currentMap.getSource(closuresSourceId) as
+        | maplibregl.GeoJSONSource
+        | undefined;
+      if (existing) {
+        existing.setData(data);
+      } else {
+        currentMap.addSource(closuresSourceId, {
+          type: "geojson",
+          data,
+        });
+        currentMap.addLayer({
+          id: closuresLayerId,
+          type: "line",
+          source: closuresSourceId,
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#dc2626",
+            "line-width": 4,
+            "line-opacity": 0.85,
+          },
+        });
+      }
+    };
+
+    if (snapshot) {
+      applyData(snapshot);
+      return;
+    }
+
     let isSubscribed = true;
-    fetch("/v1/feed/closures.geojson?vclass=car")
+    fetch(`/v1/feed/snapshot/closures?city=${encodeURIComponent(city)}&vclass=car`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!isSubscribed || !data || !mapInstanceRef.current) return;
-        const currentMap = mapInstanceRef.current;
-        const existing = currentMap.getSource(closuresSourceId) as
-          | maplibregl.GeoJSONSource
-          | undefined;
-        if (existing) {
-          existing.setData(data);
-        } else {
-          currentMap.addSource(closuresSourceId, {
-            type: "geojson",
-            data,
-          });
-          currentMap.addLayer({
-            id: closuresLayerId,
-            type: "line",
-            source: closuresSourceId,
-            layout: {
-              "line-join": "round",
-              "line-cap": "round",
-            },
-            paint: {
-              "line-color": "#dc2626",
-              "line-width": 4,
-              "line-opacity": 0.85,
-            },
-          });
-        }
+        applyData(data);
       })
       .catch(() => {
         // Ignore offline network failure for live closures
@@ -299,7 +346,7 @@ export const MapView: React.FC<MapViewProps> = ({
     return () => {
       isSubscribed = false;
     };
-  }, [mapLoaded, showHotspots]);
+  }, [mapLoaded, showHotspots, snapshot, city]);
 
   // Update Route Polyline Layers
   useEffect(() => {
@@ -505,9 +552,9 @@ export const MapView: React.FC<MapViewProps> = ({
             </defs>
             <rect width="600" height="500" fill="url(#grid)" />
 
-            {/* Bangalore Hotspots */}
+            {/* City Hotspots */}
             {showHotspots &&
-              BENGALURU_HOTSPOTS.map((spot) => {
+              (CITY_HOTSPOTS[city] || CITY_HOTSPOTS.bengaluru).map((spot) => {
                 const pt = project(spot.coords);
                 return (
                   <g key={spot.id} transform={`translate(${pt[0]}, ${pt[1]})`}>

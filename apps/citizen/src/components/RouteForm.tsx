@@ -1,29 +1,61 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LatLon, VehicleClass } from "../types";
 
 interface RouteFormProps {
+  city?: string;
   onPlanRoute: (origin: LatLon, dest: LatLon, vclass: VehicleClass) => void;
   isLoading: boolean;
 }
 
-const PRESETS: Record<string, LatLon> = {
-  "Indiranagar 100ft Rd": { lat: 12.9719, lon: 77.6412 },
-  "MG Road Metro": { lat: 12.9756, lon: 77.6066 },
-  "Silk Board Junction": { lat: 12.9172, lon: 77.6228 },
-  "Bellandur EcoSpace ORR": { lat: 12.9260, lon: 77.6762 },
-  "Domlur Flyover": { lat: 12.9609, lon: 77.6387 },
-  "Windsor Manor Underpass": { lat: 12.9982, lon: 77.5855 },
+const CITY_PRESETS: Record<string, Record<string, LatLon>> = {
+  bengaluru: {
+    "Indiranagar 100ft Rd": { lat: 12.9719, lon: 77.6412 },
+    "MG Road Metro": { lat: 12.9756, lon: 77.6066 },
+    "Silk Board Junction": { lat: 12.9172, lon: 77.6228 },
+    "Bellandur EcoSpace ORR": { lat: 12.9260, lon: 77.6762 },
+    "Domlur Flyover": { lat: 12.9609, lon: 77.6387 },
+    "Windsor Manor Underpass": { lat: 12.9982, lon: 77.5855 },
+  },
+  mumbai: {
+    "BKC Kurla Corridor": { lat: 19.0656, lon: 72.8681 },
+    "Dadar TT Circle": { lat: 19.0182, lon: 72.8436 },
+    "Andheri Subway Link": { lat: 19.1197, lon: 72.8444 },
+    "Milan Subway Santacruz": { lat: 19.0833, lon: 72.8425 },
+    "South Mumbai Fort": { lat: 18.9322, lon: 72.8339 },
+  },
+  gurugram: {
+    "Cyber City DLF Phase 2": { lat: 28.4950, lon: 77.0895 },
+    "IFFCO Chowk": { lat: 28.4720, lon: 77.0725 },
+    "Subhash Chowk Sohna Rd": { lat: 28.4311, lon: 77.0422 },
+    "Hero Honda Chowk": { lat: 28.4389, lon: 77.0017 },
+    "Golf Course Rd Genpact": { lat: 28.4550, lon: 77.1020 },
+  },
 };
 
-export const RouteForm: React.FC<RouteFormProps> = ({ onPlanRoute, isLoading }) => {
-  const [originKey, setOriginKey] = useState<string>("Indiranagar 100ft Rd");
-  const [destKey, setDestKey] = useState<string>("Silk Board Junction");
+export const RouteForm: React.FC<RouteFormProps> = ({
+  city = "bengaluru",
+  onPlanRoute,
+  isLoading,
+}) => {
+  const currentPresets = CITY_PRESETS[city] || CITY_PRESETS.bengaluru;
+  const presetKeys = Object.keys(currentPresets);
+
+  const [originKey, setOriginKey] = useState<string>(presetKeys[0] || "");
+  const [destKey, setDestKey] = useState<string>(presetKeys[2] || presetKeys[1] || "");
   const [vclass, setVclass] = useState<VehicleClass>("two_wheeler");
+
+  useEffect(() => {
+    const keys = Object.keys(CITY_PRESETS[city] || CITY_PRESETS.bengaluru);
+    if (keys.length >= 2) {
+      setOriginKey(keys[0]);
+      setDestKey(keys[2] || keys[1]);
+    }
+  }, [city]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const origin = PRESETS[originKey];
-    const dest = PRESETS[destKey];
+    const origin = currentPresets[originKey];
+    const dest = currentPresets[destKey];
     if (origin && dest) {
       onPlanRoute(origin, dest, vclass);
     }
@@ -58,7 +90,7 @@ export const RouteForm: React.FC<RouteFormProps> = ({ onPlanRoute, isLoading }) 
           value={originKey}
           onChange={(e) => setOriginKey(e.target.value)}
         >
-          {Object.keys(PRESETS).map((name) => (
+          {presetKeys.map((name) => (
             <option key={name} value={name}>
               {name}
             </option>
@@ -76,7 +108,7 @@ export const RouteForm: React.FC<RouteFormProps> = ({ onPlanRoute, isLoading }) 
           value={destKey}
           onChange={(e) => setDestKey(e.target.value)}
         >
-          {Object.keys(PRESETS).map((name) => (
+          {presetKeys.map((name) => (
             <option key={name} value={name}>
               {name}
             </option>

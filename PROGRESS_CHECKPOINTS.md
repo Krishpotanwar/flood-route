@@ -452,3 +452,36 @@ This document tracks local execution, verification, fixes, and ongoing progress 
     - Zero em-dashes and strict safety invariant maintained.
 
 ---
+
+### Checkpoint 25: PWA Service Worker Offline Resilience & Background Sync Engine (TRD 11, 12 & 16)
+- **Status**: Completed
+- **Actions & Findings**:
+  - **Service Worker Enhancements (`apps/citizen/public/sw.js`)**:
+    - Upgraded cache configuration to `floodroute-v2`.
+    - Implemented stale-while-revalidate caching strategy for dynamic CDN closure snapshots (`/v1/feed/snapshot/closures`) and multi-city metadata (`/v1/cities`), ensuring map and closure layers load instantly even when offline or experiencing high network latency.
+    - Preserved network-first caching with fallback for route planning, rerouting, and health endpoints.
+    - Added Background Sync API event listener (`floodroute-sync-reports`) dispatching `FLUSH_OFFLINE_REPORTS` message to active browser client tabs when network connectivity is restored.
+  - **Offline Resilience & Queue Utility (`apps/citizen/src/utils/offline.ts`)**:
+    - `formatConditionsAsOf`: formats timestamps into standard TRD 11 banner format ("Conditions as of HH:MM").
+    - `isSnapshotStale`: evaluates data staleness against the 5-minute threshold (300 seconds).
+    - `getSnapshotAgeMinutes`: calculates non-negative elapsed minutes from conditions timestamp.
+    - Offline crowd report queue manager: `queueOfflineReport`, `getQueuedOfflineReports`, `removeQueuedOfflineReport`, `clearQueuedOfflineReports`, and `flushOfflineReports`.
+    - Local snapshot caching and fetching: `saveCachedSnapshot`, `getCachedSnapshot`, and `fetchClosureSnapshot` with HTTP 304 conditional GET handling (`If-None-Match`).
+  - **Multi-City Support & Citizen UI Integration (`apps/citizen/src/App.tsx`, `Header.tsx`, `RouteForm.tsx`, `MapView.tsx`)**:
+    - Added municipal city selector (`bengaluru`, `mumbai`, `gurugram`) to top navigation bar.
+    - Updated `RouteForm` with localized landmarks and presets across Bengaluru (Indiranagar, MG Road, Silk Board, etc.), Mumbai (BKC, Dadar TT, Andheri Subway, Milan Subway, South Mumbai Fort), and Gurugram (Cyber City, IFFCO Chowk, Subhash Chowk, Hero Honda Chowk, Golf Course Rd).
+    - Dynamic flood corridor risk monitoring list per selected city.
+    - Map automatically re-centers and renders city-specific chronic hotspots.
+    - MapView renders active closures directly from pre-generated CDN GeoJSON snapshots (`snapshot` prop and `/v1/feed/snapshot/closures`) as red dashed closure vectors.
+    - TRD 11 offline resilience banner: displays "Offline Mode Active: Conditions as of HH:MM" with staleness caution advisory when data age exceeds 5 minutes.
+    - Automatic background flush of queued citizen crowd reports upon reconnecting or receiving Service Worker sync events.
+  - **Verification & Testing**:
+    - Added 7 unit tests in `apps/citizen/src/utils/offline.test.ts` (12/12 passing tests across `apps/citizen`).
+    - TypeScript compiler passed with 0 errors (`npx tsc --noEmit`).
+    - Vite production build succeeded cleanly (`npm run build`).
+    - Backend test suite verified: 688/688 passing tests in `apps/api`.
+    - 0 ruff lint errors across all Python code.
+    - Zero em-dashes and strict safety invariant maintained.
+
+---
+

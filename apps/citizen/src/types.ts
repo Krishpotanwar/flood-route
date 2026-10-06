@@ -80,3 +80,52 @@ export interface HealthResponse {
   model_version: string;
   sources: Record<string, { last_ok?: string; last_error?: string; lag_s?: number }>;
 }
+
+export interface ClosureFeature {
+  type: "Feature";
+  geometry: {
+    type: string;
+    coordinates: any;
+  };
+  properties: {
+    segment_id: number;
+    osm_way_id: number;
+    road_class: string;
+    state: RiskState;
+    p_unusable: number;
+    structure: string;
+  };
+}
+
+export interface ClosureSnapshot {
+  type: "FeatureCollection";
+  snapshot_version: string;
+  city: string;
+  city_id: number;
+  vclass: VehicleClass;
+  bbox: [number, number, number, number];
+  generated_at: string;
+  conditions_as_of: string;
+  feature_count: number;
+  features: ClosureFeature[];
+  etag?: string;
+}
+
+export interface CityInfo {
+  city_id: number;
+  name: string;
+  display_name: string;
+  state: string;
+  bbox: [number, number, number, number];
+  center: [number, number]; // [lat, lon]
+}
+
+export interface OfflineReportPayload {
+  id?: string;
+  lat: number;
+  lon: number;
+  depth_class: string;
+  photo_ref?: string | null;
+  reporter_id: string;
+  queued_at: string;
+}
