@@ -205,4 +205,33 @@ This document tracks local execution, verification, fixes, and ongoing progress 
   - Added 4 comprehensive tests in `apps/api/tests/test_worker.py`.
   - Reached 634 passing tests (100% pass rate in 35.9s) with 0 ruff lint errors.
 
+### Checkpoint 16: Citizen React PWA, Gesture BottomSheet & FastAPI Mounting
+- **Status**: Completed
+- **Actions & Findings**:
+  - Implemented mobile-first Citizen React PWA in `apps/citizen/`:
+    - `BottomSheet.tsx`: pointer-event gesture interaction with velocity detection (|v| >= 0.3 px/ms), distance thresholds, and 3 snap heights:
+      - Collapsed: 96px (`6rem`)
+      - Half: 50% dynamic viewport height (`50dvh`)
+      - Expanded: 90% dynamic viewport height (`90dvh`)
+      - Fluid spring transition curve `cubic-bezier(0.16, 1, 0.3, 1)` and ARIA accessibility.
+    - `Header.tsx`: live health indicator dot, report modal launcher, language switcher (en, hi, kn, ta, te), and theme selector.
+    - `RouteForm.tsx`: vehicle class selector (two-wheeler, car) with preset Bengaluru origin and destination coordinates.
+    - `RouteCard.tsx`: plain-language reasoning, ETA, monitored segment count, and worst state chip badge ("Clear", "Watch", "Risky", "Impassable").
+    - `LiveSimulator.tsx`: simulated turn-by-turn navigation ticks interacting with live reroute engine (`POST /v1/route/reroute`), displaying detour suggestions and commit-zone holds.
+    - `ReportModal.tsx`: crowd waterlogging reporting with camera photo capture and EXIF metadata sanitization via `POST /v1/reports/photo`.
+    - `App.tsx` and `main.tsx`: complete state coordination, theme synchronization via `<html data-theme="...">`, offline fallback routing, and report queueing.
+  - Package build:
+    - Added `"exports": { "./tokens.css": "./tokens.css" }` to `packages/ui/package.json`.
+    - Configured relative base (`base: "./"`) in `apps/citizen/vite.config.ts`.
+    - Production bundle compiled with Vite in ~650ms to `apps/citizen/dist`.
+  - Backend integration:
+    - Mounted `/app` static files in `apps/api/floodroute/api/main.py` serving the citizen SPA with HTML fallback.
+    - Added 3 unit tests in `apps/api/tests/api/test_api_citizen.py`.
+  - Verification:
+    - 637 passing tests across `apps/api/tests/` (100% pass rate in 36.3s).
+    - 0 ruff lint errors across all Python code.
+    - All WCAG 2.x contrast and color-vision token checks pass (`pnpm --filter @floodroute/ui check`).
+    - Zero em-dashes and strict safety invariant maintained.
+
 ---
+
