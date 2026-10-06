@@ -19,6 +19,7 @@ from floodroute.api.routes import (
     reports,
     risk,
     route,
+    safety,
     snapshot,
     webhooks,
 )
@@ -55,6 +56,7 @@ def create_app() -> FastAPI:
     app.include_router(cities.router)
     app.include_router(snapshot.router)
     app.include_router(metrics.router)
+    app.include_router(safety.router)
 
 
 

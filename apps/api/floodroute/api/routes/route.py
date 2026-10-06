@@ -42,6 +42,7 @@ from floodroute.route.watch import (
     create_route_watch,
     get_route_watch,
 )
+from floodroute.safety.kill_switch import get_active_kill_switch
 from floodroute.score.config import Config as ScoreConfig
 
 logger = logging.getLogger(__name__)
@@ -78,6 +79,19 @@ def compute_route(
         raise HTTPException(status_code=400, detail=str(e))
     except (RuntimeError, httpx.HTTPError, psycopg.Error) as e:
         raise HTTPException(status_code=502, detail=f"routing error: {e}")
+
+    # Safety Case: check emergency kill switch freeze (TRD 16)
+    active_kill = get_active_kill_switch(db)
+    if active_kill:
+        freeze_msg = "Emergency advisory freeze active. Obey on-ground traffic signs and instructions."
+        if p.response.routes:
+            for rt in p.response.routes:
+                rt.reasons = [freeze_msg]
+        if p.response.guidance_when_no_route:
+            p.response.guidance_when_no_route.keys = ["advisory_off"]
+            p.response.guidance_when_no_route.text = [
+                "Flood advisories are currently suspended. Follow on-ground traffic police directions. In an emergency call 112."
+            ]
 
     # Record decision for audit / FR-M1 privacy-safe logging
     try:
@@ -120,6 +134,26 @@ def compute_reroute(
     """Evaluate live position tick against route conditions and propose reroutes."""
     now = req.depart_at or datetime.now(UTC)
     decision_id = uuid.uuid4().hex
+
+    # Safety Case: check emergency kill switch freeze (TRD 16)
+    active_kill = get_active_kill_switch(db)
+    if active_kill:
+        return RerouteResponse(
+            decision_id=decision_id,
+            action="keep",
+            code="advisory_off",
+            warn=True,
+            reasons=[
+                "Emergency advisory freeze active. Do not rely on automated flood guidance. Obey on-ground traffic directions and call 112 in emergencies."
+            ],
+            reason_keys=["advisory_off"],
+            trip_state=req.trip_state or TripStatePayload(),
+            suggested_route=None,
+            current_worst_state="unknown",
+            current_worst_band=0,
+            current_violations_count=0,
+            lang=req.lang,
+        )
 
     if not req.current_edges:
         raise HTTPException(

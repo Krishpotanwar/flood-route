@@ -176,3 +176,48 @@ def test_route_arrival_time_validation_and_decision_log(app_db):
         assert dec_row is not None
         assert dec_row[0] == "car"
         assert dec_row[1] is False
+
+
+def test_route_with_active_kill_switch_freezes_advisories(app_db):
+    from floodroute.safety.kill_switch import engage_kill_switch
+
+    now = datetime.now(UTC)
+    engage_kill_switch(
+        conn=app_db,
+        scope="global",
+        reason="Drill freeze test active",
+        operator_id="op_tester",
+    )
+
+    def fake_router(origin, dest, vclass, date_time, exclude_polys=()):
+        return Route(
+            (
+                Edge(
+                    segment_id=9001,
+                    geometry=((12.97, 77.58), (12.98, 77.59)),
+                    travel_time_s=120.0,
+                ),
+            )
+        )
+
+    app = create_app()
+    app.dependency_overrides[get_db] = lambda: app_db
+    app.dependency_overrides[get_router] = lambda: fake_router
+
+    with TestClient(app) as test_client:
+        r = test_client.post(
+            "/v1/route",
+            json={
+                "origin": {"lat": 12.970, "lon": 77.580},
+                "destination": {"lat": 12.990, "lon": 77.600},
+                "vclass": "car",
+                "depart_at": now.isoformat(),
+                "profile": "citizen",
+                "lang": "en",
+            },
+        )
+        assert r.status_code == 200
+        data = r.json()
+        assert len(data["routes"]) == 1
+        assert "Emergency advisory freeze active" in data["routes"][0]["reasons"][0]
+
