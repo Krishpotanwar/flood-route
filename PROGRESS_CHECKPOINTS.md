@@ -298,5 +298,22 @@ This document tracks local execution, verification, fixes, and ongoing progress 
 
 ---
 
+### Checkpoint 19: Advanced Model Calibration & Multi-Horizon Backtest Evaluation Engine
+- **Status**: Completed
+- **Actions & Findings**:
+  - **TRD 15 Model Calibration & Statistical Decomposition (`apps/api/floodroute/score/backtest.py`)**:
+    - Implemented Area Under the ROC Curve (`compute_roc_auc`) via trapezoidal integration over sorted discrimination thresholds, validating model ranking performance against ground-truth flood observations.
+    - Implemented Brier Score Decomposition (`decompose_brier_score`) based on Murphy (1973), separating total quadratic error into Reliability (calibration error: differences between forecast probabilities and observed relative frequencies), Resolution (ability to discriminate event from non-event instances), and Uncertainty (inherent climatological base-rate variance).
+    - Added Reliability Diagram Generator (`compute_reliability_diagram`) producing binned probability intervals (0.0 to 1.0) with sample counts, mean predicted probability, and empirical event frequencies for visualization.
+    - Added Threshold Optimization Sweep (`compute_threshold_sweep`) evaluating cutoffs from 0.05 to 0.80, computing full contingency metrics (Hits, Misses, False Alarms, Correct Negatives, POD, FAR, CSI / Threat Score, Accuracy, and F1-score) to find the optimal decision boundary maximizing Critical Success Index.
+    - Implemented Multi-Horizon Matrix Audit (`run_full_calibration_audit`) running a comprehensive 4x4 evaluation across all 4 vehicle classes (two_wheeler, car, ambulance, heavy) and all 4 forecast horizons (0m, 30m, 60m, 120m) against verified historical flood events.
+  - **CLI Instrumentation (`apps/api/floodroute/score/__main__.py`)**:
+    - Added `--seed-benchmark` CLI flag to populate historical ground-truth waterlogging records from Bengaluru municipal flood benchmarks.
+    - Added `--audit-matrix` CLI option running the complete 16-cell calibration audit across all vehicle profiles and forecast horizons.
+  - **Verification & Testing**:
+    - Added 4 new calibration test cases to `apps/api/tests/score/test_score_backtest.py` (`test_compute_roc_auc`, `test_decompose_brier_score_and_diagram`, `test_compute_threshold_sweep`, and `test_db_backtest_calibration_and_audit`).
+    - Total API test suite expanded to 644 passing tests (100% pass rate in 38.5s).
+    - 0 ruff lint errors across all Python code.
+    - Zero em-dashes and strict safety invariant maintained.
 
-
+---

@@ -11,7 +11,12 @@ from floodroute.score.backtest import (
     compute_brier_score,
     compute_contingency,
     compute_mae_depth,
+    compute_reliability_diagram,
+    compute_roc_auc,
+    compute_threshold_sweep,
+    decompose_brier_score,
     run_db_backtest,
+    run_full_calibration_audit,
     seed_benchmark_events,
 )
 
@@ -142,3 +147,127 @@ def test_db_backtest_with_benchmark_events(db):
     # Breakdowns
     assert "high" in report["by_tier"]
     assert "traffic_police" in report["by_source"]
+
+
+def test_compute_roc_auc():
+    # Empty
+    assert compute_roc_auc([]) is None
+
+    # Single-class datasets (AUC undefined)
+    assert compute_roc_auc([(0.8, True), (0.4, True)]) is None
+    assert compute_roc_auc([(0.8, False), (0.4, False)]) is None
+
+    # Perfect discrimination
+    perfect = [(0.9, True), (0.8, True), (0.3, False), (0.1, False)]
+    assert compute_roc_auc(perfect) == pytest.approx(1.0)
+
+    # Completely inverted
+    inverted = [(0.1, True), (0.2, True), (0.8, False), (0.9, False)]
+    assert compute_roc_auc(inverted) == pytest.approx(0.0)
+
+    # Intermediate discrimination
+    inter = [(0.9, True), (0.7, False), (0.6, True), (0.2, False)]
+    assert compute_roc_auc(inter) == pytest.approx(0.75)
+
+
+def test_decompose_brier_score_and_diagram():
+    assert decompose_brier_score([]) is None
+    assert compute_reliability_diagram([]) == []
+
+    dataset = [
+        (0.9, True),
+        (0.8, True),
+        (0.4, True),
+        (0.2, False),
+        (0.1, False),
+    ]
+
+    decomp = decompose_brier_score(dataset, n_bins=5)
+    assert decomp is not None
+    assert "reliability" in decomp
+    assert "resolution" in decomp
+    assert "uncertainty" in decomp
+    assert "brier_score" in decomp
+    assert "base_rate" in decomp
+    assert decomp["base_rate"] == pytest.approx(3 / 5)
+
+    diagram = compute_reliability_diagram(dataset, n_bins=5)
+    assert len(diagram) == 5
+    assert sum(b["count"] for b in diagram) == len(dataset)
+    for b in diagram:
+        assert "bin_lower" in b
+        assert "bin_upper" in b
+        assert "bin_center" in b
+        assert "mean_pred_p" in b
+        assert "observed_frequency" in b
+
+
+def test_compute_threshold_sweep():
+    assert compute_threshold_sweep([]) == []
+
+    dataset = [
+        (0.8, True),
+        (0.4, True),
+        (0.2, True),
+        (0.5, False),
+        (0.1, False),
+    ]
+
+    sweep = compute_threshold_sweep(dataset, thresholds=[0.10, 0.30, 0.50])
+    assert len(sweep) == 3
+    assert sweep[0]["threshold"] == 0.10
+    assert sweep[1]["threshold"] == 0.30
+    assert sweep[2]["threshold"] == 0.50
+
+    pt50 = sweep[2]
+    assert pt50["hits"] == 1
+    assert pt50["false_alarms"] == 1
+    assert pt50["misses"] == 2
+    assert pt50["correct_negatives"] == 1
+    assert pt50["pod"] == pytest.approx(1 / 3, abs=1e-4)
+    assert pt50["far"] == pytest.approx(1 / 2, abs=1e-4)
+    assert pt50["csi"] == pytest.approx(1 / 4, abs=1e-4)
+
+
+def test_db_backtest_calibration_and_audit(db):
+    db.execute(
+        "insert into zone (zone_id, city_id, geom, params) "
+        "values (1, 1, 'SRID=4326;MULTIPOLYGON(((77.4 12.8, 77.85 12.8, 77.85 13.2, 77.4 13.2, 77.4 12.8)))', '{}')"
+    )
+    db.execute(
+        "insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed) "
+        "values (1001, 1, 'SRID=4326;LINESTRING(77.6841 12.9298, 77.6842 12.9299)', 'primary', 1, true), "
+        "       (1002, 2, 'SRID=4326;LINESTRING(77.6101 12.9165, 77.6102 12.9166)', 'primary', 1, true)"
+    )
+    now = datetime.now(UTC)
+    for vc in ("two_wheeler", "car", "ambulance", "heavy"):
+        for hz in (0, 30, 60, 120):
+            db.execute(
+                "insert into segment_risk (segment_id, vclass, horizon_min, p_unusable, state, confidence, evidence_age_s, model_version, updated_at, depth_p50_cm, depth_p90_cm) "
+                "values (1001, %s, %s, 0.75, 'impassable', 'high', 0, 'v0.0.1', %s, 50.0, 70.0), "
+                "       (1002, %s, %s, 0.10, 'watch', 'low', 0, 'v0.0.1', %s, 10.0, 20.0)",
+                (vc, hz, now, vc, hz, now),
+            )
+    seed_benchmark_events(db)
+
+    report = run_db_backtest(db, city_id=1, vclass="car", horizon_min=0, p_threshold=0.30)
+    assert "threshold_sweep" in report
+    assert "reliability_diagram" in report
+    assert len(report["threshold_sweep"]) > 0
+    assert len(report["reliability_diagram"]) > 0
+
+    m = report["metrics"]
+    assert "roc_auc" in m
+    assert "brier_decomp" in m
+    assert "optimal_threshold_csi" in m
+
+    audit = run_full_calibration_audit(db, city_id=1, p_threshold=0.30)
+    assert audit["status"] == "ok"
+    assert "two_wheeler" in audit["matrix"]
+    assert "car" in audit["matrix"]
+    assert "ambulance" in audit["matrix"]
+    assert "heavy" in audit["matrix"]
+    for hz in ("0m", "30m", "60m", "120m"):
+        assert hz in audit["matrix"]["car"]
+
+

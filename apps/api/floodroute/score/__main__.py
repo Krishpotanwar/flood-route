@@ -5,7 +5,11 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .backtest import run_db_backtest, seed_benchmark_events
+from .backtest import (
+    run_db_backtest,
+    run_full_calibration_audit,
+    seed_benchmark_events,
+)
 from .config import DEFAULT_PATH, load_config
 from .replay import dumps, replay
 
@@ -26,6 +30,11 @@ def main(argv: list[str] | None = None) -> None:
         "--threshold", type=float, default=0.30, help="Probability threshold (default: 0.30)"
     )
     b.add_argument("--seed-benchmark", action="store_true", help="Seed benchmark historical events")
+    b.add_argument(
+        "--audit-matrix",
+        action="store_true",
+        help="Run comprehensive calibration audit across all vehicle classes and horizons",
+    )
     b.add_argument(
         "--db-url",
         default="postgresql://postgres:postgres@localhost:54329/floodroute",
@@ -48,6 +57,20 @@ def main(argv: list[str] | None = None) -> None:
             if args.seed_benchmark:
                 n = seed_benchmark_events(conn)
                 print(f"Seeded {n} benchmark events.")
+            if args.audit_matrix:
+                audit = run_full_calibration_audit(
+                    conn, city_id=args.city_id, p_threshold=args.threshold
+                )
+                print("\n=== FloodRoute Full Calibration Matrix (TRD 15) ===")
+                for vc, horizons in audit["matrix"].items():
+                    print(f"\nVehicle Class: {vc}")
+                    for hz, m in horizons.items():
+                        print(
+                            f"  {hz:5s}: samples={m.get('samples', 0)} | CSI={m.get('csi')} | "
+                            f"POD={m.get('pod')} | FAR={m.get('far')} | "
+                            f"ROC-AUC={m.get('roc_auc')} | Brier={m.get('brier_score')}"
+                        )
+                return
             rep = run_db_backtest(
                 conn,
                 city_id=args.city_id,

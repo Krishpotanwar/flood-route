@@ -66,6 +66,9 @@ class EvaluationMetrics:
     brier_score: float | None
     sample_count: int
     mae_depth_cm: float | None = None
+    roc_auc: float | None = None
+    brier_decomp: dict[str, float] | None = None
+    optimal_threshold_csi: float | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -82,6 +85,9 @@ class EvaluationMetrics:
             else None,
             "brier_score": round(self.brier_score, 4) if self.brier_score is not None else None,
             "mae_depth_cm": round(self.mae_depth_cm, 2) if self.mae_depth_cm is not None else None,
+            "roc_auc": round(self.roc_auc, 4) if self.roc_auc is not None else None,
+            "brier_decomp": self.brier_decomp,
+            "optimal_threshold_csi": self.optimal_threshold_csi,
         }
 
 
@@ -131,6 +137,189 @@ def compute_mae_depth(
         return None
     total = sum(abs(p - o) for p, o in depth_pairs)
     return total / len(depth_pairs)
+
+
+def compute_roc_auc(predictions: Sequence[tuple[float, bool]]) -> float | None:
+    """Compute Area Under the Receiver Operating Characteristic curve (ROC-AUC).
+
+    Uses trapezoidal integration over discrete threshold cutoffs.
+    Returns None if dataset lacks both positive and negative classes.
+    """
+    if not predictions:
+        return None
+    positives = sum(1 for _, truth in predictions if truth)
+    negatives = len(predictions) - positives
+    if positives == 0 or negatives == 0:
+        return None
+
+    # Sort descending by predicted probability
+    sorted_pairs = sorted(predictions, key=lambda x: x[0], reverse=True)
+
+    tpr_prev = 0.0
+    fpr_prev = 0.0
+    cum_tp = 0
+    cum_fp = 0
+    auc = 0.0
+
+    i = 0
+    n = len(sorted_pairs)
+    while i < n:
+        cur_p = sorted_pairs[i][0]
+        while i < n and sorted_pairs[i][0] == cur_p:
+            if sorted_pairs[i][1]:
+                cum_tp += 1
+            else:
+                cum_fp += 1
+            i += 1
+        tpr = cum_tp / positives
+        fpr = cum_fp / negatives
+        auc += (tpr + tpr_prev) * (fpr - fpr_prev) / 2.0
+        tpr_prev = tpr
+        fpr_prev = fpr
+
+    return max(0.0, min(1.0, auc))
+
+
+def decompose_brier_score(
+    predictions: Sequence[tuple[float, bool]],
+    n_bins: int = 5,
+) -> dict[str, float] | None:
+    """Decompose Brier score into reliability, resolution, and uncertainty (TRD 15).
+
+    Brier = Reliability - Resolution + Uncertainty
+    where:
+      Uncertainty = base_rate * (1 - base_rate)
+      Reliability = sum(N_k / N * (f_k - o_k)^2)
+      Resolution  = sum(N_k / N * (o_k - base_rate)^2)
+    """
+    if not predictions:
+        return None
+    n = len(predictions)
+    base_rate = sum(1 for _, truth in predictions if truth) / n
+    uncertainty = base_rate * (1.0 - base_rate)
+
+    bin_width = 1.0 / n_bins
+    bins: list[list[tuple[float, bool]]] = [[] for _ in range(n_bins)]
+
+    for p, truth in predictions:
+        idx = min(int(p / bin_width), n_bins - 1)
+        bins[idx].append((p, truth))
+
+    reliability = 0.0
+    resolution = 0.0
+
+    for b in bins:
+        if not b:
+            continue
+        n_k = len(b)
+        f_k = sum(p for p, _ in b) / n_k
+        o_k = sum(1 for _, truth in b if truth) / n_k
+        weight = n_k / n
+        reliability += weight * ((f_k - o_k) ** 2)
+        resolution += weight * ((o_k - base_rate) ** 2)
+
+    brier = sum((p - (1.0 if truth else 0.0)) ** 2 for p, truth in predictions) / n
+
+    return {
+        "brier_score": round(brier, 4),
+        "reliability": round(reliability, 4),
+        "resolution": round(resolution, 4),
+        "uncertainty": round(uncertainty, 4),
+        "base_rate": round(base_rate, 4),
+    }
+
+
+def compute_reliability_diagram(
+    predictions: Sequence[tuple[float, bool]],
+    n_bins: int = 5,
+) -> list[dict[str, Any]]:
+    """Compute reliability diagram bins (mean forecast vs observed event frequency)."""
+    if not predictions:
+        return []
+    bin_width = 1.0 / n_bins
+    bins: list[list[tuple[float, bool]]] = [[] for _ in range(n_bins)]
+
+    for p, truth in predictions:
+        idx = min(int(p / bin_width), n_bins - 1)
+        bins[idx].append((p, truth))
+
+    diagram: list[dict[str, Any]] = []
+    for i, b in enumerate(bins):
+        low = round(i * bin_width, 2)
+        high = round((i + 1) * bin_width, 2)
+        center = round((low + high) / 2.0, 2)
+        count = len(b)
+        mean_p = round(sum(p for p, _ in b) / count, 4) if count > 0 else center
+        obs_freq = round(sum(1 for _, truth in b if truth) / count, 4) if count > 0 else 0.0
+
+        diagram.append(
+            {
+                "bin_lower": low,
+                "bin_upper": high,
+                "bin_center": center,
+                "count": count,
+                "mean_pred_p": mean_p,
+                "observed_frequency": obs_freq,
+            }
+        )
+
+    return diagram
+
+
+DEFAULT_SWEEP_THRESHOLDS = (
+    0.05,
+    0.10,
+    0.15,
+    0.20,
+    0.25,
+    0.30,
+    0.35,
+    0.40,
+    0.45,
+    0.50,
+    0.60,
+    0.70,
+    0.80,
+)
+
+
+def compute_threshold_sweep(
+    predictions: Sequence[tuple[float, bool]],
+    thresholds: Sequence[float] = DEFAULT_SWEEP_THRESHOLDS,
+) -> list[dict[str, Any]]:
+    """Evaluate contingency table metrics across multiple probability cutoffs."""
+    if not predictions:
+        return []
+
+    points = []
+    for thr in thresholds:
+        ct = compute_contingency(predictions, threshold=thr)
+        precision = (
+            (ct.hits / (ct.hits + ct.false_alarms))
+            if (ct.hits + ct.false_alarms) > 0
+            else None
+        )
+        recall = ct.pod
+        f1 = (
+            (2 * precision * recall / (precision + recall))
+            if precision is not None and recall is not None and (precision + recall) > 0
+            else None
+        )
+        points.append(
+            {
+                "threshold": round(thr, 2),
+                "pod": round(ct.pod, 4) if ct.pod is not None else None,
+                "far": round(ct.far, 4) if ct.far is not None else None,
+                "csi": round(ct.csi, 4) if ct.csi is not None else None,
+                "accuracy": round(ct.accuracy, 4) if ct.accuracy is not None else None,
+                "f1_score": round(f1, 4) if f1 is not None else None,
+                "hits": ct.hits,
+                "misses": ct.misses,
+                "false_alarms": ct.false_alarms,
+                "correct_negatives": ct.correct_negatives,
+            }
+        )
+    return points
 
 
 # Depth class mapping to centimetres for comparison
@@ -299,6 +488,10 @@ def run_db_backtest(
             "status": "empty",
             "message": "No observed events with matched segments found.",
             "metrics": EvaluationMetrics(ContingencyTable(), None, 0).as_dict(),
+            "threshold_sweep": [],
+            "reliability_diagram": [],
+            "by_tier": {},
+            "by_source": {},
         }
 
     preds_prob: list[tuple[float, bool]] = []
@@ -327,6 +520,17 @@ def run_db_backtest(
     overall_table = compute_contingency(preds_prob, threshold=p_threshold)
     overall_brier = compute_brier_score(preds_prob)
     overall_mae = compute_mae_depth(depth_pairs)
+    overall_auc = compute_roc_auc(preds_prob)
+    overall_decomp = decompose_brier_score(preds_prob)
+    sweep_points = compute_threshold_sweep(preds_prob)
+    reliability_diagram = compute_reliability_diagram(preds_prob)
+
+    opt_thr = None
+    best_csi = -1.0
+    for pt in sweep_points:
+        if pt["csi"] is not None and pt["csi"] > best_csi:
+            best_csi = pt["csi"]
+            opt_thr = pt["threshold"]
 
     tier_metrics = {
         tier: compute_contingency(items, threshold=p_threshold)
@@ -345,6 +549,9 @@ def run_db_backtest(
         brier_score=overall_brier,
         sample_count=len(rows),
         mae_depth_cm=overall_mae,
+        roc_auc=overall_auc,
+        brier_decomp=overall_decomp,
+        optimal_threshold_csi=opt_thr,
     )
 
     return {
@@ -353,6 +560,8 @@ def run_db_backtest(
         "horizon_min": horizon_min,
         "threshold": p_threshold,
         "metrics": metrics.as_dict(),
+        "threshold_sweep": sweep_points,
+        "reliability_diagram": reliability_diagram,
         "by_tier": {
             k: {
                 "samples": t.total,
@@ -371,6 +580,32 @@ def run_db_backtest(
             }
             for k, t in source_metrics.items()
         },
+    }
+
+
+def run_full_calibration_audit(
+    conn: psycopg.Connection,
+    city_id: int | None = None,
+    p_threshold: float = 0.30,
+) -> dict[str, Any]:
+    """Execute complete calibration evaluation across all vehicle classes and horizons."""
+    matrix: dict[str, dict[str, Any]] = {}
+    for vc in SUPPORTED_VCLASSES:
+        matrix[vc] = {}
+        for hz in SUPPORTED_HORIZONS:
+            rep = run_db_backtest(
+                conn,
+                city_id=city_id,
+                vclass=vc,
+                horizon_min=hz,
+                p_threshold=p_threshold,
+            )
+            matrix[vc][f"{hz}m"] = rep.get("metrics", {})
+    return {
+        "status": "ok",
+        "evaluated_at": datetime.now(UTC).isoformat(),
+        "threshold": p_threshold,
+        "matrix": matrix,
     }
 
 
@@ -393,6 +628,11 @@ def main() -> None:
         help="Seed benchmark historical events before evaluation",
     )
     parser.add_argument(
+        "--audit-matrix",
+        action="store_true",
+        help="Run comprehensive calibration audit across all vehicle classes and horizons",
+    )
+    parser.add_argument(
         "--db-url",
         default="postgresql://postgres:postgres@localhost:54329/floodroute",
         help="PostgreSQL connection URL",
@@ -403,6 +643,19 @@ def main() -> None:
         if args.seed_benchmark:
             n = seed_benchmark_events(conn)
             print(f"Seeded {n} benchmark historical events into observed_event.")
+
+        if args.audit_matrix:
+            audit = run_full_calibration_audit(conn, city_id=args.city_id, p_threshold=args.threshold)
+            print("\n=== FloodRoute Full Calibration Matrix (TRD 15) ===")
+            for vc, horizons in audit["matrix"].items():
+                print(f"\nVehicle Class: {vc}")
+                for hz, m in horizons.items():
+                    print(
+                        f"  {hz:5s}: samples={m.get('samples', 0)} | CSI={m.get('csi')} | "
+                        f"POD={m.get('pod')} | FAR={m.get('far')} | "
+                        f"ROC-AUC={m.get('roc_auc')} | Brier={m.get('brier_score')}"
+                    )
+            return
 
         report = run_db_backtest(
             conn,
@@ -423,7 +676,14 @@ def main() -> None:
         print(
             f"POD: {m.get('pod')} | FAR: {m.get('far')} | CSI: {m.get('csi')} | Accuracy: {m.get('accuracy')}"
         )
-        print(f"Brier Score: {m.get('brier_score')} | Depth MAE: {m.get('mae_depth_cm')} cm")
+        print(
+            f"Brier Score: {m.get('brier_score')} | ROC-AUC: {m.get('roc_auc')} | Depth MAE: {m.get('mae_depth_cm')} cm"
+        )
+        if m.get("brier_decomp"):
+            bd = m["brier_decomp"]
+            print(
+                f"Brier Decomposition: Reliability={bd.get('reliability')}, Resolution={bd.get('resolution')}, Uncertainty={bd.get('uncertainty')}"
+            )
         if report.get("by_tier"):
             print("\nBreakdown by Label Tier:")
             for tier, d in report["by_tier"].items():
