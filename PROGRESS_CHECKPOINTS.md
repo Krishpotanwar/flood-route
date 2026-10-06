@@ -189,4 +189,20 @@ This document tracks local execution, verification, fixes, and ongoing progress 
   - Added 7 comprehensive tests in `apps/api/tests/api/test_api_reroute.py`.
   - Reached 630 passing tests (100% pass rate in 37.8s) with 0 ruff lint errors.
 
+### Checkpoint 15: Scheduled Background Worker Loop & Data Retention Engine
+- **Status**: Completed
+- **Actions & Findings**:
+  - Implemented `apps/api/floodroute/worker.py` orchestrating continuous background execution (TRD sections 3, 5, 13, 19):
+    - Multi-cadence scheduler tracking timestamps across independent tasks:
+      - SACHET alert feed ingestion (every 5 min)
+      - MET Norway weather forecast ingestion (hourly)
+      - Shadow scoring cycle evaluation (every 5 min)
+      - Data retention cleanup (daily)
+    - `prune_retention`: executes age-based deletes on `route_decision` table (> 365 days retention per TRD 13), purges expired sensor/crowd evidence past TTL from `evidence` table (FR-M3), and cleans resolved/rejected crowd reports (> 90 days DPDP compliance).
+    - Graceful process termination with signal handlers for SIGINT and SIGTERM.
+    - CLI entrypoint: `python -m floodroute.worker [--once] [--db-url ...]` for both container daemons and cron/Kubernetes jobs.
+  - Refined Valhalla route requests in `apps/api/floodroute/route/valhalla.py`: converted departure timestamps to UTC before serializing `date_time`, fixing silent overlay drops detected during Spike S1.
+  - Added 4 comprehensive tests in `apps/api/tests/test_worker.py`.
+  - Reached 634 passing tests (100% pass rate in 35.9s) with 0 ruff lint errors.
+
 ---

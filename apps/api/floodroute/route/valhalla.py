@@ -14,7 +14,7 @@ to 3 re-queries of box rings per request may need that limit raised.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Sequence
-from datetime import datetime
+from datetime import UTC, datetime
 
 import httpx
 
@@ -88,7 +88,8 @@ def request_body(
         "units": "kilometers",
     }
     if depart is not None:
-        body["date_time"] = {"type": 1, "value": depart.strftime("%Y-%m-%dT%H:%M")}
+        dt = depart.astimezone(UTC) if depart.tzinfo is not None else depart
+        body["date_time"] = {"type": 1, "value": dt.strftime("%Y-%m-%dT%H:%M")}
     else:
         body["date_time"] = {"type": 0}
     if exclude_polygons:  # exterior rings as [lon, lat] pairs
