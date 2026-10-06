@@ -1,0 +1,41 @@
+# Host tests keep using 54329. Inside the compose network, Postgres is db:5432.
+# After first up: docker compose run --rm api python -m floodroute.db.migrate
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    ports:
+      - "54329:5432"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: apps/api
+    image: floodroute-api:dev
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgresql://postgres@db:5432/postgres
+    volumes:
+      # scoring.v0.json lives outside the apps/api build context, so mount it in.
+      - ./data/config/scoring.v0.json:/app/data/config/scoring.v0.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  worker:
+    build: apps/api
+    image: floodroute-api:dev
+    command: ["python", "-m", "floodroute.worker"]
+    environment:
+      DATABASE_URL: postgresql://postgres@db:5432/postgres
+    volumes:
+      # scoring.v0.json lives outside the apps/api build context, so mount it in.
+      - ./data/config/scoring.v0.json:/app/data/config/scoring.v0.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
