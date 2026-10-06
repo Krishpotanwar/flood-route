@@ -564,8 +564,10 @@ This document tracks local execution, verification, fixes, and ongoing progress 
 - **External live-pilot requirements remain**: Fresh flood observations, source access/terms, coverage calibration, field validation, and the actual hackathon submission/deployment requirements. No field evidence or production accuracy is being invented.
 
 ### Checkpoint 32: Direct frontend push and Vercel import preparation
-- **Status**: Preparing the user-authorized direct push to the existing remote default branch, `claude/floodroute-project-plan-g5cntf`. No Vercel deployment is being performed by the agent.
+- **Status**: Completed. User-authorized direct push verified on 6 October 2026, 23:21 IST, to the existing remote default branch, `claude/floodroute-project-plan-g5cntf`. Vercel deployment remains with the user.
 - Remote default HEAD `c5e9750` is an ancestor of this checkout. The push can fast-forward existing history without force or a pull request.
 - Root `vercel.json` builds only `@floodroute/citizen` and publishes `apps/citizen/dist`. Import instructions specify root `.`, Node 24.x, and `ENABLE_EXPERIMENTAL_COREPACK=1`; no API variable is needed for Demo mode.
 - Vercel configuration review, token checks, TypeScript, all 18 frontend tests, and the production build passed before push.
 - Push scope: reviewed frontend, screenshots, documentation, local backend packaging and smoke helper. Existing API safety/governance source edits, migrations, inventory changes, and their tests remain local and are excluded from this frontend release.
+- Delivery commit `deebd0ee651604d696c82548d99871bfb8f61129` was pushed normally, with no force or pull request. GitHub's remote branch SHA matched the local commit exactly.
+- The configured HTTPS credential failed, and the GitHub CLI token lacked workflow-publishing scope. Existing SSH authentication for `Krishpotanwar` completed the push; no new token, account permission, or SSH key was created.
