@@ -68,6 +68,20 @@ def test_load_mumbai_and_gurugram_hotspots():
         assert spot["structure"] in {"underpass", "culvert", "dip", "low_bridge"}
 
 
+def test_load_chennai_hotspots():
+    che_spots = load_city_hotspots("chennai")
+    assert len(che_spots) == 20
+    assert CITY_REGISTRY["chennai"].hotspot_count == len(che_spots)
+    che_box = CITY_REGISTRY["chennai"].bbox
+
+    for spot in che_spots:
+        assert spot["city"] == "chennai"
+        assert spot["city_id"] == 2
+        assert che_box[0] <= spot["lon"] <= che_box[2]
+        assert che_box[1] <= spot["lat"] <= che_box[3]
+        assert spot["structure"] in {"underpass", "culvert", "dip", "low_bridge"}
+
+
 def test_seed_city_hotspots_into_db(db):
     stats = seed_city_hotspots_into_db(db, "mumbai")
     assert stats["city_id"] == 3

@@ -21,6 +21,11 @@ def test_list_cities(client):
     assert by_name["gurugram"]["hydrology_type"] == "arid_ridge_catchment"
     assert by_name["gurugram"]["city_id"] == 4
 
+    assert by_name["chennai"]["state"] == "Tamil Nadu"
+    assert by_name["chennai"]["hydrology_type"] == "coastal_estuarine"
+    assert by_name["chennai"]["city_id"] == 2
+    assert by_name["chennai"]["hotspot_count"] == 20
+
 
 def test_get_city_details(client):
     r_mum = client.get("/v1/cities/mumbai")
@@ -35,6 +40,13 @@ def test_get_city_details(client):
     data_gur = r_gur.json()
     assert data_gur["name"] == "gurugram"
     assert data_gur["display_name"] == "Gurugram"
+
+    r_che = client.get("/v1/cities/chennai")
+    assert r_che.status_code == 200
+    data_che = r_che.json()
+    assert data_che["name"] == "chennai"
+    assert data_che["display_name"] == "Chennai"
+    assert data_che["hotspot_count"] == 20
 
     r_404 = client.get("/v1/cities/atlantis")
     assert r_404.status_code == 404
@@ -56,6 +68,14 @@ def test_get_city_hotspots(client):
     data2 = r2.json()
     assert len(data2["hotspots"]) == 10
     assert data2["hotspots"][0]["hotspot_id"] != data["hotspots"][0]["hotspot_id"]
+
+    r_che = client.get("/v1/cities/chennai/hotspots?limit=50&offset=0")
+    assert r_che.status_code == 200
+    data_che = r_che.json()
+    assert data_che["city"] == "chennai"
+    assert data_che["city_id"] == 2
+    assert data_che["total_hotspots"] == 20
+    assert len(data_che["hotspots"]) == 20
 
     r_404 = client.get("/v1/cities/unknown/hotspots")
     assert r_404.status_code == 404

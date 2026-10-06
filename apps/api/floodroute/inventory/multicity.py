@@ -54,7 +54,7 @@ CITY_REGISTRY: dict[str, CityMetadata] = {
         hydrology_type="coastal_estuarine",
         rainfall_trigger_mm_h=30.0,
         primary_drainage="Cooum, Adyar Rivers & Buckingham Canal",
-        hotspot_count=0,
+        hotspot_count=20,
     ),
     "mumbai": CityMetadata(
         name="mumbai",
