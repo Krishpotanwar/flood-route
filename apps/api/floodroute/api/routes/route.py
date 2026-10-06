@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import uuid
 from datetime import UTC, datetime
-from typing import Annotated
+from typing import Annotated, Any
 
 import httpx
 import psycopg
@@ -35,6 +35,13 @@ from floodroute.route.models import (
 )
 from floodroute.route.reroute import TripState, decide, note_closed
 from floodroute.route.validate import Ctx, assess, plan
+from floodroute.route.watch import (
+    WatchRequest,
+    WatchResponse,
+    cancel_route_watch,
+    create_route_watch,
+    get_route_watch,
+)
 from floodroute.score.config import Config as ScoreConfig
 
 logger = logging.getLogger(__name__)
@@ -219,3 +226,47 @@ def compute_reroute(
         current_violations_count=len(current_assessment.violations),
         lang=lang,
     )
+
+
+@router.post("/routes/{decision_id}/watch", response_model=WatchResponse)
+@router.post("/route/{decision_id}/watch", response_model=WatchResponse)
+def watch_route_endpoint(
+    decision_id: uuid.UUID,
+    req: WatchRequest,
+    db: Annotated[psycopg.Connection, Depends(get_db)],
+) -> WatchResponse:
+    """Subscribe to material risk change alerts for a planned route."""
+    try:
+        return create_route_watch(db, decision_id, req)
+    except ValueError as e:
+        err_msg = str(e)
+        if "not found" in err_msg.lower():
+            raise HTTPException(status_code=404, detail=err_msg)
+        raise HTTPException(status_code=400, detail=err_msg)
+
+
+@router.get("/routes/{decision_id}/watch", response_model=WatchResponse)
+@router.get("/route/{decision_id}/watch", response_model=WatchResponse)
+def get_route_watch_endpoint(
+    decision_id: uuid.UUID,
+    db: Annotated[psycopg.Connection, Depends(get_db)],
+) -> WatchResponse:
+    """Check active watch subscription status for a route decision."""
+    watch = get_route_watch(db, decision_id)
+    if not watch:
+        raise HTTPException(status_code=404, detail=f"No active watch found for route {decision_id}")
+    return watch
+
+
+@router.delete("/routes/{decision_id}/watch")
+@router.delete("/route/{decision_id}/watch")
+def cancel_route_watch_endpoint(
+    decision_id: uuid.UUID,
+    db: Annotated[psycopg.Connection, Depends(get_db)],
+) -> dict[str, Any]:
+    """Unsubscribe and cancel active watch subscription for a route decision."""
+    cancelled = cancel_route_watch(db, decision_id)
+    if not cancelled:
+        raise HTTPException(status_code=404, detail=f"No active watch found for route {decision_id}")
+    return {"decision_id": str(decision_id), "cancelled": True}
+

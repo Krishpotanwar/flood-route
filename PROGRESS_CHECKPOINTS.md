@@ -317,3 +317,33 @@ This document tracks local execution, verification, fixes, and ongoing progress 
     - Zero em-dashes and strict safety invariant maintained.
 
 ---
+
+### Checkpoint 20: Enterprise Fleet Webhooks, Route Material-Change Watch & OASIS CAP 1.2 Emergency Feed
+- **Status**: Completed
+- **Actions & Findings**:
+  - **Database Migration (`0005_webhooks_and_watch.sql`)**:
+    - Created `webhook_subscription` table supporting multi-tenant event notifications with HMAC secrets and URL validation.
+    - Created `webhook_delivery` table tracking delivery attempts, HTTP status codes, latencies, payloads, and error logs.
+    - Created `route_watch` table storing route decisions, monitored segments, baseline states, notification channels (FCM, WhatsApp, SMS, webhook), and alert counts.
+  - **OASIS CAP 1.2 XML Feed (`GET /v1/feed/cap.xml`)**:
+    - Implemented standard Common Alerting Protocol v1.2 XML generator compliant with OASIS standard (`urn:oasis:names:tc:emergency:cap:1.2`), matching SACHET (NDMA) and SDMA feed specifications.
+    - Emits structured `<alert>` documents with `<info>` blocks containing event codes (`SAME / FLW`), urgency, severity (`Extreme` for impassable, `Severe` for risky), certainty (`Observed`), and localized descriptions.
+    - Represents road segment geometries using CAP `<circle>` elements centered on segment midpoints with 150m impact radius, alongside road class and depth parameters.
+  - **Enterprise Webhook Subsystem (`apps/api/floodroute/webhook/`)**:
+    - Implemented HMAC-SHA256 cryptographic signing in `signing.py`, emitting `X-FloodRoute-Signature-256`, `X-FloodRoute-Event-Id`, and `X-FloodRoute-Timestamp` headers.
+    - Built asynchronous event dispatcher in `dispatcher.py` persisting execution audit records to `webhook_delivery`.
+    - Created API endpoints in `apps/api/floodroute/api/routes/webhooks.py` (`POST /v1/webhooks`, `GET /v1/webhooks`, `DELETE /v1/webhooks/{id}`, `POST /v1/webhooks/{id}/test`, and `GET /v1/webhooks/{id}/deliveries`).
+  - **Route Material-Change Watch Engine (`apps/api/floodroute/route/watch.py`)**:
+    - Built route watch subscription manager linking planned routes (`POST /v1/routes/{id}/watch`, `GET /v1/routes/{id}/watch`, `DELETE /v1/routes/{id}/watch`).
+    - Implemented pure material change detection logic: triggers when a segment on a watched route becomes Impassable or when its risk band elevates.
+    - Enforced strict alert fatigue controls: rate-limited to a maximum of 3 notifications per user/route per hour.
+  - **Background Worker Loop Integration (`apps/api/floodroute/worker.py`)**:
+    - Wired route watch evaluations and `segment.state_changed` webhook broadcasts directly into the 5-minute scoring loop.
+    - Added automatic deactivation of expired watches to the daily retention prune cycle.
+  - **Verification & Testing**:
+    - Added 10 comprehensive tests across `test_api_feed.py`, `test_api_webhooks.py`, `test_route_watch.py`, and `test_api_watch.py`.
+    - Total API test suite expanded to 654 passing tests (100% pass rate in 39.7s).
+    - 0 ruff lint errors across all Python code.
+    - Zero em-dashes and strict safety invariant maintained.
+
+---

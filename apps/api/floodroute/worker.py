@@ -23,11 +23,14 @@ from floodroute.db.conn import database_url
 from floodroute.ingest import metno, sachet
 from floodroute.ingest.common import Http
 from floodroute.ingest.common import run as run_ingest
+from floodroute.route.watch import evaluate_route_watches
 from floodroute.score.config import Config as ScoreConfig
 from floodroute.score.config import load_config
 from floodroute.score.db import execute_score_run
+from floodroute.webhook import WebhookEvent, dispatch_event
 
 logger = logging.getLogger(__name__)
+
 
 
 @dataclass
@@ -37,6 +40,7 @@ class RetentionStats:
     route_decisions_purged: int = 0
     expired_evidence_count: int = 0
     purged_reports_count: int = 0
+    expired_watches_purged: int = 0
 
 
 @dataclass
@@ -84,6 +88,13 @@ def prune_retention(
             (cutoff_reports,),
         )
         stats.purged_reports_count = cur.rowcount
+
+        # 4. Deactivate expired route watches
+        cur.execute(
+            "update route_watch set is_active = false where expires_at <= %s and is_active",
+            (current_time,),
+        )
+        stats.expired_watches_purged = cur.rowcount
 
     return stats
 
@@ -176,9 +187,24 @@ class Worker:
                         now=current_time,
                         notes="worker:scheduled",
                     )
+                    # Evaluate route watch alerts on risk changes
+                    alerts = evaluate_route_watches(conn)
+                    if result.changes:
+                        ev = WebhookEvent(
+                            event_type="segment.state_changed",
+                            timestamp=current_time,
+                            payload={
+                                "run_id": run_id,
+                                "changes_count": len(result.changes),
+                                "segments": [c.segment_id for c in result.changes[:50]],
+                            },
+                        )
+                        dispatch_event(conn, ev)
+
                     summary["tasks"]["score"] = {
                         "run_id": run_id,
                         "changes_count": len(result.changes),
+                        "alerts_dispatched": len(alerts),
                     }
                     self.last_score = current_time
                 except (psycopg.Error, RuntimeError, ValueError) as e:
@@ -200,6 +226,7 @@ class Worker:
                         "route_decisions_purged": stats.route_decisions_purged,
                         "expired_evidence_count": stats.expired_evidence_count,
                         "purged_reports_count": stats.purged_reports_count,
+                        "expired_watches_purged": stats.expired_watches_purged,
                     }
                     self.last_retention = current_time
                 except (psycopg.Error, RuntimeError) as e:
@@ -207,6 +234,7 @@ class Worker:
                     summary["tasks"]["retention"] = {"error": str(e)}
 
         return summary
+
 
     def run_loop(
         self,
