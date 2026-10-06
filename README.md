@@ -1,12 +1,57 @@
 # FloodRoute
 
+**Know the road. Before you go.**
+
 Flood-aware route planning for Indian cities. A responsive hackathon prototype with a monochrome frontend, vehicle selection, road conditions, community reports, and a controlled rerouting demonstration.
 
-The presentation demo runs without an API. Its white and black frontend includes a subtle pointer-responsive dot background and a labelled hero route illustration. Dots stay static on touch devices and with reduced motion, and the animation stops when idle. [Progress checkpoints](PROGRESS_CHECKPOINTS.md) record completed work and verification.
+The presentation demo runs without an API. Choose a city and vehicle, explore a sample journey, and see how the interface responds to changing road conditions. White and black themes, a responsive layout, and subtle hover dots carry the same design across desktop and mobile. Dots stay static on touch devices and with reduced motion, and stop animating when idle.
 
-![FloodRoute desktop preview](output/frontend-preview/2026-10-06-dots/desktop.png)
+**Frontend:** React · TypeScript · Vite · MapLibre
 
-Actual browser capture with the dotted background and route illustration. Displayed conditions are labelled demo data.
+**Backend:** FastAPI · PostGIS · Valhalla integration
+
+## Built with spoken prompts
+
+The prompts used to design and build FloodRoute were **dictated with Wispr Flow instead of typed by hand**. Spoken instructions were transcribed into the written prompts that guided the project.
+
+[Wispr Flow](https://wisprflow.ai/) is an AI dictation app that turns natural speech into polished text inside the app you are using. It cleans up the transcription and inserts the result into the active text field. [Learn more](https://docs.wisprflow.ai/articles/2772472373-what-is-flow).
+
+## Project screenshots
+
+### White theme · Landing page
+
+![FloodRoute landing page with the dotted background and route illustration](output/frontend-preview/2026-10-06-dots/overview.png)
+
+Actual browser capture. The hero route is a labelled illustration; the presentation demo does not claim live flood observations.
+
+### Black theme · Route planner
+
+![FloodRoute black theme showing a sample journey on the map](output/frontend-preview/2026-10-06-dots/black-planner.png)
+
+Demo route planning with vehicle-specific controls and explicitly labelled sample conditions.
+
+<details>
+<summary><strong>More screenshots: desktop, mobile, and connected routing</strong></summary>
+
+<table>
+  <tr><th>Full desktop page</th><th>Mobile layout</th></tr>
+  <tr>
+    <td valign="top"><img src="output/frontend-preview/2026-10-06-dots/desktop.png" alt="FloodRoute full desktop page in white theme" width="640" /></td>
+    <td valign="top"><img src="output/frontend-preview/2026-10-06-dots/mobile.png" alt="FloodRoute responsive mobile layout" width="190" /></td>
+  </tr>
+</table>
+
+**Connected road route**
+
+![FloodRoute connected route showing real road geometry and unknown flood status](output/frontend-preview/2026-10-06-dots/live-route.png)
+
+This capture renders a recorded response from the external Valhalla demo, with the local API providing health and snapshot data. Road geometry is real; flood status remains **unknown** because current observations are missing.
+
+[Full sample journey screenshot](output/frontend-preview/2026-10-06-dots/route.png) · [Browser verification record](output/frontend-preview/2026-10-06-dots/verification.md)
+
+</details>
+
+[Progress checkpoints](PROGRESS_CHECKPOINTS.md) distinguish completed work, verified behavior, and remaining requirements.
 
 ## Run the demo
 

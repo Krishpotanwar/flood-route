@@ -13,4 +13,6 @@ Captured asset: `index-CMWuZY0L.js`.
 
 `desktop.png`, `mobile.png`, `route.png`, and `black-planner.png` show explicitly labelled demo conditions. The hero strip is a route illustration, not a geographical route or flood observation. `live-route.png` shows actual road geometry but no known flood statuses.
 
+`overview.png` is an additional actual 1440×1000 landing-page capture for the README gallery. It was captured from the production preview with service workers blocked and no browser exceptions; it does not add or change any route observations.
+
 Fresh container installation and self-hosted Valhalla graph construction remain blocked by recorded network failures. Forecast ingestion still needs a real contact value; current observations and field calibration are unavailable. See the [backend runbook](../../../docs/BACKEND_RUNBOOK.md) and [checkpoints](../../../PROGRESS_CHECKPOINTS.md).

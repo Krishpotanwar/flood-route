@@ -571,3 +571,10 @@ This document tracks local execution, verification, fixes, and ongoing progress 
 - Push scope: reviewed frontend, screenshots, documentation, local backend packaging and smoke helper. Existing API safety/governance source edits, migrations, inventory changes, and their tests remain local and are excluded from this frontend release.
 - Delivery commit `deebd0ee651604d696c82548d99871bfb8f61129` was pushed normally, with no force or pull request. GitHub's remote branch SHA matched the local commit exactly.
 - The configured HTTPS credential failed, and the GitHub CLI token lacked workflow-publishing scope. Existing SSH authentication for `Krishpotanwar` completed the push; no new token, account permission, or SSH key was created.
+
+### Checkpoint 33: README gallery and spoken-prompt attribution
+- **Status**: Documentation update completed and reviewed on 6 October 2026 for publication to the same default branch.
+- README now presents the white landing page and black route planner, with an expandable desktop/mobile gallery and a clearly labelled recorded live route.
+- Added a genuine 1440×1000 browser overview capture, with no browser exceptions. Local image/link paths and gallery markup were checked; documentation review approved the change.
+- The README states that project prompts were dictated with Wispr Flow instead of typed by hand, reflecting the user's attribution. A short description links Wispr's official site and documentation.
+- Application source and pending backend changes are unchanged. This update consists only of README/checkpoint documentation and the overview image.
