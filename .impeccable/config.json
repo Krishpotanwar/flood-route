@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "apps/api/floodroute/api/static/console.html"
+        ],
+        "createdAt": "2026-10-07T04:26:09.395Z",
+        "reason": "Agent reviewed desktop/mobile: badges, controls and all audit cells have8px padding. The residual finding is the bordered audit-table scroll wrapper; cell padding supplies the text inset, so the wrapper intentionally has none."
+      }
+    ]
+  }
+}
