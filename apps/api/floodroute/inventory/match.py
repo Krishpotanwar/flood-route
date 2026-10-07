@@ -81,6 +81,13 @@ GENERIC = {
     "bengaluru",
     "bangalore",
     "chennai",
+    "mumbai",
+    "bombay",
+    "gurugram",
+    "gurgaon",
+    "delhi",
+    "pune",
+    "hyderabad",
 }
 SPELL = {
     "mehkri": "mekhri",

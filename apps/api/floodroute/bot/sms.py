@@ -155,7 +155,13 @@ def render_sms(
 
     # Count variables
     var_count = rendered.count("{#var#}")
-    var_values = [str(variables.get(name, "")).strip() for name in tmpl.variable_names]
+
+    # Every slot must be filled with a non-blank value; blanks would send a
+    # non-compliant incomplete alert under the DLT pattern.
+    missing = [name for name in tmpl.variable_names if not str(variables.get(name, "")).strip()]
+    if missing:
+        raise ValueError(f"Template {template_key} is missing variables: {missing}")
+    var_values = [str(variables[name]).strip() for name in tmpl.variable_names]
 
     if len(var_values) != var_count:
         raise ValueError(
@@ -173,7 +179,7 @@ def render_sms(
 
     # Safety check: road state must never be called "safe"
     lower_text = rendered.lower()
-    if "safe " in lower_text or " safe" in lower_text:
+    if re.search(r"\bsafe\b", lower_text):
         raise ValueError("Rendered SMS violates safety invariant: contains 'safe'")
 
     char_limit = tmpl.max_chars

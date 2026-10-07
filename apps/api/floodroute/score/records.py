@@ -119,7 +119,11 @@ class Evidence:
             if getattr(self, name) is not None:
                 _num(getattr(self, name), f"Evidence.{name}", lo=0)
         if self.contributors is not None:
-            _num(self.contributors, "Evidence.contributors", lo=0)
+            _id(self.contributors, "Evidence.contributors")
+            if self.contributors < 0:
+                raise ValueError(
+                    f"Evidence.contributors out of range [0, None]: {self.contributors}"
+                )
 
 
 @dataclass(frozen=True)

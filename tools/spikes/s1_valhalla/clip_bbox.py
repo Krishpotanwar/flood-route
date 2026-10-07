@@ -27,7 +27,17 @@ def main():
     ap.add_argument("bbox")
     ap.add_argument("--perturb", type=int, default=None)
     a = ap.parse_args()
-    x0, y0, x1, y1 = map(float, a.bbox.split(","))
+    try:
+        parts = [float(p) for p in a.bbox.split(",")]
+    except ValueError:
+        ap.error("bbox must be four comma-separated numbers: minlon,minlat,maxlon,maxlat")
+    if len(parts) != 4:
+        ap.error("bbox must be four comma-separated numbers: minlon,minlat,maxlon,maxlat")
+    x0, y0, x1, y1 = parts
+    if not (x0 < x1 and y0 < y1):
+        ap.error("bbox needs west<east and south<north")
+    if not (-180 <= x0 <= 180 and -180 <= x1 <= 180 and -90 <= y0 <= 90 and -90 <= y1 <= 90):
+        ap.error("bbox out of range: lon -180..180, lat -90..90")
     t0 = time.time()
 
     way_ids, node_ids = set(), set()
@@ -42,6 +52,8 @@ def main():
     print(f"pass1 {len(way_ids)} ways {len(node_ids)} nodes {time.time()-t0:.0f}s", file=sys.stderr)
 
     rng = random.Random(a.perturb)
+    if not way_ids:
+        ap.error("no highway ways inside the bbox: nothing to clip")
     max_way = max(way_ids)
     dropped, splits, split_log, late = set(), 0, {}, []
     with osmium.SimpleWriter(a.dst, overwrite=True) as out:

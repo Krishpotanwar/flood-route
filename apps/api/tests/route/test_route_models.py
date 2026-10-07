@@ -10,6 +10,7 @@ from floodroute.route.models import (
     DEFAULT,
     HORIZONS,
     Edge,
+    EdgeIn,
     RouteRequest,
     RouteResponse,
     SegmentRisk,
@@ -130,6 +131,25 @@ def test_edge_rejects_nonsense_times_and_lengths(bad):
         Edge(1, (), bad)
     with pytest.raises(ValueError):
         Edge(1, (), 1.0, bad)
+
+
+def test_unknown_junctions_hold_and_zero_length_with_geometry_is_rejected():
+    assert Edge(1, ((12.9, 77.6), (12.91, 77.6)), 60.0).turn_off_after is False
+    assert EdgeIn(segment_id=1, travel_time_s=60.0).turn_off_after is False
+    with pytest.raises(ValidationError):
+        EdgeIn(
+            segment_id=1,
+            travel_time_s=60.0,
+            length_m=0.0,
+            geometry=[{"lat": 12.9, "lon": 77.6}, {"lat": 12.91, "lon": 77.6}],
+        )
+    ok = EdgeIn(
+        segment_id=1,
+        travel_time_s=60.0,
+        length_m=100.0,
+        geometry=[{"lat": 12.9, "lon": 77.6}, {"lat": 12.91, "lon": 77.6}],
+    )
+    assert ok.length_m == 100.0
 
 
 def test_a_route_needs_edges_and_sums_its_time():

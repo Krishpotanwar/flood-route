@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import secrets
+from datetime import UTC, datetime
 
 
 def generate_webhook_secret() -> str:
@@ -35,6 +36,24 @@ def build_webhook_headers(
 
 def verify_signature(secret: str, payload_bytes: bytes, signature_header: str) -> bool:
     """Verify incoming signature against expected HMAC-SHA256 digest."""
-    expected = compute_signature(secret, payload_bytes)
-    candidate = signature_header.removeprefix("sha256=").strip()
-    return hmac.compare_digest(expected, candidate)
+    try:
+        expected = compute_signature(secret, payload_bytes)
+        candidate = signature_header.removeprefix("sha256=").strip()
+        return hmac.compare_digest(expected, candidate)
+    except (AttributeError, TypeError, ValueError):
+        return False
+
+
+def verify_timestamp_fresh(timestamp_iso: str, max_skew_s: float = 300.0) -> bool:
+    """True when a signed delivery timestamp is within the replay window.
+
+    Receivers must call this alongside `verify_signature`: the signature alone
+    cannot stop a captured delivery from being replayed forever.
+    """
+    try:
+        ts = datetime.fromisoformat(timestamp_iso)
+    except (TypeError, ValueError):
+        return False
+    if ts.tzinfo is None:
+        return False
+    return abs((datetime.now(UTC) - ts).total_seconds()) <= max_skew_s

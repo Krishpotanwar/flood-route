@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -9,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from floodroute.api.body_limit import RequestBodyLimit
 from floodroute.api.routes import (
     bot,
     cities,
@@ -31,18 +33,27 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="FloodRoute API",
         version="0.0.1",
-        description="Predicts unusable roads in heavy rain and safely routes vehicles.",
+        description="Provides flood-aware road conditions and routing advisories.",
         openapi_url="/openapi.json",
         docs_url="/docs",
     )
 
     app.add_middleware(PrometheusMetricsMiddleware)
+    app.add_middleware(RequestBodyLimit)
+    # The console and PWA are served same-origin; public feeds need no
+    # credentials. Origins come from the environment so control-room POSTs
+    # are never exposed to an allow-all credentialed policy.
+    cors_origins = [
+        o.strip()
+        for o in os.environ.get("FLOODROUTE_CORS_ORIGINS", "https://floodroute.in").split(",")
+        if o.strip()
+    ]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_origins=cors_origins,
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization", "If-None-Match", "X-FloodRoute-Co-Signature"],
     )
 
     app.include_router(health.router)

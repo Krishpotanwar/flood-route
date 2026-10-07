@@ -36,9 +36,24 @@ class Decision:
     warn: bool = False  # tell the user about flooding ahead on the current route
 
 
-def note_closed(state: TripState, segment_ids: Iterable[int], now: datetime) -> TripState:
-    """Record segments seen impassable now (FR-RT7 memory). Call every tick while they stay shut."""
-    return replace(state, closed_at={**state.closed_at, **{s: now for s in segment_ids}})
+def note_closed(
+    state: TripState,
+    segment_ids: Iterable[int],
+    now: datetime,
+    cfg: Config = DEFAULT,
+    max_entries: int = 256,
+) -> TripState:
+    """Record segments seen impassable now (FR-RT7 memory). Call every tick while they stay shut.
+
+    Entries older than `closed_memory_s` are evicted and the map is capped at
+    `max_entries` (newest win), so long trips cannot grow the payload without bound.
+    """
+    merged = {**state.closed_at, **{s: now for s in segment_ids}}
+    limit = timedelta(seconds=cfg.closed_memory_s)
+    fresh = {s: t for s, t in merged.items() if now - t < limit}
+    if len(fresh) > max_entries:
+        fresh = dict(sorted(fresh.items(), key=lambda kv: kv[1])[-max_entries:])
+    return replace(state, closed_at=fresh)
 
 
 def _in_commit_zone(current: Assessment, cfg: Config) -> bool:
@@ -58,7 +73,10 @@ def _in_commit_zone(current: Assessment, cfg: Config) -> bool:
 def _recently_closed(
     current: Assessment, candidate: Assessment, state: TripState, now: datetime, cfg: Config
 ) -> bool:
-    """FR-RT7: does the candidate enter a segment, new to the trip, closed in the last 15 min?"""
+    """FR-RT7: does the candidate enter a segment, new to the trip, closed in the last 15 min?
+
+    The boundary is exclusive: exactly `closed_memory_s` old counts as expired.
+    """
     ahead = {e.segment_id for e in current.route.edges}
     new = {e.segment_id for e in candidate.route.edges} - ahead - {None}
     limit = timedelta(seconds=cfg.closed_memory_s)

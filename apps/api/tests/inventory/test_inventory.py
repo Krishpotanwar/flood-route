@@ -277,6 +277,41 @@ def test_hotspot_build_cross_checks_and_falls_back():
     assert out[6]["geocode_confidence"] == "low"  # an area centroid is not a segment: capped at low
 
 
+def test_hotspot_build_ignores_conflicted_peers():
+    rows = [
+        seed("Hoodi Signal", "https://a", "12.9920", "77.7180"),
+        seed("Hoodi Signal", "https://b", "12.9700", "77.7180"),  # 2.2 km apart: both low
+        seed("Hoodi Signal", "https://c"),  # no coords: peers conflicted, must ask Nominatim
+    ]
+    geo = FakeGeo({})
+    out, _ = build(rows, "bengaluru", geo)
+    assert out[2]["geocode_confidence"] == "none"
+    assert "nominatim" in out[2]["geocode_method"]
+    assert geo.asked == ["Hoodi Signal, Bengaluru"]
+
+
+def test_hotspot_build_caps_area_kinds_and_extents():
+    rows = [
+        seed("Area A", "https://a", "12.9200", "77.6200", kind="gcc_chronic_low_lying"),
+        seed("Area A", "https://b", "12.9201", "77.6201", kind="gcc_chronic_low_lying"),
+        seed("Stretch B", "https://a", "12.9300", "77.6300", extent="stretch"),
+        seed("Stretch B", "https://b", "12.9301", "77.6301", extent="stretch"),
+    ]
+    out, _ = build(rows, "bengaluru", FakeGeo({}))
+    assert [o["geocode_confidence"] for o in out] == ["medium", "medium", "low", "low"]
+
+
+def test_hotspot_name_match_cannot_promote_an_area_to_a_point():
+    rows = [
+        seed("Canal Outlet", "https://a", "12.95", "77.65"),
+        seed("Canal Outlet", "https://b", extent="area"),
+    ]
+    out, _ = build(rows, "bengaluru", FakeGeo({}))
+    assert out[1]["geocode_confidence"] == "low"
+    assert out[1]["needs_review"] == "true"
+    assert "capped_extent_area" in out[1]["geocode_method"]
+
+
 def test_hotspot_seed_needs_provenance(tmp_path):
     bad = seed("No source", "")
     with pytest.raises(ValueError, match="line 2"):

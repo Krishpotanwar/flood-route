@@ -8,11 +8,19 @@ import psycopg
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from floodroute.api.deps import get_db
+from floodroute.score.db import SUPPORTED_HORIZONS, SUPPORTED_VCLASSES
 
 router = APIRouter(prefix="/v1", tags=["risk"])
 
-VALID_HORIZONS = frozenset({0, 30, 60, 120})
-VALID_VCLASSES = frozenset({"two_wheeler", "car", "ambulance", "heavy"})
+# Single source of truth lives in score.db (Fix-2 converged the score side);
+# these names stay for existing importers.
+VALID_HORIZONS = SUPPORTED_HORIZONS
+VALID_VCLASSES = SUPPORTED_VCLASSES
+
+# Widest bbox the endpoint serves in one call; wider windows must page via
+# smaller boxes (the result caps at _RESULT_LIMIT rows).
+MAX_BBOX_DEG = 2.0
+_RESULT_LIMIT = 1000
 
 
 @router.get("/risk")
@@ -47,10 +55,22 @@ def get_risk(
             min_lon, min_lat, max_lon, max_lat = parts
             if min_lon > max_lon or min_lat > max_lat:
                 raise ValueError
+            if not (
+                -180.0 <= min_lon <= 180.0
+                and -180.0 <= max_lon <= 180.0
+                and -90.0 <= min_lat <= 90.0
+                and -90.0 <= max_lat <= 90.0
+            ):
+                raise ValueError
         except ValueError:
             raise HTTPException(
                 status_code=400,
                 detail="invalid bbox; expected min_lon,min_lat,max_lon,max_lat",
+            )
+        if max_lon - min_lon > MAX_BBOX_DEG or max_lat - min_lat > MAX_BBOX_DEG:
+            raise HTTPException(
+                status_code=422,
+                detail=f"bbox wider than {MAX_BBOX_DEG} degrees; query smaller windows",
             )
         clauses.append("ST_Intersects(s.geom, ST_MakeEnvelope(%s, %s, %s, %s, 4326))")
         params.extend([min_lon, min_lat, max_lon, max_lat])
@@ -65,7 +85,7 @@ def get_risk(
       on s.segment_id = sr.segment_id and sr.vclass = %s and sr.horizon_min = %s
     where {where_sql}
     order by s.segment_id
-    limit 1000
+    limit {_RESULT_LIMIT}
     """
 
     cur = db.execute(sql, tuple(params))

@@ -45,9 +45,13 @@ ponytail: one request per zone per run and no If-Modified-Since. A request per z
 from __future__ import annotations
 
 import json
+import logging
+import os
 from datetime import UTC, datetime, timedelta
 
 from floodroute.ingest.common import IngestError, Outcome, Rejected, in_india, utcnow
+
+logger = logging.getLogger(__name__)
 
 SOURCE = "metno"
 INTERVAL_S = 3600
@@ -139,12 +143,17 @@ def zone_points(conn) -> list[tuple]:
 
 def ingest(conn, http, *, points=None, now: datetime | None = None) -> Outcome:
     now = now or utcnow()
+    if not os.environ.get("FLOODROUTE_CONTACT", "").strip():
+        logger.warning(
+            "FLOODROUTE_CONTACT is unset: MET Norway blocks contact-less clients without warning"
+        )
     points = zone_points(conn) if points is None else list(points)
     if not points:
         raise IngestError("no zones to forecast: the zone table is empty")
     errors: list[str] = []
     rows_total = 0
     oldest = None
+    newest = None
     for zone_id, lat, lon in points:
         try:
             lat, lon = check_point(zone_id, lat, lon)
@@ -157,7 +166,11 @@ def ingest(conn, http, *, points=None, now: datetime | None = None) -> Outcome:
             cur.executemany(UPSERT_SQL, rows)
         rows_total += len(rows)
         oldest = updated if oldest is None else min(oldest, updated)
+        newest = updated if newest is None else max(newest, updated)
     if errors:
         raise IngestError(f"{len(errors)} of {len(points)} zones failed: " + "; ".join(errors[:3]))
     lag = max(0, int((now - oldest).total_seconds()))
-    return Outcome({"zones": len(points), "rows": rows_total}, lag)
+    warn = None
+    if newest is not None and newest > now:
+        warn = f"newest forecast updated_at {newest:%Y-%m-%dT%H:%MZ} is in the future"
+    return Outcome({"zones": len(points), "rows": rows_total}, lag, warn)

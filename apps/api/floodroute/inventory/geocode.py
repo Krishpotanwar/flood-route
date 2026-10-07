@@ -62,7 +62,10 @@ def confidence(results, query_name, box):
         return "none", ""
     want = tokens(query_name)
     for other in results[1:]:
-        far = dist_m(lat, lon, [(float(other["lon"]), float(other["lat"]))]) > NAMESAKE_M
+        olon, olat = float(other["lon"]), float(other["lat"])
+        if not (box[0] <= olon <= box[2] and box[1] <= olat <= box[3]):
+            continue  # out-of-box rivals cannot force ambiguity
+        far = dist_m(lat, lon, [(olon, olat)]) > NAMESAKE_M
         if (
             far
             and overlap(want, tokens(_name(other))) >= 0.5

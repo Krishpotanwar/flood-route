@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import json
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
+from threading import Barrier
 from uuid import uuid4
+
+import psycopg
 
 from floodroute.route.watch import (
     WatchRequest,
@@ -149,3 +153,107 @@ def test_route_watch_rate_limit_3_per_hour(app_db):
     )
     alerts_after_1hr = evaluate_route_watches(app_db)
     assert len(alerts_after_1hr) == 1
+
+
+def test_baseline_advances_on_recovery_so_a_reflood_alerts(app_db):
+    _seed_base_data(app_db)
+    decision_id = uuid4()
+    _seed_route_decision(app_db, decision_id, segments=[2001])
+
+    req = WatchRequest(contact_target="t", alert_channel="fcm", dwell_minutes=60)
+    create_route_watch(app_db, decision_id, req)
+
+    def set_state(state, p):
+        app_db.execute(
+            "update segment_risk set state = %s, p_unusable = %s, updated_at = %s"
+            " where segment_id = 2001 and vclass = 'car' and horizon_min = 0",
+            (state, p, datetime.now(UTC)),
+        )
+
+    set_state("impassable", 0.9)
+    assert len(evaluate_route_watches(app_db)) == 1
+    # Recovery: no alert, but the baseline must follow the fall.
+    set_state("clear", 0.05)
+    assert evaluate_route_watches(app_db) == []
+    row = app_db.execute(
+        "select baseline_states from route_watch where decision_id = %s", (decision_id,)
+    ).fetchone()[0]
+    states = row if isinstance(row, dict) else json.loads(row)
+    assert states["2001"] == "clear"
+    # Re-flood from the lower baseline alerts again.
+    set_state("risky", 0.4)
+    alerts = evaluate_route_watches(app_db)
+    assert len(alerts) == 1
+    assert alerts[0].changed_segments[0]["previous_state"] == "clear"
+
+
+def test_missing_risk_row_baselines_unknown_and_duplicates_return_existing(app_db):
+    _seed_base_data(app_db)
+    decision_id = uuid4()
+    _seed_route_decision(app_db, decision_id, segments=[2001, 9999])
+
+    req = WatchRequest(contact_target="t", alert_channel="sms", dwell_minutes=60)
+    first = create_route_watch(app_db, decision_id, req)
+    row = app_db.execute(
+        "select baseline_states from route_watch where decision_id = %s", (decision_id,)
+    ).fetchone()[0]
+    states = row if isinstance(row, dict) else json.loads(row)
+    assert states["9999"] == "unknown"
+
+    second = create_route_watch(
+        app_db, decision_id, WatchRequest(contact_target="other", dwell_minutes=60)
+    )
+    assert second.watch_id == first.watch_id
+    count = app_db.execute(
+        "select count(*) from route_watch where decision_id = %s", (decision_id,)
+    ).fetchone()[0]
+    assert count == 1
+
+
+def test_watch_request_rejects_an_unknown_alert_channel():
+    import pytest
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        WatchRequest(contact_target="t", alert_channel="smoke-signal")
+
+
+def test_concurrent_creators_share_one_watch_and_alert_counter(app_db, db_url):
+    _seed_base_data(app_db)
+    decision_id = uuid4()
+    _seed_route_decision(app_db, decision_id)
+    ready = Barrier(2)
+
+    def create():
+        with psycopg.connect(db_url, autocommit=True, connect_timeout=3) as conn:
+            conn.execute("set role floodroute_app")
+            ready.wait(timeout=5)
+            return create_route_watch(conn, decision_id, WatchRequest(contact_target="t"))
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first, second = [
+            future.result(timeout=10) for future in [pool.submit(create), pool.submit(create)]
+        ]
+    assert first.watch_id == second.watch_id
+    assert (
+        app_db.execute(
+            "select count(*) from route_watch where decision_id=%s", (decision_id,)
+        ).fetchone()[0]
+        == 1
+    )
+
+
+def test_retired_segment_risk_is_unknown_and_does_not_alert(app_db):
+    _seed_base_data(app_db)
+    decision_id = uuid4()
+    _seed_route_decision(app_db, decision_id, segments=[2001])
+    watch = create_route_watch(app_db, decision_id, WatchRequest(contact_target="t"))
+    app_db.execute("update segment set assessed=false where segment_id=2001")
+    app_db.execute(
+        "update segment_risk set state='impassable', p_unusable=0.9 where segment_id=2001"
+    )
+    assert evaluate_route_watches(app_db) == []
+    baseline = app_db.execute(
+        "select baseline_states from route_watch where watch_id=%s", (watch.watch_id,)
+    ).fetchone()[0]
+    assert baseline["2001"] == "unknown"

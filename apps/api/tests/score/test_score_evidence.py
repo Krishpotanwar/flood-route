@@ -32,6 +32,35 @@ def same_as_without_evidence(evidence) -> bool:
     return all(a[k].p == b[k].p and a[k].state == b[k].state for k in a)
 
 
+def test_contributors_must_be_an_integer_count():
+    with pytest.raises((TypeError, ValueError)):
+        Evidence("probe", at(), at(60), "p1", speed_ratio=0.2, contributors=5.5)
+    with pytest.raises((TypeError, ValueError)):
+        Evidence("probe", at(), at(60), "p1", speed_ratio=0.2, contributors=-1)
+    Evidence("probe", at(), at(60), "p1", speed_ratio=0.2, contributors=5)  # floor holds
+
+
+def test_replay_accepts_zulu_utc_suffix():
+    import json
+
+    from floodroute.score.replay import replay
+
+    lines = [
+        json.dumps(
+            {
+                "type": "segment",
+                "ts": "2027-05-18T11:00:00Z",
+                "segment_id": 1,
+                "zone_id": 10,
+                "assessed": False,
+            }
+        ),
+        json.dumps({"type": "tick", "ts": "2027-05-18T11:00:00Z"}),
+    ]
+    ticks = list(replay(lines, CFG))
+    assert len(ticks) == 1 and ticks[0]["ts"] == "2027-05-18T11:00:00+00:00"
+
+
 # ---- FR-R8 corroboration ----------------------------------------------------------------
 
 

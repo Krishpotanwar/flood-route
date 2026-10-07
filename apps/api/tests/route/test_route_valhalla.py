@@ -160,6 +160,22 @@ def test_no_path_errors_return_none(code):
     assert _router(lambda req: response)(O, D, "car", T0) is None
 
 
+@pytest.mark.parametrize("code", [167, 176])
+def test_exclude_polygon_limits_return_none_instead_of_502(code):
+    # 167/176 mean the avoid-boxes blew the Valhalla service limits on the
+    # flooded path: fail closed to no-route, never raise to a 502.
+    body = {"error_code": code, "error": "Exclude polygons exceed the limit"}
+    response = httpx.Response(400, json=body)
+    assert _router(lambda req: response)(O, D, "car", T0) is None
+
+
+def test_naive_depart_raises_instead_of_reading_as_utc():
+    from datetime import datetime
+
+    with pytest.raises(ValueError, match="timezone-aware"):
+        request_body(O, D, "car", depart=datetime(2026, 10, 5, 12, 0))  # noqa: DTZ001
+
+
 @pytest.mark.parametrize(
     "response",
     [

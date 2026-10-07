@@ -16,7 +16,10 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 MAX_PHOTO_BYTES = 5 * 1024 * 1024  # 5 MB
 MAX_DIMENSION = 1600  # px max width or height
 JPEG_QUALITY = 85
-ALLOWED_FORMATS = frozenset({"JPEG", "PNG", "WEBP", "MPO"})
+# Decoded-pixel budget: outputs are capped at 1600 px (2.56 MP), so inputs
+# past this are decompression-bomb shaped, never real phone photos.
+MAX_IMAGE_PIXELS = 16_000_000
+ALLOWED_FORMATS = frozenset({"JPEG", "PNG", "WEBP"})
 
 
 class PhotoSanitizationError(ValueError):
@@ -57,6 +60,10 @@ def sanitize_photo(
 
     try:
         img_in = Image.open(io.BytesIO(raw_bytes))
+        if (img_in.width or 0) * (img_in.height or 0) > MAX_IMAGE_PIXELS:
+            raise PhotoSanitizationError(
+                f"Photo pixel count exceeds budget ({MAX_IMAGE_PIXELS} pixels)"
+            )
         fmt = (img_in.format or "").upper()
         if fmt not in ALLOWED_FORMATS:
             raise PhotoSanitizationError(

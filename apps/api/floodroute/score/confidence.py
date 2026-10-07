@@ -17,9 +17,12 @@ def confidence(
     rain_age_s: int | None,
     covered: bool,
     cfg: Config,
+    wetness_unknown: bool = False,
 ) -> str:
     """n_sources counts independent inputs: the rain source plus distinct evidence sources that
-    fired. rain_age_s is None when no rain observation is fresh."""
+    fired. rain_age_s is None when no rain observation is fresh. wetness_unknown is True when
+    no observation carried a 24 h total, so the logit counted antecedent wetness as dry: one
+    level is withheld against that optimistic assumption."""
     c, limit = cfg.confidence, cfg.staleness.max_age_s
     if evidence_age_s is None or evidence_age_s > limit:
         level = 0
@@ -30,6 +33,8 @@ def confidence(
     if forecast_missing or (spread_mm_h is not None and spread_mm_h > c.spread_penalty_mm_h):
         level -= 1
     if rain_age_s is None or rain_age_s > limit:
+        level -= 1
+    if wetness_unknown:
         level -= 1
     if not covered:
         level -= 1

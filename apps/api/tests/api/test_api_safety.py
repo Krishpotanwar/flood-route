@@ -14,7 +14,7 @@ def test_api_kill_switch_lifecycle_and_advisory_freeze(client, app_db):
     engage_payload = {
         "scope": "global",
         "reason": "Suspected telemetry spoofing during flash flood",
-        "operator_id": "op_chief",
+        "operator_id": "op-primary",
         "notes": "Emergency freeze activated",
     }
     r_engage = client.post("/v1/safety/kill-switch", json=engage_payload)
@@ -56,8 +56,8 @@ def test_api_kill_switch_lifecycle_and_advisory_freeze(client, app_db):
     # 5. Disengage requires distinct operators
     fail_disengage = {
         "reason": "Telemetry verified against ground truth",
-        "operator_id": "op_chief",
-        "second_operator_id": "op_chief",
+        "operator_id": "op-primary",
+        "second_operator_id": "op-primary",
     }
     r_fail = client.post(f"/v1/safety/kill-switch/{switch_id}/disengage", json=fail_disengage)
     assert r_fail.status_code == 400
@@ -66,8 +66,8 @@ def test_api_kill_switch_lifecycle_and_advisory_freeze(client, app_db):
     # 6. Disengage with two operators succeeds
     succ_disengage = {
         "reason": "Telemetry verified against ground truth and radar",
-        "operator_id": "op_chief",
-        "second_operator_id": "op_safety_officer",
+        "operator_id": "op-primary",
+        "second_operator_id": "op-secondary",
         "notes": "Clear to resume advisories",
     }
     r_succ = client.post(f"/v1/safety/kill-switch/{switch_id}/disengage", json=succ_disengage)

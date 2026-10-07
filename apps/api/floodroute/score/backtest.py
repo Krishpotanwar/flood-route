@@ -15,10 +15,12 @@ from typing import Any
 
 import psycopg
 
-logger = logging.getLogger(__name__)
+from floodroute.score.db import SUPPORTED_HORIZONS, SUPPORTED_VCLASSES
 
-SUPPORTED_VCLASSES = ("two_wheeler", "car", "ambulance", "heavy")
-SUPPORTED_HORIZONS = (0, 30, 60, 120)
+# Single source of truth lives in score/db.py. api/routes/risk.py keeps its own
+# copy; converging that endpoint is Fix-3's job, not this module's.
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -466,8 +468,21 @@ def run_db_backtest(
     horizon_min: int = 0,
     p_threshold: float = 0.30,
 ) -> dict[str, Any]:
-    """Evaluate database predictions against observed ground-truth events."""
-    where_parts = ["oe.segment_id is not null"]
+    """Evaluate database predictions against observed ground-truth events.
+
+    Only labelled events with a matching risk row are evaluated: a missing
+    prediction is unevaluated, never a confident clear. `other` ground truth
+    means unclear and is excluded too.
+    """
+    if vclass not in SUPPORTED_VCLASSES:
+        raise ValueError(
+            f"unknown vclass {vclass!r}: expected one of {SUPPORTED_VCLASSES}"
+        )
+    if horizon_min not in SUPPORTED_HORIZONS:
+        raise ValueError(
+            f"unknown horizon_min {horizon_min!r}: expected one of {SUPPORTED_HORIZONS}"
+        )
+    where_parts = ["oe.segment_id is not null", "oe.kind != 'other'"]
     params: list[Any] = [vclass, horizon_min]
 
     if city_id is not None:
@@ -479,11 +494,11 @@ def run_db_backtest(
     # We evaluate against current segment_risk as well as historical records
     sql = f"""
         select oe.event_id, oe.segment_id, oe.kind, oe.depth_class, oe.source_kind, oe.label_tier,
-               coalesce(sr.p_unusable, 0.0) as p_unusable,
-               coalesce(sr.state, 'clear') as state,
-               sr.depth_p50_cm
+                sr.p_unusable as p_unusable,
+                sr.state as state,
+                sr.depth_p50_cm
         from observed_event oe
-        left join segment_risk sr
+        join segment_risk sr
           on oe.segment_id = sr.segment_id and sr.vclass = %s and sr.horizon_min = %s
         where {where_sql}
         order by oe.observed_at
@@ -505,19 +520,17 @@ def run_db_backtest(
         }
 
     preds_prob: list[tuple[float, bool]] = []
-    preds_state: list[tuple[str, bool]] = []
     depth_pairs: list[tuple[float, float]] = []
 
     by_tier: dict[str, list[tuple[float, bool]]] = {"high": [], "medium": [], "low": []}
     by_source: dict[str, list[tuple[float, bool]]] = {}
 
-    for _eid, _sid, kind, d_class, src_kind, tier, p, state, pred_d in rows:
+    for _eid, _sid, kind, d_class, src_kind, tier, p, _state, pred_d in rows:
         # Ground truth: flooded/impassable/stalled = True (1), cleared = False (0)
         is_truth_flood = kind in ("flooded", "impassable", "stalled_vehicle")
         p_val = float(p)
 
         preds_prob.append((p_val, is_truth_flood))
-        preds_state.append((state, is_truth_flood))
 
         if tier in by_tier:
             by_tier[tier].append((p_val, is_truth_flood))

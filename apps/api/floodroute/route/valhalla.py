@@ -24,9 +24,11 @@ from floodroute.route.models import Edge, LatLon, Polygon, Route
 COSTING = {"two_wheeler": "motor_scooter", "car": "auto", "ambulance": "auto", "heavy": "truck"}
 
 # Valhalla error_code values that mean "no path" (docs error table): 170 unconnected regions,
-# 171 no suitable edges near location, 441 location unreachable, 442 no path found. The JSON
-# field name `error_code` is recalled, not in the API page [U]: S1 to confirm on a live server.
-NO_ROUTE_CODES = frozenset({170, 171, 441, 442})
+# 171 no suitable edges near location, 441 location unreachable, 442 no path found, plus the
+# exclude_polygons service limits: 167 max-avoid-edges/area exceeded, 176 max avoid locations.
+# The JSON field name `error_code` is recalled, not in the API page [U]: S1 to confirm on a live server.
+# 167/176 map to no-route (fail closed) instead of raising to a 502 on the flooded path.
+NO_ROUTE_CODES = frozenset({167, 171, 170, 176, 441, 442})
 
 SegmentOf = Callable[[Sequence[LatLon]], int | None]
 
@@ -88,7 +90,9 @@ def request_body(
         "units": "kilometers",
     }
     if depart is not None:
-        dt = depart.astimezone(UTC) if depart.tzinfo is not None else depart
+        if depart.tzinfo is None:
+            raise ValueError("depart must be timezone-aware, naive input never reads as UTC")
+        dt = depart.astimezone(UTC)
         body["date_time"] = {"type": 1, "value": dt.strftime("%Y-%m-%dT%H:%M")}
     else:
         body["date_time"] = {"type": 0}

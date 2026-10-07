@@ -41,7 +41,12 @@ def test_migrator_owns_every_object(db):
 
 
 def test_app_role_has_dml_only_and_audit_log_is_insert_select(db):
-    expected = {"audit_log": {"SELECT", "INSERT"}, "schema_migrations": set()}
+    expected = {
+        "audit_log": {"SELECT", "INSERT"},
+        "schema_migrations": set(),
+        # Scoring history is the backtest record: the app appends and reads it, never rewrites it.
+        "segment_risk_history": {"SELECT", "INSERT"},
+    }
     tables = [r[0] for r in db.execute(TABLES).fetchall()]
     assert len(tables) >= 18
     for table in tables:
@@ -79,6 +84,52 @@ def test_neither_role_holds_server_wide_privileges(db):
 def test_app_role_cannot_run_ddl_truncate_or_touch_migration_history(app_db, sql):
     with pytest.raises(errors.InsufficientPrivilege):
         app_db.execute(sql)
+
+
+def test_app_role_cannot_rewrite_scoring_history(app_db, db):
+    assert app_db.execute("select ensure_risk_history_partitions(5)").fetchone()[0] == 2
+    db.execute(
+        "insert into shadow_run (model_version, config_hash) values ('v0', 'abc')"
+    )
+    app_db.execute(
+        "insert into segment_risk_history (segment_id, vclass, horizon_min, p_unusable,"
+        " state, confidence, evidence_age_s, model_version, updated_at, run_id)"
+        " values (10, 'car', 60, 0.3, 'risky', 'medium', 120, 'v0', now(), 1)"
+    )
+    with pytest.raises(errors.InsufficientPrivilege, match="permission denied"):
+        app_db.execute("update segment_risk_history set state = 'clear' where segment_id = 10")
+    with pytest.raises(errors.InsufficientPrivilege, match="permission denied"):
+        app_db.execute("delete from segment_risk_history where segment_id = 10")
+    assert app_db.execute("select count(*) from segment_risk_history").fetchone()[0] == 1
+    for (name,) in db.execute(
+        "select relid::regclass::text from pg_partition_tree('segment_risk_history')"
+    ).fetchall():
+        for operation in ("update {} set state = 'clear' where false", "delete from {} where false"):
+            query = psycopg.sql.SQL(operation).format(psycopg.sql.Identifier(name))
+            with pytest.raises(errors.InsufficientPrivilege, match="permission denied"):
+                app_db.execute(query)
+
+
+def test_release_migration_revokes_existing_partition_bypass(fresh_db, tmp_path, template_db):
+    name = "0009_backend_release.sql"
+    for path in MIGRATIONS.iterdir():
+        if path.name < name:
+            shutil.copy(path, tmp_path)
+    migrate(fresh_db, tmp_path)
+    with psycopg.connect(fresh_db, autocommit=True) as conn:
+        conn.execute("select ensure_risk_history_partitions(5)")
+        acl_sql = (
+            "select has_table_privilege('floodroute_app', relid, 'UPDATE'),"
+            " has_table_privilege('floodroute_app', relid, 'DELETE')"
+            " from pg_partition_tree('segment_risk_history')"
+        )
+        assert (True, True) in conn.execute(acl_sql).fetchall()
+        shutil.copy(MIGRATIONS / name, tmp_path)
+        assert migrate(fresh_db, tmp_path) == [name]
+        assert set(conn.execute(acl_sql).fetchall()) == {(False, False)}
+        conn.execute("select ensure_risk_history_partitions(6)")
+        assert set(conn.execute(acl_sql).fetchall()) == {(False, False)}
+        assert migrate(fresh_db, tmp_path) == []
 
 
 def test_app_role_writes_identity_tables_without_sequence_grants(app_db):

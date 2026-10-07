@@ -9,9 +9,11 @@ from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 
 import psycopg
-from fastapi import APIRouter, Depends, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 from floodroute.api.deps import get_db
+from floodroute.api.routes.risk import VALID_HORIZONS, VALID_VCLASSES
+from floodroute.safety.kill_switch import get_active_kill_switch
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,33 @@ router = APIRouter(prefix="/v1/feed", tags=["feed"])
 
 CAP_NS = "urn:oasis:names:tc:emergency:cap:1.2"
 
+
+def _freeze_detail() -> str:
+    return "Emergency advisory freeze active. Feeds are suspended until operators lift the freeze."
+
+
+def _reject_when_frozen(db: psycopg.Connection) -> None:
+    """Global freeze suspends advisory feeds (city freezes do not apply: the
+    feed has no city parameter, so it keeps serving unfrozen cities)."""
+    if get_active_kill_switch(db) is not None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=_freeze_detail(),
+        )
+
+
+def _checked_params(vclass: str, horizon_min: int) -> None:
+    """Unknown vclass/horizon is a 422, never a 200 with empty features."""
+    if vclass not in VALID_VCLASSES:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="vclass must be one of two_wheeler, car, ambulance, heavy",
+        )
+    if horizon_min not in VALID_HORIZONS:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="horizon_min must be one of 0, 30, 60, 120",
+        )
 
 
 @router.get("/closures.geojson")
@@ -28,12 +57,15 @@ def get_closures_geojson(
     horizon_min: int = Query(0, description="Horizon in minutes: 0, 30, 60, 120"),
 ) -> dict[str, Any]:
     """GeoJSON feed of currently impassable and risky road segments."""
+    _checked_params(vclass, horizon_min)
+    _reject_when_frozen(db)
     sql = """
     select s.segment_id, s.road_class, sr.state, sr.p_unusable, sr.confidence,
            sr.depth_p50_cm, sr.depth_p90_cm, sr.updated_at, ST_AsGeoJSON(s.geom)
     from segment_risk sr
     join segment s on sr.segment_id = s.segment_id
     where sr.vclass = %s
+      and s.assessed
       and sr.horizon_min = %s
       and sr.state in ('impassable', 'risky')
     order by s.segment_id
@@ -73,12 +105,15 @@ def get_closures_cap_xml(
     horizon_min: int = Query(0, description="Horizon in minutes: 0, 30, 60, 120"),
 ) -> Response:
     """OASIS CAP 1.2 XML feed of currently impassable and risky road closures."""
+    _checked_params(vclass, horizon_min)
+    _reject_when_frozen(db)
     sql = """
     select s.segment_id, s.road_class, sr.state, sr.p_unusable, sr.confidence,
            sr.depth_p50_cm, sr.depth_p90_cm, sr.updated_at, ST_AsGeoJSON(s.geom)
     from segment_risk sr
     join segment s on sr.segment_id = s.segment_id
     where sr.vclass = %s
+      and s.assessed
       and sr.horizon_min = %s
       and sr.state in ('impassable', 'risky')
     order by s.segment_id
@@ -118,7 +153,9 @@ def get_closures_cap_xml(
 
         ET.SubElement(info, "expires").text = expires_str
         ET.SubElement(info, "senderName").text = "FloodRoute Flood Risk Monitor"
-        ET.SubElement(info, "headline").text = f"Road Inundation Closures for {vclass.replace('_', ' ').title()}"
+        ET.SubElement(
+            info, "headline"
+        ).text = f"Road Inundation Closures for {vclass.replace('_', ' ').title()}"
         ET.SubElement(info, "description").text = (
             f"Active flood closures on {len(rows)} road segment(s). "
             f"Water levels exceed vehicle clearance thresholds."
@@ -156,7 +193,6 @@ def get_closures_cap_xml(
                     ET.SubElement(area, "circle").text = f"{lat:.6f},{lon:.6f} 0.15"
             except (json.JSONDecodeError, KeyError, IndexError, TypeError):
                 logger.debug("Failed parsing geometry for segment %s into CAP circle", sid)
-
 
             p_sid = ET.SubElement(area, "parameter")
             ET.SubElement(p_sid, "valueName").text = "segmentId"

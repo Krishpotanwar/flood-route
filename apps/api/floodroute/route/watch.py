@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID, uuid4
 
 import psycopg
@@ -24,12 +24,14 @@ STATE_RANKS = {
     "impassable": 3,
 }
 
+AlertChannel = Literal["fcm", "whatsapp", "sms", "webhook"]
+
 
 class WatchRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     device_token: str | None = None
-    alert_channel: str = Field(
+    alert_channel: AlertChannel = Field(
         default="fcm",
         description="Notification channel: fcm, whatsapp, sms, webhook",
     )
@@ -77,86 +79,116 @@ def create_route_watch(
     tenant_id: int | None = None,
 ) -> WatchResponse:
     """Subscribe to material change alerts for a planned route decision."""
-    sql = "select vclass, chosen from route_decision where decision_id = %s"
-    row = db.execute(sql, (decision_id,)).fetchone()
-    if not row:
-        raise ValueError(f"Route decision {decision_id} not found")
+    # Serialise creation per audited decision: one watch shares one alert counter.
+    with db.transaction():
+        sql = "select vclass, chosen from route_decision where decision_id = %s for update"
+        row = db.execute(sql, (decision_id,)).fetchone()
+        if not row:
+            raise ValueError(f"Route decision {decision_id} not found")
 
-    vclass, chosen_data = row[0], row[1]
-    segment_ids: list[int] = []
+        vclass, chosen_data = row[0], row[1]
+        segment_ids: list[int] = []
 
-    if isinstance(chosen_data, dict):
-        raw_segs = chosen_data.get("segments", [])
-        for s in raw_segs:
-            if isinstance(s, dict) and "segment_id" in s:
-                segment_ids.append(int(s["segment_id"]))
-            elif isinstance(s, int):
-                segment_ids.append(s)
-    elif isinstance(chosen_data, list):
-        for s in chosen_data:
-            if isinstance(s, dict) and "segment_id" in s:
-                segment_ids.append(int(s["segment_id"]))
+        if isinstance(chosen_data, dict):
+            raw_segs = chosen_data.get("segments", [])
+            for s in raw_segs:
+                if isinstance(s, dict) and "segment_id" in s:
+                    segment_ids.append(int(s["segment_id"]))
+                elif isinstance(s, int):
+                    segment_ids.append(s)
+        elif isinstance(chosen_data, list):
+            for s in chosen_data:
+                if isinstance(s, dict) and "segment_id" in s:
+                    segment_ids.append(int(s["segment_id"]))
 
-    if not segment_ids:
-        raise ValueError(f"No routable segments found in route decision {decision_id}")
+        if not segment_ids:
+            raise ValueError(f"No routable segments found in route decision {decision_id}")
 
-    # Deduplicate while preserving order
-    unique_segments = list(dict.fromkeys(segment_ids))
+        # Deduplicate while preserving order
+        unique_segments = list(dict.fromkeys(segment_ids))
 
-    # Fetch initial baseline states
-    cur = db.execute(
+        # Fetch initial baseline states
+        cur = db.execute(
+            """
+            select sr.segment_id, sr.state
+            from segment_risk sr
+            join segment s on s.segment_id = sr.segment_id
+            where sr.segment_id = ANY(%s) and sr.vclass = %s and sr.horizon_min = 0 and s.assessed
+            """,
+            (unique_segments, vclass),
+        )
+        baseline_states: dict[str, str] = {str(sid): state for sid, state in cur.fetchall()}
+        for sid in unique_segments:
+            if str(sid) not in baseline_states:
+                # Missing row means unknown, never clear: an unassessed segment
+                # must not read as free of water.
+                baseline_states[str(sid)] = "unknown"
+
+        # One active watch per decision: duplicates would each carry their own
+        # 3/hr counter and multiply alerts to the same target.
+        existing = db.execute(
+            """
+            select watch_id, decision_id, vclass, cardinality(segments),
+                   alert_channel, contact_target, alerts_sent_count, expires_at, is_active
+            from route_watch
+            where decision_id = %s and is_active and expires_at > now()
+            order by created_at desc
+            limit 1
+            """,
+            (decision_id,),
+        ).fetchone()
+        if existing:
+            return WatchResponse(
+                watch_id=existing[0],
+                decision_id=existing[1],
+                vclass=existing[2],
+                segments_count=existing[3],
+                alert_channel=existing[4],
+                contact_target=existing[5],
+                alerts_sent_count=existing[6],
+                expires_at=existing[7],
+                status="active" if existing[8] else "inactive",
+            )
+
+        now = datetime.now(UTC)
+        expires_at = now + timedelta(minutes=req.dwell_minutes)
+        watch_id = uuid4()
+
+        insert_sql = """
+        insert into route_watch (
+            watch_id, decision_id, device_token, tenant_id, vclass,
+            segments, baseline_states, alert_channel, contact_target,
+            alerts_sent_count, expires_at, is_active, created_at
+        ) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, 0, %s, true, %s)
         """
-        select sr.segment_id, sr.state
-        from segment_risk sr
-        where sr.segment_id = ANY(%s) and sr.vclass = %s and sr.horizon_min = 0
-        """,
-        (unique_segments, vclass),
-    )
-    baseline_states: dict[str, str] = {str(sid): state for sid, state in cur.fetchall()}
-    for sid in unique_segments:
-        if str(sid) not in baseline_states:
-            baseline_states[str(sid)] = "clear"
+        db.execute(
+            insert_sql,
+            (
+                watch_id,
+                decision_id,
+                req.device_token,
+                tenant_id,
+                vclass,
+                unique_segments,
+                json.dumps(baseline_states),
+                req.alert_channel,
+                req.contact_target,
+                expires_at,
+                now,
+            ),
+        )
 
-    now = datetime.now(UTC)
-    expires_at = now + timedelta(minutes=req.dwell_minutes)
-    watch_id = uuid4()
-
-    insert_sql = """
-    insert into route_watch (
-        watch_id, decision_id, device_token, tenant_id, vclass,
-        segments, baseline_states, alert_channel, contact_target,
-        alerts_sent_count, expires_at, is_active, created_at
-    ) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, 0, %s, true, %s)
-    """
-    db.execute(
-        insert_sql,
-        (
-            watch_id,
-            decision_id,
-            req.device_token,
-            tenant_id,
-            vclass,
-            unique_segments,
-            json.dumps(baseline_states),
-            req.alert_channel,
-            req.contact_target,
-            expires_at,
-            now,
-        ),
-    )
-    db.commit()
-
-    return WatchResponse(
-        watch_id=watch_id,
-        decision_id=decision_id,
-        vclass=vclass,
-        segments_count=len(unique_segments),
-        alert_channel=req.alert_channel,
-        contact_target=req.contact_target,
-        alerts_sent_count=0,
-        expires_at=expires_at,
-        status="active",
-    )
+        return WatchResponse(
+            watch_id=watch_id,
+            decision_id=decision_id,
+            vclass=vclass,
+            segments_count=len(unique_segments),
+            alert_channel=req.alert_channel,
+            contact_target=req.contact_target,
+            alerts_sent_count=0,
+            expires_at=expires_at,
+            status="active",
+        )
 
 
 def get_route_watch(db: psycopg.Connection, decision_id: UUID) -> WatchResponse | None:
@@ -234,32 +266,40 @@ def evaluate_route_watches(db: psycopg.Connection) -> list[WatchAlert]:
                 # Capped: skip further notifications this hour
                 continue
 
-        baseline: dict[str, str] = baseline_raw if isinstance(baseline_raw, dict) else json.loads(baseline_raw)
+        baseline: dict[str, str] = (
+            baseline_raw if isinstance(baseline_raw, dict) else json.loads(baseline_raw)
+        )
 
         # Query latest segment risk
         seg_sql = """
         select sr.segment_id, sr.state, sr.p_unusable, sr.depth_p50_cm, s.road_class
         from segment_risk sr
         join segment s on sr.segment_id = s.segment_id
-        where sr.segment_id = ANY(%s) and sr.vclass = %s and sr.horizon_min = 0
+        where sr.segment_id = ANY(%s) and sr.vclass = %s and sr.horizon_min = 0 and s.assessed
         """
         cur = db.execute(seg_sql, (segments, vclass))
         rows = cur.fetchall()
 
         changed_segments: list[dict[str, Any]] = []
-        updated_baseline = dict(baseline)
+        updated_baseline = {str(sid): "unknown" for sid in segments}
 
         for sid, state, p, d50, rclass in rows:
             sid_str = str(sid)
-            old_state = baseline.get(sid_str, "clear")
+            old_state = baseline.get(sid_str, "unknown")
             old_rank = STATE_RANKS.get(old_state, 0)
             new_rank = STATE_RANKS.get(state, 0)
 
             # Material change condition:
             # 1. Road turned Impassable (and wasn't previously)
             # 2. Risk band increased (e.g. clear -> watch/risky/impassable)
-            is_material = (state == "impassable" and old_state != "impassable") or (new_rank > old_rank)
+            is_material = (state == "impassable" and old_state != "impassable") or (
+                new_rank > old_rank
+            )
 
+            # The baseline always advances to the current state, even on a
+            # recovery (fall). Otherwise a baseline stuck at impassable would
+            # never alert on a later re-flood (a fall is logged, not alerted).
+            updated_baseline[sid_str] = state
             if is_material:
                 changed_segments.append(
                     {
@@ -271,7 +311,6 @@ def evaluate_route_watches(db: psycopg.Connection) -> list[WatchAlert]:
                         "depth_p50_cm": float(d50) if d50 is not None else None,
                     }
                 )
-                updated_baseline[sid_str] = state
 
         if changed_segments:
             reason = (
@@ -299,6 +338,14 @@ def evaluate_route_watches(db: psycopg.Connection) -> list[WatchAlert]:
             where watch_id = %s
             """
             db.execute(up_sql, (new_count, now, json.dumps(updated_baseline), watch_id))
+            db.commit()
+        elif updated_baseline != baseline:
+            # Recovery (or any fall) moves the baseline without alerting, so
+            # a later rise counts as news again. Counters are untouched.
+            db.execute(
+                "update route_watch set baseline_states = %s where watch_id = %s",
+                (json.dumps(updated_baseline), watch_id),
+            )
             db.commit()
 
     return alerts

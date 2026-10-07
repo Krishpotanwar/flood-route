@@ -12,14 +12,26 @@ Implements PRD FR-P1 and TRD 9:
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import math
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
 import psycopg
 
+from floodroute.score.db import SUPPORTED_VCLASSES
+
 SUPPORTED_LANGUAGES = {"kn": "ಕನ್ನಡ", "hi": "हिन्दी", "en": "English"}
 DEFAULT_VEHICLE_CLASS = "car"
+
+# Inbound abuse controls (single-process; a multi-replica deployment needs a
+# shared store to enforce these globally).
+SESSION_TTL_S = 24 * 3600.0
+SESSION_CAP = 10000
+RATE_LIMIT_N = 30
+RATE_LIMIT_WINDOW_S = 60.0
 
 
 @dataclass
@@ -34,15 +46,77 @@ class UserSession:
     updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
-# In-memory session store (can be backed by Postgres or Redis as needed)
+# In-memory session store (can be backed by Postgres or Redis as needed).
+# Bounded by SESSION_CAP with TTL eviction so spoofed senders cannot grow it
+# without limit (see get_user_session).
 _SESSIONS: dict[str, UserSession] = {}
+
+# Sender -> (window_start_epoch_s, count). Best effort per process.
+_RATE: dict[str, tuple[float, int]] = {}
+
+
+def _prune_sessions(now_ts: float) -> None:
+    """Drop sessions past the TTL."""
+    expired = [k for k, s in _SESSIONS.items() if now_ts - s.updated_at.timestamp() > SESSION_TTL_S]
+    for k in expired:
+        del _SESSIONS[k]
 
 
 def get_user_session(phone_number: str) -> UserSession:
-    """Retrieve or create user session."""
+    """Retrieve or create user session (bounded: oldest-first past the cap)."""
+    now_ts = datetime.now(UTC).timestamp()
+    _prune_sessions(now_ts)
     if phone_number not in _SESSIONS:
+        if len(_SESSIONS) >= SESSION_CAP:
+            oldest = min(_SESSIONS, key=lambda k: _SESSIONS[k].updated_at)
+            del _SESSIONS[oldest]
         _SESSIONS[phone_number] = UserSession(phone_number=phone_number)
     return _SESSIONS[phone_number]
+
+
+def _prune_rate_windows(now: float) -> None:
+    """Drop sender windows that already expired."""
+    expired = [k for k, (start, _) in _RATE.items() if now - start >= RATE_LIMIT_WINDOW_S]
+    for k in expired:
+        del _RATE[k]
+
+
+def sender_allowed(sender: str, now_ts: float | None = None) -> bool:
+    """Fixed-window per-sender rate limit for inbound webhook traffic."""
+    now = now_ts if now_ts is not None else datetime.now(UTC).timestamp()
+    if len(_RATE) > SESSION_CAP:
+        _prune_rate_windows(now)
+    start, count = _RATE.get(sender, (now, 0))
+    if now - start >= RATE_LIMIT_WINDOW_S:
+        _RATE[sender] = (now, 1)
+        return True
+    if count >= RATE_LIMIT_N:
+        return False
+    _RATE[sender] = (start, count + 1)
+    return True
+
+
+def is_valid_inbound(parsed: dict[str, Any] | None) -> bool:
+    """Strict shape check: only well-formed sender message events are handled."""
+    if not parsed:
+        return False
+    sender = parsed.get("sender")
+    if not isinstance(sender, str) or not sender.strip():
+        return False
+    if not parsed.get("message_id"):
+        return False
+    return parsed.get("type") in ("text", "location", "interactive")
+
+
+def _parse_coord(value: Any, lo: float, hi: float) -> float | None:
+    """Numeric, finite, in-range coordinate, else None (fail closed to welcome)."""
+    try:
+        num = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(num) or not lo <= num <= hi:
+        return None
+    return num
 
 
 def verify_meta_webhook(
@@ -52,9 +126,42 @@ def verify_meta_webhook(
     expected_token: str,
 ) -> str | None:
     """Verify Meta Webhook setup handshake (hub.mode, hub.verify_token)."""
-    if mode == "subscribe" and token == expected_token and challenge:
-        return challenge
-    return None
+    if mode != "subscribe" or not challenge or not token or not expected_token:
+        return None
+    try:
+        ok = hmac.compare_digest(token.encode("utf-8"), expected_token.encode("utf-8"))
+    except (TypeError, ValueError):
+        return None
+    return challenge if ok else None
+
+
+def verify_whatsapp_signature(
+    raw_body: bytes,
+    signature_header: str | None,
+    app_secret: str,
+) -> bool:
+    """Validate a WhatsApp Cloud API webhook POST against the App Secret.
+
+    Meta signs every webhook POST with HMAC-SHA256 over the raw body keyed
+    by the App Secret and sends the hex digest in X-Hub-Signature-256; see
+    https://developers.facebook.com/documentation/business-messaging/whatsapp/webhooks/create-webhook-endpoint/
+    Validation recomputes the digest over the exact request bytes and
+    compares in constant time. Returns False on a missing or malformed
+    header or an empty secret.
+    """
+    if not app_secret or not signature_header or raw_body is None:
+        return False
+    prefix = "sha256="
+    if not signature_header.startswith(prefix):
+        return False
+    candidate = signature_header[len(prefix):].strip()
+    if not candidate:
+        return False
+    expected = hmac.new(app_secret.encode("utf-8"), raw_body, hashlib.sha256).hexdigest()
+    try:
+        return hmac.compare_digest(expected, candidate)
+    except (TypeError, ValueError):
+        return False
 
 
 def parse_meta_payload(payload: dict[str, Any]) -> dict[str, Any] | None:
@@ -119,8 +226,10 @@ def handle_incoming_message(
 
     # 1. Location intent
     if parsed["type"] == "location" and parsed["location"]:
-        lat = float(parsed["location"]["latitude"])
-        lon = float(parsed["location"]["longitude"])
+        lat = _parse_coord(parsed["location"].get("latitude"), -90.0, 90.0)
+        lon = _parse_coord(parsed["location"].get("longitude"), -180.0, 180.0)
+        if lat is None or lon is None:
+            return _handle_welcome(session)
         session.last_lat = lat
         session.last_lon = lon
         session.updated_at = datetime.now(UTC)
@@ -144,6 +253,16 @@ def handle_incoming_message(
                 )
         elif btn.startswith("VEHICLE_"):
             new_vclass = btn.replace("VEHICLE_", "").lower()
+            if new_vclass not in SUPPORTED_VCLASSES:
+                return _response_text(
+                    sender,
+                    _text(
+                        session.lang,
+                        kn="ವಾಹನ ವರ್ಗ ಗುರುತಿಸಲಾಗಲಿಲ್ಲ. ದ್ವಿಚಕ್ರ, ಕಾರು, ಆಂಬ್ಯುಲೆನ್ಸ್ ಅಥವಾ ಹೆವಿ ಆಯ್ಕೆಮಾಡಿ.",
+                        hi="वाहन प्रकार पहचाना नहीं गया। दोपहिया, कार, एम्बुलेंस या हैवी चुनें।",
+                        en=f"Vehicle class '{new_vclass}' is not recognized. Choose two_wheeler, car, ambulance or heavy.",
+                    ),
+                )
             session.vclass = new_vclass
             return _response_text(
                 sender,

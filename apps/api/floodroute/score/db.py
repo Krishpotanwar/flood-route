@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
+from dataclasses import asdict
 from datetime import UTC, datetime
 
 import psycopg
@@ -32,19 +34,19 @@ from floodroute.score.records import (
 from floodroute.score.run import score_run
 
 SUPPORTED_VCLASSES: frozenset[str] = frozenset({"two_wheeler", "car", "ambulance", "heavy"})
+# The segment_risk table only stores these horizons (0001 CHECK). A config with
+# anything else would die mid-run on the CHECK, so the bridge refuses up front.
+SUPPORTED_HORIZONS: frozenset[int] = frozenset({0, 30, 60, 120})
+
+logger = logging.getLogger(__name__)
 
 
 def config_digest(cfg: Config) -> str:
-    """Stable sha256 hash of the effective configuration."""
-    raw = json.dumps(
-        {
-            "model_version": cfg.model_version,
-            "horizons_min": list(cfg.horizons_min),
-            "vclasses": sorted(cfg.vclasses),
-            "structures": sorted(cfg.structures.keys()),
-        },
-        sort_keys=True,
-    )
+    """Stable sha256 hash of the effective configuration (every threshold).
+
+    The hash covers the whole config, so any threshold edit moves the
+    shadow_run.config_hash and two runs with different closures never share it."""
+    raw = json.dumps(asdict(cfg), sort_keys=True)
     return hashlib.sha256(raw.encode()).hexdigest()[:16]
 
 
@@ -83,8 +85,10 @@ def load_run_input(
         )
         obs_by_zone: dict[int, list[RainObs]] = {}
         for src, zid, ts, mm60, mm24 in cur.fetchall():
+            if mm60 is None:
+                continue  # NULL means missing data, never confirmed dry
             obs_by_zone.setdefault(zid, []).append(
-                RainObs(source=src, ts=ts, mm_60m=mm60 or 0.0, mm_24h=mm24)
+                RainObs(source=src, ts=ts, mm_60m=mm60, mm_24h=mm24)
             )
 
         # Load rain forecasts for zones (valid from now to next 6 hours)
@@ -99,11 +103,13 @@ def load_run_input(
         )
         fcst_by_zone: dict[int, list[RainFcst]] = {}
         for src, zid, valid, mm_h, spread in cur.fetchall():
+            if mm_h is None:
+                continue  # NULL means missing data, never confirmed dry
             fcst_by_zone.setdefault(zid, []).append(
                 RainFcst(
                     source=src,
                     valid=valid,
-                    mm_per_h=mm_h or 0.0,
+                    mm_per_h=mm_h,
                     spread=spread,
                 )
             )
@@ -123,20 +129,27 @@ def load_run_input(
         cur.execute(
             """
             select s.segment_id, s.assessed,
-                   coalesce(ss.structure, 'none') as structure,
-                   ss.base_logit,
-                   coalesce(ss.zone_id, 1) as zone_id
+                    coalesce(ss.structure, 'none') as structure,
+                    ss.base_logit,
+                    ss.zone_id
             from segment s
             left join segment_static ss on s.segment_id = ss.segment_id
             order by s.segment_id
             """
         )
         seg_rows = cur.fetchall()
+        for sid, assessed, _struct, _base, zid in seg_rows:
+            if assessed and zid is None:
+                raise ValueError(
+                    f"segment {sid}: assessed but has no segment_static row, "
+                    "so its rain zone is unknown (refusing to score it as zone 1)"
+                )
 
         # Load active evidence
         cur.execute(
             """
-            select segment_id, kind, ts, expires, source_id, trust, depth_cm, speed_ratio
+            select segment_id, kind, ts, expires, source_id, trust,
+                   depth_cm, speed_ratio, verified, contributors
             from evidence
             where ts <= %s and expires > %s
             order by ts desc
@@ -144,7 +157,7 @@ def load_run_input(
             (now, now),
         )
         evidence_by_seg: dict[int, list[Evidence]] = {}
-        for sid, kind, ts, exp, src_id, trust, depth, spd in cur.fetchall():
+        for sid, kind, ts, exp, src_id, trust, depth, spd, ver, contrib in cur.fetchall():
             evidence_by_seg.setdefault(sid, []).append(
                 Evidence(
                     kind=kind,
@@ -154,18 +167,22 @@ def load_run_input(
                     trust=trust if trust is not None else 1.0,
                     depth_cm=depth,
                     speed_ratio=spd,
+                    verified=bool(ver),
+                    contributors=contrib,
                 )
             )
 
-        # Load active overrides
+        # Load overrides live at any horizon of this run: active_actions tests
+        # each row against the valid time now + h, so a close that starts in
+        # 45 minutes must be loaded even though it has not started yet.
         cur.execute(
             """
             select segment_id, action, starts_at, expires_at
             from override
-            where starts_at <= %s and expires_at > %s
+            where expires_at > %s
             order by starts_at desc
             """,
-            (now, now),
+            (now,),
         )
         overrides_by_seg: dict[int, list[Override]] = {}
         for sid, action, starts, expires in cur.fetchall():
@@ -176,11 +193,15 @@ def load_run_input(
     segments = tuple(
         SegmentInput(
             segment_id=sid,
-            zone_id=zid,
+            # Unassessed rows never look up rain (score_segment ignores their
+            # zone), so a missing static row only needs a placeholder here.
+            # Assessed rows with no zone raised above and never reach this.
+            zone_id=zid if zid is not None else -1,
             assessed=bool(assessed),
             structure=struct,
             base_logit=base_l,
-            covered=True,
+            # No DEM/drain coverage source exists yet: default to uncovered.
+            covered=False,
             evidence=tuple(evidence_by_seg.get(sid, ())),
             overrides=tuple(overrides_by_seg.get(sid, ())),
         )
@@ -283,27 +304,26 @@ def persist_run_result(
             values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
 
+        skipped_vclasses: set[str] = set()
         for r in result.rows:
             if not r.assessed or r.p is None or r.state is None:
                 continue  # Unassessed segments do not write risk state
             if r.vclass not in SUPPORTED_VCLASSES:
+                skipped_vclasses.add(r.vclass)
                 continue  # Research/experimental classes outside database schema are omitted
-            depth_p50 = (
-                0.0
-                if r.state == "clear"
-                else (15.0 if r.state == "risky" else (30.0 if r.state == "impassable" else 5.0))
-            )
-            depth_p90 = depth_p50 * 1.5
+            # No depth model exists at v0: persisting invented constants made
+            # depth MAE measure the placeholder, not model skill. NULL means
+            # "no depth prediction"; the backtest skips NULLs.
             args = (
                 r.segment_id,
                 r.vclass,
                 r.horizon_min,
                 r.p,
-                depth_p50,
-                depth_p90,
+                None,
+                None,
                 r.state,
                 r.confidence or "low",
-                r.evidence_age_s if r.evidence_age_s is not None else 0,
+                r.evidence_age_s,  # None (no evidence) stays NULL, never 0
                 r.model_version,
                 r.updated_at,
                 r.closed_since,
@@ -311,6 +331,17 @@ def persist_run_result(
             )
             cur.execute(upsert_risk_sql, args)
             cur.execute(insert_history_sql, args + (run_id,))
+        if skipped_vclasses:
+            logger.warning(
+                "persist_run_result: omitted %d rows for vehicle classes outside "
+                "the database schema: %s (no routing fallback persists them)",
+                sum(
+                    1
+                    for r in result.rows
+                    if r.vclass in skipped_vclasses and r.assessed
+                ),
+                sorted(skipped_vclasses),
+            )
 
         # 3. Append state changes to audit_log
         audit_sql = """
@@ -344,6 +375,12 @@ def execute_score_run(
 ) -> tuple[int, RunResult]:
     """Execute an end-to-end scoring run: load DB, score, persist."""
     effective_cfg = cfg or load_config()
+    bad_horizons = [h for h in effective_cfg.horizons_min if h not in SUPPORTED_HORIZONS]
+    if bad_horizons:
+        raise ValueError(
+            f"config horizons_min {bad_horizons} cannot be stored: "
+            "segment_risk only accepts horizons (0, 30, 60, 120)"
+        )
     current_time = now or datetime.now(UTC)
     inputs, prev = load_run_input(conn, current_time, effective_cfg)
     result = score_run(inputs, prev, effective_cfg)

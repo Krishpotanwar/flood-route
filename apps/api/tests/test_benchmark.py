@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 
@@ -16,6 +15,7 @@ from tools.benchmark import (
     ScenarioResult,
     compute_percentiles,
     execute_full_suite,
+    run_benchmark_scenario,
 )
 
 
@@ -52,14 +52,15 @@ def test_scenario_result_dataclass():
 
 
 @pytest.mark.anyio
-async def test_benchmark_full_suite_in_process(monkeypatch):
+async def test_benchmark_full_suite_in_process(monkeypatch, db_url):
     """Run lightweight in-process benchmark execution verifying all endpoints respond."""
-    default_url = "postgresql://postgres:postgres@localhost:54329/floodroute"
-    monkeypatch.setenv("DATABASE_URL", os.environ.get("DATABASE_URL", default_url))
+    monkeypatch.setenv("DATABASE_URL", db_url)
+    token = "benchmark-test-only-token-000000000000"
+    monkeypatch.setenv("FLOODROUTE_OPERATOR_TOKENS", '{"benchmark": "' + token + '"}')
 
     import httpx
 
-    from floodroute.api.deps import get_router
+    from floodroute.api.deps import close_pool, get_router
     from floodroute.api.main import create_app
     from floodroute.route.models import Edge, Route
 
@@ -74,21 +75,41 @@ async def test_benchmark_full_suite_in_process(monkeypatch):
             )
         )
 
-    app = create_app()
-    app.dependency_overrides[get_router] = lambda: mock_router
-
-    async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
-    ) as client:
-        results = await execute_full_suite(
-            client=client,
-            concurrency=2,
-            requests_per_scenario=4,
-        )
+    close_pool()
+    try:
+        app = create_app()
+        app.dependency_overrides[get_router] = lambda: mock_router
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://testserver",
+            headers={"Authorization": f"Bearer {token}"},
+        ) as client:
+            results = await execute_full_suite(
+                client=client, concurrency=2, requests_per_scenario=4, stub_router=True,
+            )
         assert len(results) == 7
         for r in results:
             assert r.total_requests == 4
             assert r.failure_count == 0
-            assert r.p50_ms < 250.0
-            assert r.meets_slo or r.p95_ms < r.target_p95_ms * 2.0
+        # Hardware timing belongs to the benchmark CLI, not a functional CI test.
+        assert sum("[stub router]" in r.scenario for r in results) == 3
+    finally:
+        close_pool()
 
+
+@pytest.mark.anyio
+async def test_benchmark_counts_transport_failures_but_exposes_programming_errors():
+    import httpx
+
+    async def transport_failure():
+        raise httpx.ReadTimeout("test transport failure")
+
+    result = await run_benchmark_scenario("transport", transport_failure, 1, 2, 100)
+    assert result.failure_count == 2 and not result.meets_slo
+
+    async def programming_error():
+        raise ValueError("test programming error")
+
+    with pytest.raises(ValueError, match="programming error"):
+        await run_benchmark_scenario("programming", programming_error, 1, 1, 100)
+    with pytest.raises(ValueError, match="must be positive"):
+        await run_benchmark_scenario("invalid", transport_failure, 0, 1, 100)

@@ -190,15 +190,7 @@ def test_route_with_active_kill_switch_freezes_advisories(app_db):
     )
 
     def fake_router(origin, dest, vclass, date_time, exclude_polys=()):
-        return Route(
-            (
-                Edge(
-                    segment_id=9001,
-                    geometry=((12.97, 77.58), (12.98, 77.59)),
-                    travel_time_s=120.0,
-                ),
-            )
-        )
+        raise AssertionError("router must not be called while frozen")
 
     app = create_app()
     app.dependency_overrides[get_db] = lambda: app_db
@@ -218,6 +210,101 @@ def test_route_with_active_kill_switch_freezes_advisories(app_db):
         )
         assert r.status_code == 200
         data = r.json()
-        assert len(data["routes"]) == 1
-        assert "Emergency advisory freeze active" in data["routes"][0]["reasons"][0]
+        assert data["routes"] == []
+        assert data["no_safe_route"] is True
+        assert data["guidance_when_no_route"]["keys"] == ["advisory_off"]
+
+        # The frozen decision is still recorded for audit.
+        cur = app_db.execute(
+            "select no_safe_route from route_decision where decision_id = %s",
+            (data["decision_id"],),
+        )
+        assert cur.fetchone()[0] is True
+
+
+def test_city_scoped_freeze_applies_inside_the_city_only(app_db):
+    from floodroute.safety.kill_switch import engage_kill_switch
+
+    engage_kill_switch(
+        conn=app_db,
+        scope="city",
+        reason="City drill freeze test",
+        operator_id="op_tester",
+        city_id=1,  # bengaluru
+    )
+
+    def fake_router(origin, dest, vclass, date_time, exclude_polys=()):
+        return Route(
+            (
+                Edge(
+                    segment_id=9001,
+                    geometry=((12.97, 77.58), (12.98, 77.59)),
+                    travel_time_s=120.0,
+                ),
+            )
+        )
+
+    app = create_app()
+    app.dependency_overrides[get_db] = lambda: app_db
+    app.dependency_overrides[get_router] = lambda: fake_router
+    now = datetime.now(UTC)
+
+    with TestClient(app) as test_client:
+        frozen = test_client.post(
+            "/v1/route",
+            json={
+                "origin": {"lat": 12.970, "lon": 77.580},
+                "destination": {"lat": 12.990, "lon": 77.600},
+                "vclass": "car",
+                "depart_at": now.isoformat(),
+                "profile": "citizen",
+                "lang": "en",
+            },
+        )
+        assert frozen.status_code == 200
+        assert frozen.json()["routes"] == []
+        assert frozen.json()["guidance_when_no_route"]["keys"] == ["advisory_off"]
+
+        outside = test_client.post(
+            "/v1/route",
+            json={
+                "origin": {"lat": 28.610, "lon": 77.210},
+                "destination": {"lat": 28.620, "lon": 77.230},
+                "vclass": "car",
+                "depart_at": now.isoformat(),
+                "profile": "citizen",
+                "lang": "en",
+            },
+        )
+        assert outside.status_code == 200
+        assert outside.json()["routes"] != []
+        assert all(
+            "Emergency advisory freeze active" not in rt["reasons"]
+            for rt in outside.json()["routes"]
+        )
+
+
+def test_reroute_rejects_a_non_integer_closed_at_key(app_db):
+    app = create_app()
+    app.dependency_overrides[get_db] = lambda: app_db
+    now = datetime.now(UTC)
+    with TestClient(app) as test_client:
+        r = test_client.post(
+            "/v1/route/reroute",
+            json={
+                "origin": {"lat": 12.970, "lon": 77.580},
+                "destination": {"lat": 12.990, "lon": 77.600},
+                "vclass": "car",
+                "current_edges": [{"segment_id": 1, "travel_time_s": 60.0, "length_m": 100.0}],
+                "trip_state": {
+                    "last_suggestion_at": None,
+                    "baseline_band": 0,
+                    "closed_at": {"3.0": now.isoformat()},
+                },
+                "profile": "citizen",
+                "lang": "en",
+            },
+        )
+        assert r.status_code == 400
+        assert "closed_at" in r.json()["detail"]
 

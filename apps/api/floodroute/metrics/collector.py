@@ -8,10 +8,17 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
+def _escape_label_value(value: Any) -> str:
+    """Escape a label value per the Prometheus exposition format."""
+    return (
+        str(value).replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+    )
+
+
 def _format_labels(labels: dict[str, Any] | None) -> str:
     if not labels:
         return ""
-    items = [f'{k}="{v}"' for k, v in sorted(labels.items())]
+    items = [f'{k}="{_escape_label_value(v)}"' for k, v in sorted(labels.items())]
     return "{" + ",".join(items) + "}"
 
 

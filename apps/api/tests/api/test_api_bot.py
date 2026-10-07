@@ -2,13 +2,65 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import json
+import os
+import time
+from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier, Lock
+
+VERIFY_TOKEN = os.environ["WHATSAPP_VERIFY_TOKEN"]
+APP_SECRET = os.environ["WHATSAPP_APP_SECRET"]
+
+
+def test_inbound_worker_serializes_shared_sessions(monkeypatch):
+    from floodroute.api.routes import bot
+
+    barrier = Barrier(4)
+    counter_lock = Lock()
+    active = maximum = 0
+
+    def handle(db, parsed):
+        nonlocal active, maximum
+        with counter_lock:
+            active += 1
+            maximum = max(maximum, active)
+        time.sleep(0.01)  # overlapping DB work must preserve serial session access
+        with counter_lock:
+            active -= 1
+        return parsed
+
+    def invoke(sender):
+        barrier.wait(timeout=5)
+        return bot._handle_message(None, {"sender": sender})
+
+    monkeypatch.setattr(bot, "handle_incoming_message", handle)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        results = list(pool.map(invoke, range(4)))
+    assert results == [{"sender": sender} for sender in range(4)]
+    assert maximum == 1
+
+
+def _signed_post(client, payload):
+    raw = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+    sig = hmac.new(APP_SECRET.encode("utf-8"), raw, hashlib.sha256).hexdigest()
+    return client.post(
+        "/v1/whatsapp/webhook",
+        content=raw,
+        headers={
+            "Content-Type": "application/json",
+            "X-Hub-Signature-256": f"sha256={sig}",
+        },
+    )
+
 
 def test_whatsapp_webhook_verification(client):
     r_ok = client.get(
         "/v1/whatsapp/webhook",
         params={
             "hub.mode": "subscribe",
-            "hub.verify_token": "floodroute_wa_token_2026",
+            "hub.verify_token": VERIFY_TOKEN,
             "hub.challenge": "challenge_code_999",
         },
     )
@@ -47,7 +99,7 @@ def test_whatsapp_inbound_webhook(client, app_db):
             }
         ]
     }
-    r = client.post("/v1/whatsapp/webhook", json=payload)
+    r = _signed_post(client, payload)
     assert r.status_code == 200
     data = r.json()
     assert data["status"] == "processed"

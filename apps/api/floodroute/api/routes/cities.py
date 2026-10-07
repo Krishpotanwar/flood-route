@@ -7,6 +7,7 @@ from typing import Annotated, Any
 import psycopg
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
+from floodroute.api.auth import require_operator
 from floodroute.api.deps import get_db
 from floodroute.inventory.multicity import (
     get_city_metadata,
@@ -92,7 +93,11 @@ def get_city_hotspots(
     }
 
 
-@router.post("/{city}/seed", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/{city}/seed",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_operator)],
+)
 def seed_city(
     city: str,
     db: Annotated[psycopg.Connection, Depends(get_db)],

@@ -27,10 +27,11 @@ def test_override_validation_errors(client, app_db):
     r1 = client.post(
         "/v1/overrides",
         json={
+            "tenant_id": 1,
             "segment_id": 6001,
             "action": "close",
             "reason": "Road submerged",
-            "operator_id": "op-1",
+            "operator_id": "op-primary",
             "starts_at": now.isoformat(),
             "expires_at": (now - timedelta(hours=1)).isoformat(),
         },
@@ -41,11 +42,12 @@ def test_override_validation_errors(client, app_db):
     r2 = client.post(
         "/v1/overrides",
         json={
+            "tenant_id": 1,
             "segment_id": 6001,
             "action": "close",
             "reason": "Road submerged",
-            "operator_id": "op-1",
-            "second_operator_id": "op-1",
+            "operator_id": "op-primary",
+            "second_operator_id": "op-primary",
             "starts_at": now.isoformat(),
             "expires_at": (now + timedelta(hours=2)).isoformat(),
         },
@@ -56,10 +58,11 @@ def test_override_validation_errors(client, app_db):
     r3 = client.post(
         "/v1/overrides",
         json={
+            "tenant_id": 1,
             "segment_id": 999999,
             "action": "close",
             "reason": "Road submerged",
-            "operator_id": "op-1",
+            "operator_id": "op-primary",
             "starts_at": now.isoformat(),
             "expires_at": (now + timedelta(hours=2)).isoformat(),
         },
@@ -85,11 +88,12 @@ def test_override_success_and_audit_log(client, app_db):
     r = client.post(
         "/v1/overrides",
         json={
+            "tenant_id": 1,
             "segment_id": 7001,
             "action": "close",
             "reason": "Underpass flooded with 40cm water",
             "operator_id": "op-primary",
-            "second_operator_id": "op-supervisor",
+            "second_operator_id": "op-secondary",
             "starts_at": now.isoformat(),
             "expires_at": (now + timedelta(hours=3)).isoformat(),
         },
@@ -99,7 +103,7 @@ def test_override_success_and_audit_log(client, app_db):
     assert data["override_id"] > 0
     assert data["action"] == "close"
     assert data["operator_id"] == "op-primary"
-    assert data["second_operator_id"] == "op-supervisor"
+    assert data["second_operator_id"] == "op-secondary"
 
     # Verify audit_log entry
     cur = app_db.execute(
@@ -132,10 +136,11 @@ def test_override_arterial_requires_second_operator(client, app_db):
     r = client.post(
         "/v1/overrides",
         json={
+            "tenant_id": 1,
             "segment_id": 7002,
             "action": "close",
             "reason": "Arterial flooding",
-            "operator_id": "op-single",
+            "operator_id": "op-primary",
             "starts_at": now.isoformat(),
             "expires_at": (now + timedelta(hours=2)).isoformat(),
         },
@@ -163,10 +168,11 @@ def test_list_and_revert_overrides(client, app_db):
     r_create = client.post(
         "/v1/overrides",
         json={
+            "tenant_id": 1,
             "segment_id": 7003,
             "action": "close",
             "reason": "Tree fell in flood water",
-            "operator_id": "op-field",
+            "operator_id": "op-primary",
             "starts_at": now.isoformat(),
             "expires_at": (now + timedelta(hours=2)).isoformat(),
         },
@@ -182,7 +188,7 @@ def test_list_and_revert_overrides(client, app_db):
 
     # 3. Revert override early
     r_rev = client.delete(
-        f"/v1/overrides/{ov_id}?reason=Cleared+fallen+tree&operator_id=op-field"
+        f"/v1/overrides/{ov_id}?reason=Cleared+fallen+tree&operator_id=op-primary"
     )
     assert r_rev.status_code == 200
     assert r_rev.json()["reverted"] is True

@@ -169,6 +169,7 @@ def active_actions(seg: SegmentInput, now: datetime, h: int, cfg: Config) -> fro
     windows = [(o.action, o.starts_at, o.expires_at) for o in seg.overrides]
     for e in seg.evidence:
         if e.kind == "official":
-            age_s(now, e.ts, skew, f"official closure from {e.source_id}")
+            # Validation gate only: a future-dated official item beyond the skew raises here.
+            _ = age_s(now, e.ts, skew, f"official closure from {e.source_id}")
             windows.append(("close", e.ts, e.expires))
     return frozenset(a for a, start, end in windows if start <= vt < end)

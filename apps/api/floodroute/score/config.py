@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from dataclasses import dataclass, fields, is_dataclass
 from itertools import pairwise
 from pathlib import Path
@@ -310,5 +311,14 @@ def parse_config(text: str) -> Config:
     return _build(Config, data, "")  # type: ignore[return-value]
 
 
-def load_config(path: str | Path = DEFAULT_PATH) -> Config:
-    return parse_config(Path(path).read_text(encoding="utf-8"))
+def load_config(path: str | Path | None = None) -> Config:
+    """Load the scoring config. An explicit path wins, then FLOODROUTE_SCORING_CONFIG,
+    then the repo default. A missing or unreadable file is a ConfigError, never an OSError."""
+    if path is None:
+        env = os.environ.get("FLOODROUTE_SCORING_CONFIG")
+        path = Path(env) if env else DEFAULT_PATH
+    try:
+        text = Path(path).read_text(encoding="utf-8")
+    except OSError as e:
+        raise ConfigError(f"cannot read scoring config {path}: {e}") from e
+    return parse_config(text)

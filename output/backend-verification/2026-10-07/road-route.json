@@ -1,0 +1,42 @@
+{
+  "decision_id": "83838cb2a89044edb9fbe41d5d5f90e6",
+  "model_version": "v0.0.1",
+  "no_safe_route": false,
+  "valid_until": "2026-10-07T11:35:12.789064+05:30",
+  "routes": [
+    {
+      "kind": "fastest",
+      "is_default": true,
+      "eta_min": 18,
+      "delta_min": 0,
+      "worst_state": "unknown",
+      "data_age_s": 168,
+      "reasons": [
+        "Take care. Flood data is out of date on part of this route."
+      ],
+      "segments": [
+        {
+          "segment_id": "5814830754753796308",
+          "assessed": true,
+          "state": "unknown",
+          "p": 0.1,
+          "confidence": "low",
+          "evidence_age_s": 168,
+          "over_limit": false
+        },
+        {
+          "segment_id": "170838402526213588",
+          "assessed": true,
+          "state": "unknown",
+          "p": 0.1,
+          "confidence": "low",
+          "evidence_age_s": 168,
+          "over_limit": false
+        }
+      ],
+      "geometry": "{vvvWy`zasCf_B}ClAClCGzAEbQe@`rAmClBElaAmB|HIp]a@~l@_At`DmGfAAlACvBEbCCbg@_@`EE~DO``@q@|LYpo@yAhDEzWpAvSfD|OlBf[fCn}@jEbHT~FFpABbNRtb@uAlY]~[Lz^Ln[d@rj@fBbS^rKrAvKhDd`@dQjGpCp^hQpXlNfc@dTbGtDfDxAbJlElNfGpK|DjE`B`Cv@vPpGtG`BdH|@dIP`K}@bGoBhJiE|DwCdFiEzZ{[zOwTxGgH|CcDzC_CvLsFbIkBhIw@zOKdGVdCPdBZpD|@fKdEh]zP`XnOjBdAXNdD`BjAl@fz@tc@ny@|b@|o@v\\fr@f_@pq@t]jq@t]xUxLdIbEfXzOhLtHhFfEzO|OdMpOrEvHdFxJlEvLfEvMbEfQjAnHdAzGn@zFb@bIRzPMfQO`WA`ACzBA|Bo@~{@JbFj@`a@@tNRtPIjOIjMY`[BrId@|H|@xGtE|R|@rDx@vDpBdHvBpFlBbFbCbGbFzLhGrNtGtMrFhJrJhL\\d@nAdBfB|B~LfP~EpGno@r|@vp@ly@~DhFv@bA|MbQhQfL`Al@rCnA~cAb^lk@hQdkA|\\rLfDp_AfXvWxHjSbG~[fKf\\|Jt[fKxTzGv@VbF`BvCz@`EnAnBj@hJjCxlAd\\zIbCtBj@rMtJn@d@`B~AjB`DpEdIr_@nnAlFrNhApC??vd@mUzY_OpFe@xIwEd`@qSlTuL`WwN`i@aY~@i@jAm@r@a@lAq@`G{CrQkIjPuHjB{@bAk@rJkFnCqAdE}Cv`@aVpCeBrIaDhe@a[lC}Aha@iUfr@k^"
+    }
+  ],
+  "guidance_when_no_route": null,
+  "lang": "en"
+}

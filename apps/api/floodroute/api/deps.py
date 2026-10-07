@@ -30,6 +30,12 @@ from floodroute.score.config import load_config
 
 RouterCallable = Callable[[LatLon, LatLon, str, any, Sequence[Polygon]], Route | None]
 
+# Forecast rows for one segment/vclass should come from a single scoring run.
+# Past this updated_at spread the horizons mix runs and the row is unusable.
+MAX_HORIZON_SKEW_S = 60.0
+
+_CONFIDENCE_RANK = {"low": 0, "medium": 1, "high": 2}
+
 _POOL: ConnectionPool | None = None
 
 
@@ -98,13 +104,19 @@ def db_segment_of(conn: psycopg.Connection, coords: Sequence[LatLon]) -> int | N
 
 
 def db_risk_for(conn: psycopg.Connection, segment_id: int, vclass: str) -> SegmentRisk | None:
-    """Load the current forecast for a segment and vehicle class."""
+    """Load the current forecast for a segment and vehicle class.
+
+    None means no forecast rows exist (segment outside inventory: legitimately
+    unassessed). A partial horizon set raises instead of reading as neutral,
+    since a missing horizon could hide a flood peak.
+    """
     cur = conn.execute(
         """
-        select horizon_min, p_unusable, state, confidence, evidence_age_s, updated_at
-        from segment_risk
-        where segment_id = %s and vclass = %s
-        order by horizon_min
+        select sr.horizon_min, sr.p_unusable, sr.state, sr.confidence, sr.evidence_age_s, sr.updated_at
+        from segment_risk sr
+        join segment s on s.segment_id = sr.segment_id
+        where sr.segment_id = %s and sr.vclass = %s and s.assessed
+        order by sr.horizon_min
         """,
         (segment_id, vclass),
     )
@@ -114,13 +126,31 @@ def db_risk_for(conn: psycopg.Connection, segment_id: int, vclass: str) -> Segme
     p = {row[0]: float(row[1]) for row in rows}
     state = {row[0]: row[2] for row in rows}
     if set(p.keys()) != set(HORIZONS):
-        return None
+        raise RuntimeError(
+            f"incomplete forecast for segment {segment_id}/{vclass}: "
+            f"have horizons {sorted(p)} expected {sorted(HORIZONS)}"
+        )
+    stamps = [row[5] for row in rows]
+    if any(t is None or t.tzinfo is None for t in stamps):
+        raise RuntimeError(f"forecast for segment {segment_id}/{vclass} is missing timestamps")
+    # A newer horizon cannot renew an older one. A scoring run normally
+    # writes together; retain the oldest timestamp when small skew exists.
+    issued_at = min(stamps)
+    if (max(stamps) - issued_at).total_seconds() > MAX_HORIZON_SKEW_S:
+        raise RuntimeError(
+            f"forecast for segment {segment_id}/{vclass} mixes runs "
+            f"(updated_at spread past {MAX_HORIZON_SKEW_S}s)"
+        )
+    known = [row[3] for row in rows if row[3] in _CONFIDENCE_RANK]
+    confidence = min(known, key=_CONFIDENCE_RANK.get) if known else "low"
+    ages = [row[4] for row in rows if row[4] is not None]
+    evidence_age_s = max(ages) if ages else None
     return SegmentRisk(
-        issued_at=rows[0][5],
+        issued_at=issued_at,
         p=p,
         state=state,
-        confidence=rows[0][3],
-        evidence_age_s=rows[0][4],
+        confidence=confidence,
+        evidence_age_s=evidence_age_s,
     )
 
 

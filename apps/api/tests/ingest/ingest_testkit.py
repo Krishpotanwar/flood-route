@@ -80,7 +80,7 @@ class FakeConn:
         if s.startswith("select pg_advisory_unlock"):
             return Cur([(True,)])
         if s == norm(sachet.SEEN_SQL):
-            keys = set(params[1])
+            keys = set(params[0])
             return Cur(
                 (a[-1].obj["rss_key"],)
                 for a in self.alerts.values()
@@ -90,8 +90,7 @@ class FakeConn:
             n = sum(
                 1
                 for a in self.alerts.values()
-                if a[6] is not None
-                and a[6] > params[0]
+                if (a[6] is None or a[6] > params[0])
                 and a[7] is None
                 and a[-1].obj["cap"]["status"] == "Actual"
                 and a[-1].obj["cap"]["msgType"] in ("Alert", "Update")

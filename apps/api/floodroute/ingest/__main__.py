@@ -5,6 +5,7 @@ loops at its own cadence, which is a dev convenience: there is no scheduler in p
 """
 
 import argparse
+import signal
 import sys
 import time
 
@@ -29,17 +30,31 @@ def main(argv: list[str] | None = None) -> int:
         print(f"ingest: {e}", file=sys.stderr)
         return 1
     http = Http(adapter.HOSTS)
+    stop = False
+
+    def handle_stop(sig, frame):
+        nonlocal stop
+        stop = True
+
+    signal.signal(signal.SIGTERM, handle_stop)
+    code = 0
     try:
-        while True:
+        while not stop:
             code = run(conn, adapter.SOURCE, lambda c: adapter.ingest(c, http))
             if args.once:
                 return code
-            time.sleep(adapter.INTERVAL_S)
+            # Slice the cadence so SIGTERM stops the loop promptly (PEP 475
+            # would otherwise resume a long time.sleep after the handler).
+            for _ in range(int(adapter.INTERVAL_S)):
+                if stop:
+                    break
+                time.sleep(1)
     except KeyboardInterrupt:
-        return 0
+        pass
     finally:
         http.close()
         conn.close()
+    return code
 
 
 if __name__ == "__main__":

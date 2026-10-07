@@ -73,7 +73,7 @@
       gap: 4px;
       padding: 2px 6px;
       border-radius: 4px;
-      font-size: 11px;
+      font-size: 14px;
       background: color-mix(in srgb, var(--fr-ink-2) 15%, transparent);
       color: var(--fr-ink-2);
     }
@@ -364,6 +364,10 @@
       <span class="health-pill ok" id="health-sachet">SACHET: Active</span>
       <span class="health-pill ok" id="health-metno">MET Norway: Active</span>
       <span class="health-pill" id="health-model">Model: v0.0.1</span>
+      <label class="form-label" for="operator-key">Operator key</label>
+      <input class="form-input" id="operator-key" type="password" autocomplete="off" placeholder="Kept in this tab only">
+      <button class="btn-toggle" onclick="setOperatorKey()">Use key</button>
+      <span id="operator-key-status" role="status"></span>
       <button class="btn-toggle" onclick="openAuditModal()" title="Inspect append-only compliance audit trail">Audit Log</button>
     </div>
 
@@ -489,11 +493,16 @@
         </div>
         <div class="form-group">
           <label class="form-label">Operator ID (Initiator)</label>
-          <input class="form-input" type="text" id="ov-op1" required value="traffic_police_hq">
+          <input class="form-input" type="text" id="ov-op1" required placeholder="Your registered operator ID">
         </div>
         <div class="form-group">
           <label class="form-label">Second Operator ID (Arterial co-verification)</label>
-          <input class="form-input" type="text" id="ov-op2" required value="flood_control_officer_2">
+          <input class="form-input" type="text" id="ov-op2" placeholder="Required for arterial roads">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="ov-op2-key">Second operator key</label>
+          <input class="form-input" type="password" id="ov-op2-key" autocomplete="off" placeholder="Distinct operator must co-sign">
         </div>
         <div class="form-group">
           <label class="form-label">Duration (Hours)</label>
@@ -580,7 +589,7 @@
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px;">
         <input class="form-input" type="text" id="audit-filter-actor" placeholder="Filter by actor..." oninput="loadAuditLog()" style="flex:1;">
         <input class="form-input" type="text" id="audit-filter-action" placeholder="Filter by action..." oninput="loadAuditLog()" style="flex:1;">
-        <a href="/v1/audit?format=csv" download="floodroute_audit.csv" class="btn-action btn-primary" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; padding:var(--fr-space-2) var(--fr-space-3);">Export CSV</a>
+        <button onclick="exportAuditLog()" class="btn-action btn-primary">Export CSV</button>
       </div>
       <div style="flex: 1; overflow-y: auto; border: 1px solid color-mix(in srgb, var(--fr-ink-2) 20%, transparent); border-radius: var(--fr-radius-control);">
         <table class="audit-table">
@@ -645,6 +654,46 @@
     let activeVClass = 'car';
     let activeHorizon = 0;
     const horizonOptions = [0, 30, 60, 120];
+    let operatorKey = '';
+
+    function setOperatorKey() {
+      const field = document.getElementById('operator-key');
+      operatorKey = field.value.trim();
+      field.value = '';
+      document.getElementById('operator-key-status').textContent = operatorKey ? 'Key retained in this tab' : 'Locked';
+    }
+
+    function operatorFetch(url, options = {}) {
+      if (!operatorKey) throw new Error('Enter your operator key to use control-room actions.');
+      const headers = new Headers(options.headers);
+      headers.set('Authorization', 'Bearer ' + operatorKey);
+      return fetch(url, { ...options, headers });
+    }
+
+    async function exportAuditLog() {
+      try {
+        const res = await operatorFetch('/v1/audit?format=csv');
+        if (!res.ok) throw new Error('Audit export unavailable. Check your operator key.');
+        const url = URL.createObjectURL(await res.blob());
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'floodroute_audit.csv';
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 0);
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    // Escape operator- and feed-controlled strings before innerHTML/popup use.
+    function escapeHtml(v) {
+      return String(v == null ? '' : v)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
     let map = null;
     let closureLayer = null;
     let incidentListItems = [];
@@ -672,13 +721,15 @@
         },
         onEachFeature: function(feature, layer) {
           const p = feature.properties;
-          layer.bindPopup(`
-            <strong>Segment ID:</strong> ${p.segment_id}<br/>
-            <strong>Status:</strong> ${p.state.toUpperCase()}<br/>
-            <strong>Road Class:</strong> ${p.road_class || 'N/A'}<br/>
-            <strong>P(Unusable):</strong> ${(p.p_unusable * 100).toFixed(1)}%<br/>
-            <strong>Depth:</strong> ${p.depth_p50_cm || 'N/A'} cm
-          `);
+          const depthTxt = (p.depth_p50_cm == null ? 'N/A' : escapeHtml(p.depth_p50_cm) + ' cm');
+          const pctTxt = (p.p_unusable == null ? 'N/A' : (Number(p.p_unusable) * 100).toFixed(1) + '%');
+          layer.bindPopup(
+            '<strong>Segment ID:</strong> ' + escapeHtml(p.segment_id) + '<br/>' +
+            '<strong>Status:</strong> ' + escapeHtml(String(p.state || '').toUpperCase()) + '<br/>' +
+            '<strong>Road Class:</strong> ' + escapeHtml(p.road_class || 'N/A') + '<br/>' +
+            '<strong>P(Unusable):</strong> ' + escapeHtml(pctTxt) + '<br/>' +
+            '<strong>Depth:</strong> ' + escapeHtml(depthTxt)
+          );
         }
       }).addTo(map);
     }
@@ -740,16 +791,23 @@
           const el = document.createElement('div');
           el.className = `incident-item ${seg.state || 'unknown'}`;
           el.dataset.idx = idx;
-          el.innerHTML = `
-            <div class="incident-header">
-              <span class="mono">${seg.segment_id}</span>
-              <span class="risk-chip ${seg.state || 'unknown'}">${seg.state ? seg.state.toUpperCase() : 'UNKNOWN'}</span>
-            </div>
-            <div style="font-size: var(--fr-text-xs); color: var(--fr-ink-2);">
-              P(unusable): <span class="num">${((seg.p_unusable || 0) * 100).toFixed(1)}%</span> |
-              Depth: <span class="num">${seg.depth_p50_cm || 5}cm</span>
-            </div>
-          `;
+          const header = document.createElement('div');
+          header.className = 'incident-header';
+          const idSpan = document.createElement('span');
+          idSpan.className = 'mono';
+          idSpan.textContent = seg.segment_id;
+          const chip = document.createElement('span');
+          chip.className = `risk-chip ${seg.state || 'unknown'}`;
+          chip.textContent = seg.state ? seg.state.toUpperCase() : 'UNKNOWN';
+          header.appendChild(idSpan);
+          header.appendChild(chip);
+          const sub = document.createElement('div');
+          sub.style.cssText = 'font-size: var(--fr-text-xs); color: var(--fr-ink-2);';
+          const pct = seg.p_unusable == null ? 'Unknown' : (Number(seg.p_unusable) * 100).toFixed(1) + '%';
+          const depth = seg.depth_p50_cm == null ? 'Unknown' : seg.depth_p50_cm + 'cm';
+          sub.textContent = `P(unusable): ${pct} | Depth: ${depth}`;
+          el.appendChild(header);
+          el.appendChild(sub);
           el.onclick = () => {
             selectIncident(idx);
             document.getElementById('ov-segment-id').value = seg.segment_id;
@@ -824,7 +882,7 @@
         return;
       }
       try {
-        const res = await fetch('/v1/overrides/preview', {
+        const res = await operatorFetch('/v1/overrides/preview', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ segment_id: numId, action: 'close' })
@@ -866,22 +924,43 @@
       const orig = document.getElementById('em-origin').value.split(',').map(s => parseFloat(s.trim()));
       const dest = document.getElementById('em-dest').value.split(',').map(s => parseFloat(s.trim()));
       const vclass = document.getElementById('em-vclass').value;
-      if (orig.length !== 2 || dest.length !== 2 || isNaN(orig[0]) || isNaN(dest[0])) {
+      if (orig.length !== 2 || dest.length !== 2 || isNaN(orig[0]) || isNaN(dest[0]) || isNaN(orig[1]) || isNaN(dest[1])) {
         alert('Please enter valid coordinates (lat, lon)');
         return;
       }
       try {
-        const res = await fetch(`/v1/route?start=${orig[0]},${orig[1]}&end=${dest[0]},${dest[1]}&vclass=${vclass}`);
+        const res = await fetch('/v1/route', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            origin: { lat: orig[0], lon: orig[1] },
+            destination: { lat: dest[0], lon: dest[1] },
+            vclass: vclass,
+            depart_at: new Date().toISOString(),
+            profile: 'citizen',
+            lang: 'en'
+          })
+        });
         const resCard = document.getElementById('em-corridor-result');
         resCard.style.display = 'block';
         if (res.ok) {
           const routeData = await res.json();
-          document.getElementById('em-route-eta').textContent = `${Math.round((routeData.duration_seconds || 480) / 60)} min`;
-          document.getElementById('em-route-dist').textContent = `${((routeData.distance_meters || 3200) / 1000).toFixed(1)} km`;
-          document.getElementById('em-route-segs').textContent = routeData.segments ? routeData.segments.length : '14';
-          document.getElementById('em-route-status').textContent = 'Clear corridor verified';
-          document.getElementById('em-route-badge').textContent = 'CLEAR PASSAGE';
-          document.getElementById('em-route-badge').className = 'risk-chip clear';
+          const first = routeData.routes && routeData.routes[0];
+          if (routeData.no_safe_route || !first) {
+            document.getElementById('em-route-status').textContent = 'No recommended corridor right now';
+            document.getElementById('em-route-badge').textContent = 'OBSTRUCTED';
+            document.getElementById('em-route-badge').className = 'risk-chip impassable';
+            document.getElementById('em-route-eta').textContent = '-';
+            document.getElementById('em-route-dist').textContent = '-';
+            document.getElementById('em-route-segs').textContent = '0';
+            return;
+          }
+          document.getElementById('em-route-eta').textContent = `${first.eta_min} min`;
+          document.getElementById('em-route-dist').textContent = `${first.segments ? first.segments.length : 0} segments`;
+          document.getElementById('em-route-segs').textContent = first.segments ? first.segments.length : '0';
+          document.getElementById('em-route-status').textContent = `Recommended corridor: worst state ${first.worst_state}`;
+          document.getElementById('em-route-badge').textContent = String(first.worst_state || '').toUpperCase();
+          document.getElementById('em-route-badge').className = 'risk-chip ' + (first.worst_state || 'unknown');
         } else {
           document.getElementById('em-route-status').textContent = 'Impassable sections detected';
           document.getElementById('em-route-badge').textContent = 'OBSTRUCTED';
@@ -896,7 +975,7 @@
       e.preventDefault();
       const callsign = document.getElementById('em-callsign').value;
       const vclass = document.getElementById('em-vclass').value;
-      alert(`Emergency unit dispatched! Callsign: ${callsign} (${vclass}) co-verified for flood transit.`);
+      alert(`Dispatch request noted for unit ${callsign} (${vclass}). Confirm by radio with traffic control before moving; no automated corridor claim is made here.`);
       closeEmergencyModal();
     }
 
@@ -908,7 +987,7 @@
       if (actor) url += `&actor=${encodeURIComponent(actor)}`;
       if (action) url += `&action=${encodeURIComponent(action)}`;
       try {
-        const res = await fetch(url);
+        const res = await operatorFetch(url);
         if (!res.ok) return;
         const logs = await res.json();
         const tbody = document.getElementById('audit-table-body');
@@ -920,17 +999,23 @@
         logs.forEach(item => {
           const tr = document.createElement('tr');
           const tsFormatted = item.timestamp ? new Date(item.timestamp).toLocaleTimeString() : '-';
-          tr.innerHTML = `
-            <td class="mono num">${tsFormatted}</td>
-            <td>${item.actor}</td>
-            <td><span class="mono">${item.action}</span></td>
-            <td class="num">${item.segment_id || '-'}</td>
-            <td>${item.reason || '-'}</td>
-          `;
+          const cells = [
+            { text: tsFormatted, cls: 'mono num' },
+            { text: item.actor || '-', cls: '' },
+            { text: item.action || '-', cls: 'mono' },
+            { text: item.segment_id || '-', cls: 'num' },
+            { text: item.reason || '-', cls: '' },
+          ];
+          cells.forEach(c => {
+            const td = document.createElement('td');
+            if (c.cls) td.className = c.cls;
+            td.textContent = c.text;
+            tr.appendChild(td);
+          });
           tbody.appendChild(tr);
         });
       } catch (e) {
-        console.error('Failed to load audit logs:', e);
+        document.getElementById('audit-table-body').textContent = 'Audit unavailable. Enter a valid operator key.';
       }
     }
 
@@ -940,22 +1025,23 @@
       const action = document.getElementById('ov-action').value;
       const reason = document.getElementById('ov-reason').value;
       const op1 = document.getElementById('ov-op1').value;
-      const op2 = document.getElementById('ov-op2').value;
+      const op2 = document.getElementById('ov-op2').value.trim();
+      const coKey = document.getElementById('ov-op2-key').value.trim();
       const hours = parseInt(document.getElementById('ov-hours').value, 10);
 
       const exp = new Date(Date.now() + hours * 3600 * 1000).toISOString();
 
       try {
-        const res = await fetch('/v1/overrides', {
+        const res = await operatorFetch('/v1/overrides', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-FloodRoute-Co-Signature': coKey },
           body: JSON.stringify({
             tenant_id: 1,
             segment_id: segId,
             action: action,
             reason: reason,
             operator_id: op1,
-            second_operator_id: op2,
+            second_operator_id: op2 || null,
             expires_at: exp
           })
         });
@@ -971,6 +1057,8 @@
         }
       } catch (e) {
         alert('Network error: ' + e);
+      } finally {
+        document.getElementById('ov-op2-key').value = '';
       }
     }
 

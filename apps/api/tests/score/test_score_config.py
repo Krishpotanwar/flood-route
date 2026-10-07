@@ -9,7 +9,14 @@ from dataclasses import fields
 import pytest
 from score_helpers import CFG
 
-from floodroute.score.config import DEFAULT_PATH, Config, ConfigError, Group, parse_config
+from floodroute.score.config import (
+    DEFAULT_PATH,
+    Config,
+    ConfigError,
+    Group,
+    load_config,
+    parse_config,
+)
 
 RAW = json.loads(DEFAULT_PATH.read_text(encoding="utf-8"))
 
@@ -23,6 +30,20 @@ def mutated(fn) -> str:
 def test_default_config_loads_with_prd_horizons():
     assert CFG.horizons_min == (0, 30, 60, 120)  # FR-R1
     assert CFG.model_version
+
+
+def test_missing_config_file_is_a_config_error(tmp_path):
+    with pytest.raises(ConfigError, match="cannot read"):
+        load_config(tmp_path / "absent.json")
+
+
+def test_config_path_env_override(monkeypatch, tmp_path):
+    data = copy.deepcopy(RAW)
+    data["model_version"] = "v9test"
+    target = tmp_path / "custom.json"
+    target.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setenv("FLOODROUTE_SCORING_CONFIG", str(target))
+    assert load_config().model_version == "v9test"
 
 
 def test_every_group_is_flagged_provisional_with_a_note():

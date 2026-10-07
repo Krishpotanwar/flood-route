@@ -10,9 +10,11 @@ from typing import Annotated, Any, Literal
 import psycopg
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field
+from starlette.concurrency import run_in_threadpool
 
 from floodroute.api.deps import get_db
 from floodroute.api.photo import (
+    MAX_PHOTO_BYTES,
     PhotoSanitizationError,
     sanitize_photo,
     store_photo,
@@ -62,26 +64,28 @@ def submit_report(
     row = cur.fetchone()
     segment_id = row[0] if row else None
 
-    # Insert into report table
-    db.execute(
-        """
-        insert into report (report_id, segment_id, ts, depth_class, trust, photo_ref, status)
-        values (%s, %s, %s, %s, %s, %s, 'pending')
-        """,
-        (report_id, segment_id, now, req.depth_class, 0.5, req.photo_ref),
-    )
-
-    # If matched to a segment, inject as evidence so scoring immediately reacts
-    if segment_id is not None:
-        depth_cm = DEPTH_CM_MAP[req.depth_class]
-        expires = now + timedelta(minutes=15)
+    # A failed evidence write must not leave a received report without its evidence.
+    with db.transaction():
         db.execute(
             """
-            insert into evidence (segment_id, kind, ts, expires, depth_cm, source_id, trust)
-            values (%s, 'report', %s, %s, %s, %s, %s)
+            insert into report (report_id, segment_id, ts, depth_class, trust, photo_ref, status)
+            values (%s, %s, %s, %s, %s, %s, 'pending')
             """,
-            (segment_id, now, expires, depth_cm, req.reporter_id, 0.5),
+            (report_id, segment_id, now, req.depth_class, 0.5, req.photo_ref),
         )
+
+        if segment_id is not None:
+            depth_cm = DEPTH_CM_MAP[req.depth_class]
+            expires = now + timedelta(minutes=15)
+            db.execute(
+                """
+                insert into evidence (
+                    segment_id, kind, ts, expires, depth_cm, source_id, trust, report_id
+                )
+                values (%s, 'report', %s, %s, %s, %s, %s, %s)
+                """,
+                (segment_id, now, expires, depth_cm, req.reporter_id, 0.5, report_id),
+            )
 
     return {
         "report_id": report_id,
@@ -96,14 +100,28 @@ async def upload_photo(
     request: Request,
 ) -> dict[str, Any]:
     """Upload and sanitize citizen flood photo (DPDP Act 2023, EXIF stripped)."""
+    content_type = request.headers.get("content-type", "")
+    if not content_type.startswith("image/"):
+        raise HTTPException(status_code=415, detail="Content-Type must be an image/* media type")
+    declared = request.headers.get("content-length")
+    if declared is not None:
+        try:
+            declared_n = int(declared)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid Content-Length")
+        if declared_n > MAX_PHOTO_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Photo exceeds limit ({MAX_PHOTO_BYTES} bytes)",
+            )
     raw_bytes = await request.body()
     try:
-        proc = sanitize_photo(raw_bytes)
+        proc = await run_in_threadpool(sanitize_photo, raw_bytes)
     except PhotoSanitizationError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     storage_dir = Path(__file__).resolve().parents[4] / "data" / "photos"
-    store_photo(proc, storage_dir)
+    await run_in_threadpool(store_photo, proc, storage_dir)
 
     return {
         "photo_ref": proc.photo_ref,

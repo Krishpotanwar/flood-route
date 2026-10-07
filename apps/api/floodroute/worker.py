@@ -24,14 +24,20 @@ from floodroute.feed.snapshot import generate_city_closure_snapshot
 from floodroute.ingest import metno, sachet
 from floodroute.ingest.common import Http
 from floodroute.ingest.common import run as run_ingest
+from floodroute.inventory import CITIES
 from floodroute.metrics.collector import METRICS
 from floodroute.route.watch import evaluate_route_watches
+from floodroute.safety.kill_switch import get_active_kill_switch
 from floodroute.score.config import Config as ScoreConfig
 from floodroute.score.config import load_config
 from floodroute.score.db import execute_score_run
 from floodroute.webhook import WebhookEvent, dispatch_event
 
 logger = logging.getLogger(__name__)
+
+# Retry delay after a failed ingest run (instead of a full interval).
+SACHET_RETRY_S = 60.0
+METNO_RETRY_S = 300.0
 
 
 @dataclass
@@ -124,10 +130,7 @@ class Worker:
     def db_url(self) -> str:
         if self._explicit_db_url:
             return self._explicit_db_url
-        try:
-            return database_url()
-        except RuntimeError:
-            return "postgresql://postgres:postgres@localhost:54329/floodroute"
+        return database_url()
 
     def stop(self) -> None:
         """Signal the worker to terminate gracefully."""
@@ -157,10 +160,19 @@ class Worker:
                 try:
                     code = run_ingest(conn, sachet.SOURCE, lambda c: sachet.ingest(c, http_sachet))
                     summary["tasks"]["sachet"] = {"status_code": code}
-                    self.last_sachet = current_time
-                except (psycopg.Error, RuntimeError, OSError) as e:
+                    if code == 0:
+                        self.last_sachet = current_time
+                    else:
+                        # Failed run: retry soon instead of waiting a full interval.
+                        self.last_sachet = current_time - timedelta(
+                            seconds=self.config.sachet_interval_s - SACHET_RETRY_S
+                        )
+                except Exception as e:
                     logger.exception("Worker error running SACHET ingest")
                     summary["tasks"]["sachet"] = {"error": str(e)}
+                    self.last_sachet = current_time - timedelta(
+                        seconds=self.config.sachet_interval_s - SACHET_RETRY_S
+                    )
                 finally:
                     http_sachet.close()
 
@@ -172,10 +184,18 @@ class Worker:
                 try:
                     code = run_ingest(conn, metno.SOURCE, lambda c: metno.ingest(c, http_metno))
                     summary["tasks"]["metno"] = {"status_code": code}
-                    self.last_metno = current_time
-                except (psycopg.Error, RuntimeError, OSError) as e:
+                    if code == 0:
+                        self.last_metno = current_time
+                    else:
+                        self.last_metno = current_time - timedelta(
+                            seconds=self.config.metno_interval_s - METNO_RETRY_S
+                        )
+                except Exception as e:
                     logger.exception("Worker error running MET Norway ingest")
                     summary["tasks"]["metno"] = {"error": str(e)}
+                    self.last_metno = current_time - timedelta(
+                        seconds=self.config.metno_interval_s - METNO_RETRY_S
+                    )
                 finally:
                     http_metno.close()
 
@@ -193,27 +213,51 @@ class Worker:
                     )
                     METRICS.score_runs_total.inc(labels={"status": "success"})
                     METRICS.score_duration_seconds.observe(time.perf_counter() - score_start)
-                    # Evaluate route watch alerts on risk changes
-                    alerts = evaluate_route_watches(conn)
-                    if result.changes:
-                        ev = WebhookEvent(
-                            event_type="segment.state_changed",
-                            timestamp=current_time,
-                            payload={
-                                "run_id": run_id,
-                                "changes_count": len(result.changes),
-                                "segments": [c.segment_id for c in result.changes[:50]],
-                            },
+                    # Advisory freeze (TRD 16): while a global freeze is
+                    # engaged, worker dispatch of advisories is held. Feeds
+                    # and snapshots keep serving ground truth during a
+                    # freeze (withholding real closures would itself cause
+                    # harm; the freeze governs advisories only, enforced at
+                    # route/reroute/snapshot-request and now worker-dispatch
+                    # time). City-scoped freezes stay request-time only:
+                    # the worker has no identity/city plumbing, so only the
+                    # global switch is checked here.
+                    freeze = get_active_kill_switch(conn)
+                    if freeze is not None:
+                        logger.info(
+                            "Advisory freeze active (%s): holding watch alerts "
+                            "and segment broadcasts for run %s",
+                            freeze.switch_id,
+                            run_id,
                         )
-                        dispatch_event(conn, ev)
+                        summary["tasks"]["score"] = {
+                            "run_id": run_id,
+                            "changes_count": len(result.changes),
+                            "alerts_generated": 0,
+                            "dispatch_held": True,
+                        }
+                    else:
+                        # Evaluate route watch alerts on risk changes
+                        alerts = evaluate_route_watches(conn)
+                        if result.changes:
+                            ev = WebhookEvent(
+                                event_type="segment.state_changed",
+                                timestamp=current_time,
+                                payload={
+                                    "run_id": run_id,
+                                    "changes_count": len(result.changes),
+                                    "segments": [c.segment_id for c in result.changes[:50]],
+                                },
+                            )
+                            dispatch_event(conn, ev)
 
-                    summary["tasks"]["score"] = {
-                        "run_id": run_id,
-                        "changes_count": len(result.changes),
-                        "alerts_dispatched": len(alerts),
-                    }
+                        summary["tasks"]["score"] = {
+                            "run_id": run_id,
+                            "changes_count": len(result.changes),
+                            "alerts_generated": len(alerts),
+                        }
                     self.last_score = current_time
-                except (psycopg.Error, RuntimeError, ValueError) as e:
+                except Exception as e:
                     METRICS.score_runs_total.inc(labels={"status": "failed"})
                     logger.exception("Worker error running scoring cycle")
                     summary["tasks"]["score"] = {"error": str(e)}
@@ -236,7 +280,7 @@ class Worker:
                         "expired_watches_purged": stats.expired_watches_purged,
                     }
                     self.last_retention = current_time
-                except (psycopg.Error, RuntimeError) as e:
+                except Exception as e:
                     logger.exception("Worker error running retention prune")
                     summary["tasks"]["retention"] = {"error": str(e)}
 
@@ -244,16 +288,20 @@ class Worker:
             if force_all or self.is_due(
                 self.last_snapshot, self.config.snapshot_interval_s, current_time
             ):
-                snapshot_cities = ["bengaluru", "mumbai", "gurugram"]
                 snapshots_done = []
-                for c_name in snapshot_cities:
+                snapshot_errors = []
+                for c_name in sorted(CITIES):
                     try:
                         res = generate_city_closure_snapshot(conn, city_name=c_name, vclass="car")
                         snapshots_done.append({"city": c_name, "features": res["feature_count"]})
-                    except (psycopg.Error, OSError) as e:
+                    except Exception as e:  # noqa: BLE001 - one city never blocks the others
                         logger.warning("Failed to generate closure snapshot for %s: %s", c_name, e)
+                        snapshot_errors.append({"city": c_name, "error": str(e)})
                 summary["tasks"]["snapshot"] = {"cities": snapshots_done}
-                self.last_snapshot = current_time
+                if snapshot_errors:
+                    summary["tasks"]["snapshot"]["errors"] = snapshot_errors
+                if snapshots_done:
+                    self.last_snapshot = current_time
 
         return summary
 
@@ -273,7 +321,7 @@ class Worker:
                 iterations += 1
                 if max_iterations is not None and iterations >= max_iterations:
                     break
-            except (psycopg.Error, RuntimeError, OSError) as e:
+            except Exception as e:  # noqa: BLE001 - the daemon never exits on one bad tick
                 logger.error("Unhandled exception in worker step: %s", e)
 
             if self.running:
@@ -296,7 +344,6 @@ def main(argv: list[str] | None = None) -> int:
     worker = Worker(db_url=args.db_url)
 
     def handle_signal(sig, frame):
-        logger.info("Signal received, stopping worker...")
         worker.stop()
 
     signal.signal(signal.SIGINT, handle_signal)

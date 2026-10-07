@@ -169,7 +169,13 @@ def parse_rss(data: bytes) -> tuple[list[RssItem], int]:
 
 def _t(el: ET.Element, name: str, limit: int = 4096) -> str | None:
     child = el.find(NS + name)
-    text = (child.text or "").strip() if child is not None else ""
+    if child is None:
+        return None
+    if len(child):
+        raise Rejected(f"{name} has child elements, expected a scalar")
+    if (child.tail or "").strip():
+        raise Rejected(f"{name} has trailing text after a child element")
+    text = (child.text or "").strip()
     if len(text) > limit:
         raise Rejected(f"{name} longer than {limit} characters")
     return text or None
@@ -440,12 +446,12 @@ on conflict (cap_id) do update set
 """
 NO_AREA_SQL = """
 select count(*) from official_alert
-where expires > %s and area is null
+where (expires is null or expires > %s) and area is null
   and raw->'cap'->>'status' = 'Actual' and raw->'cap'->>'msgType' in ('Alert', 'Update')
 """
 SEEN_SQL = """
 select raw->>'rss_key' from official_alert
-where (onset is null or onset > %s) and raw->>'rss_key' = any(%s)
+where raw->>'rss_key' = any(%s)
 """
 
 
@@ -507,9 +513,10 @@ def ingest(conn, http, *, now: datetime | None = None, max_new: int = MAX_NEW_PE
     if not items:
         raise IngestError("feed has no usable items")
     items.sort(key=lambda i: i.pub, reverse=True)
+    feed_total = len(items)
     items = items[:MAX_ITEMS]
     keys = [i.key for i in items]
-    seen = {r[0] for r in conn.execute(SEEN_SQL, (now - SEEN_WINDOW, keys)).fetchall()}
+    seen = {r[0] for r in conn.execute(SEEN_SQL, (keys,)).fetchall()}
     todo = [i for i in items if i.key not in seen]
     stored = no_area = 0
     refused: list[str] = []
@@ -536,6 +543,12 @@ def ingest(conn, http, *, now: datetime | None = None, max_new: int = MAX_NEW_PE
     notes = []
     if refused:
         notes.append(f"{len(refused)} item(s) refused: " + "; ".join(refused[:3]))
+    if bad:
+        notes.append(f"{bad} RSS item(s) skipped as malformed")
+    if feed_total > MAX_ITEMS:
+        notes.append(f"considering newest {MAX_ITEMS} of {feed_total} feed items")
+    if items[0].pub > now + timedelta(minutes=5):
+        notes.append(f"newest item pubDate {items[0].pub:%Y-%m-%dT%H:%MZ} is in the future")
     active_without_area = conn.execute(NO_AREA_SQL, (now,)).fetchone()[0]
     if active_without_area:  # stable across quiet runs: it is about the table, not this run
         notes.append(

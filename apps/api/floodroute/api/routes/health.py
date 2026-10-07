@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Annotated, Any
 
 import psycopg
@@ -9,6 +10,8 @@ from fastapi import APIRouter, Depends
 
 from floodroute.api.deps import get_db, get_score_config
 from floodroute.score.config import Config as ScoreConfig
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/v1", tags=["health"])
 
@@ -34,7 +37,8 @@ def health_check(
             if lag is not None and lag > 3600:
                 is_healthy = False
     except psycopg.Error as e:
-        db_status = f"error: {e}"
+        logger.warning("Health check database error: %s", e)
+        db_status = "error"
         is_healthy = False
 
     return {

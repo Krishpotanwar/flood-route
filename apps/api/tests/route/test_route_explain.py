@@ -77,5 +77,9 @@ def test_every_message_id_the_code_uses_exists():
         )
     # avoid.* keys are built from parts in validate._avoid_lines
     used |= {f"avoid.{now}{named}" for now in ("", "now_") for named in ("named", "unnamed")}
+    # advisory_off is set as a guidance key by the kill-switch path in api/routes/route.py
+    api_route = SOURCES.parent / "api" / "routes" / "route.py"
+    if '"advisory_off"' in api_route.read_text():
+        used.add("advisory_off")
     assert used and used <= set(EN), used - set(EN)
     assert set(EN) <= used, set(EN) - used  # no orphan strings either

@@ -6,12 +6,15 @@ shadow_run, segment_risk, segment_risk_history, and audit_log.
 
 from __future__ import annotations
 
+import copy
+import json
 from datetime import UTC, datetime, timedelta
 
 import psycopg
 import pytest
 
-from floodroute.score.config import load_config
+from floodroute.score import score_run
+from floodroute.score.config import DEFAULT_PATH, load_config, parse_config
 from floodroute.score.db import (
     SUPPORTED_VCLASSES,
     config_digest,
@@ -34,6 +37,215 @@ def test_config_digest_stability_and_uniqueness():
     assert d1 == d2
     assert len(d1) == 16
     assert isinstance(d1, str)
+
+
+def test_config_digest_moves_with_any_threshold():
+    data = json.loads(DEFAULT_PATH.read_text(encoding="utf-8"))
+    edited = copy.deepcopy(data)
+    edited["states"]["watch_min"] = 0.11
+    assert config_digest(load_config()) != config_digest(parse_config(json.dumps(edited)))
+    edited = copy.deepcopy(data)
+    edited["confidence"]["spread_penalty_mm_h"] = 99.0
+    assert config_digest(load_config()) != config_digest(parse_config(json.dumps(edited)))
+
+
+def test_null_rain_rows_are_skipped_never_dry(app_db):
+    cfg = load_config()
+    now = datetime(2027, 5, 18, 12, 0, tzinfo=UTC)
+    app_db.execute(
+        "insert into zone (zone_id, city_id, geom, params) values (1, 1, %s, '{}')",
+        (ZONE_GEOM,),
+    )
+    app_db.execute(
+        "insert into rain_obs (source, zone_id, ts, mm_60m, mm_24h) values "
+        "('gauge', 1, %s, NULL, NULL), "
+        "('gauge', 1, %s, 12.0, 30.0)",
+        (now - timedelta(minutes=5), now - timedelta(minutes=10)),
+    )
+    app_db.execute(
+        "insert into rain_fcst (source, zone_id, issued, valid, mm_per_h, ensemble_spread) "
+        "values ('metno', 1, %s, %s, NULL, NULL)",
+        (now - timedelta(minutes=30), now + timedelta(hours=1)),
+    )
+    run_input, _ = load_run_input(app_db, now, cfg)
+    zone = run_input.zones[0]
+    assert [o.mm_60m for o in zone.obs] == [12.0]
+    assert zone.fcst == ()
+
+
+def test_verified_evidence_fields_load_from_db_and_fire_rules(app_db):
+    cfg = load_config()
+    now = datetime(2027, 5, 18, 12, 0, tzinfo=UTC)
+    app_db.execute(
+        "insert into zone (zone_id, city_id, geom, params) values (1, 1, %s, '{}')",
+        (ZONE_GEOM,),
+    )
+    app_db.execute(
+        """
+        insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed)
+        values (1001, 555001, %s, 'primary', 1, true)
+        """,
+        (SEG_LINE,),
+    )
+    app_db.execute(
+        """
+        insert into segment_static (segment_id, structure, base_logit, zone_id)
+        values (1001, 'underpass', -5.0, 1)
+        """
+    )
+    app_db.execute(
+        """
+        insert into evidence (segment_id, kind, ts, expires, source_id, trust,
+                              depth_cm, verified, contributors)
+        values (1001, 'sensor', %s, %s, 'sens-1', 0.9, 60.0, true, 9),
+               (1001, 'report', %s, %s, 'u1', 0.5, 5.0, false, NULL)
+        """,
+        (
+            now - timedelta(minutes=5),
+            now + timedelta(minutes=30),
+            now - timedelta(minutes=5),
+            now + timedelta(minutes=30),
+        ),
+    )
+    run_input, _ = load_run_input(app_db, now, cfg)
+    by_source = {e.source_id: e for e in run_input.segments[0].evidence}
+    assert (by_source["sens-1"].verified, by_source["sens-1"].contributors) == (True, 9)
+    assert (by_source["u1"].verified, by_source["u1"].contributors) == (False, None)
+    result = score_run(run_input, {}, cfg)
+    car_h0 = next(r for r in result.rows if (r.vclass, r.horizon_min) == ("car", 0))
+    assert "depth_unusable" in car_h0.evidence_rules  # 60 cm verified over car 30 cm
+
+
+def test_future_starting_override_covers_later_horizons(app_db):
+    cfg = load_config()
+    now = datetime(2027, 5, 18, 12, 0, tzinfo=UTC)
+    app_db.execute(
+        "insert into zone (zone_id, city_id, geom, params) values (1, 1, %s, '{}')",
+        (ZONE_GEOM,),
+    )
+    app_db.execute(
+        """
+        insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed)
+        values (1001, 555001, %s, 'primary', 1, true)
+        """,
+        (SEG_LINE,),
+    )
+    app_db.execute(
+        """
+        insert into segment_static (segment_id, structure, base_logit, zone_id)
+        values (1001, 'none', -5.0, 1)
+        """
+    )
+    app_db.execute("insert into tenant (tenant_id, name, kind) values (1, 'Test Admin', 'admin')")
+    app_db.execute(
+        """
+        insert into override (tenant_id, segment_id, action, reason, operator_id, starts_at, expires_at)
+        values (1, 1001, 'close', 'planned flooding closure', 'op-42', %s, %s)
+        """,
+        (now + timedelta(minutes=45), now + timedelta(hours=3)),
+    )
+    run_input, _ = load_run_input(app_db, now, cfg)
+    assert len(run_input.segments[0].overrides) == 1
+    result = score_run(run_input, {}, cfg)
+    states = {
+        r.horizon_min: r.state for r in result.rows if r.vclass == "car"
+    }
+    assert states == {0: "unknown", 30: "unknown", 60: "impassable", 120: "impassable"}
+
+
+def test_loaded_segments_default_to_uncovered(app_db):
+    cfg = load_config()
+    now = datetime(2027, 5, 18, 12, 0, tzinfo=UTC)
+    app_db.execute(
+        "insert into zone (zone_id, city_id, geom, params) values (1, 1, %s, '{}')",
+        (ZONE_GEOM,),
+    )
+    app_db.execute(
+        """
+        insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed)
+        values (1001, 555001, %s, 'primary', 1, true)
+        """,
+        (SEG_LINE,),
+    )
+    app_db.execute(
+        """
+        insert into segment_static (segment_id, structure, base_logit, zone_id)
+        values (1001, 'underpass', -1.5, 1)
+        """
+    )
+    run_input, _ = load_run_input(app_db, now, cfg)
+    assert run_input.segments[0].covered is False
+
+
+def test_assessed_segment_without_static_row_fails_loud(app_db):
+    cfg = load_config()
+    now = datetime(2027, 5, 18, 12, 0, tzinfo=UTC)
+    app_db.execute(
+        "insert into zone (zone_id, city_id, geom, params) values (1, 1, %s, '{}')",
+        (ZONE_GEOM,),
+    )
+    app_db.execute(
+        """
+        insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed)
+        values (9001, 555001, %s, 'primary', 1, false)
+        """,
+        (SEG_LINE,),
+    )
+    run_input, _ = load_run_input(app_db, now, cfg)
+    assert run_input.segments[0].zone_id == -1  # unassessed rows never look up rain
+    app_db.execute(
+        """
+        insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed)
+        values (1001, 555002, %s, 'primary', 1, true)
+        """,
+        (SEG_LINE,),
+    )
+    with pytest.raises(ValueError, match="no segment_static row"):
+        load_run_input(app_db, now, cfg)
+
+
+def test_execute_score_run_rejects_unstorable_horizons(app_db):
+    data = json.loads(DEFAULT_PATH.read_text(encoding="utf-8"))
+    data["horizons_min"] = [0, 15]
+    cfg = parse_config(json.dumps(data))
+    with pytest.raises(ValueError, match="cannot be stored"):
+        execute_score_run(app_db, cfg=cfg, now=datetime(2027, 5, 18, 14, 0, tzinfo=UTC))
+
+
+def test_unknown_rows_persist_null_depth_and_null_age(app_db):
+    cfg = load_config()
+    now = datetime(2027, 5, 18, 14, 0, tzinfo=UTC)
+    app_db.execute(
+        "insert into zone (zone_id, city_id, geom, params) values (1, 1, %s, '{}')",
+        (ZONE_GEOM,),
+    )
+    app_db.execute(
+        """
+        insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed)
+        values (2001, 666001, %s, 'secondary', 1, true)
+        """,
+        (SEG_LINE,),
+    )
+    app_db.execute(
+        """
+        insert into segment_static (segment_id, structure, base_logit, zone_id)
+        values (2001, 'none', -5.0, 1)
+        """
+    )
+    run_id, _ = execute_score_run(app_db, cfg=cfg, now=now, notes="null prose check")
+    rows = app_db.execute(
+        "select depth_p50_cm, depth_p90_cm, evidence_age_s, state from segment_risk"
+        " where segment_id = 2001"
+    ).fetchall()
+    assert len(rows) == len(SUPPORTED_VCLASSES) * len(cfg.horizons_min)
+    assert all(r[:3] == (None, None, None) for r in rows)
+    assert {r[3] for r in rows} == {"unknown"}
+    hist = app_db.execute(
+        "select count(*) from segment_risk_history where run_id = %s"
+        " and depth_p50_cm is null and evidence_age_s is null",
+        (run_id,),
+    ).fetchone()[0]
+    assert hist == len(rows)
 
 
 def test_load_run_input_empty_db(app_db):

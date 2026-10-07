@@ -42,11 +42,13 @@ COLS = [
 REQUIRED = ("name", "source_name", "source_url", "source_date", "list_kind", "raw_text")
 AGREE_M, CONFLICT_M = 150.0, 500.0
 SAME_NAME = 0.6  # Jaccard of distinctive tokens to call two rows the same place
-AREA_KINDS = {"low_lying_area"}  # area-level points: never better than medium
+AREA_KINDS = {"low_lying_area", "gcc_chronic_low_lying", "bmc_chronic_low_lying"}  # area-level points: never better than medium
+EXTENT_CAPPED = ("stretch", "road", "area")  # linear/area extents are not segments: capped at low
 
 
 def validate(rows):
-    """Trust boundary: no row without provenance, no non-http URL, no malformed date."""
+    """Trust boundary: no row without provenance, no non-http URL, no malformed date,
+    no non-numeric source coordinates, no unknown extent vocabulary."""
     bad = []
     for i, r in enumerate(rows, 2):  # 2 = first data line of the CSV
         if any(not (r.get(k) or "").strip() for k in REQUIRED):
@@ -55,6 +57,12 @@ def validate(rows):
             bad.append(f"line {i}: source_url is not http(s)")
         elif not re.fullmatch(r"\d{4}-\d{2}-\d{2}", r["source_date"]):
             bad.append(f"line {i}: source_date is not YYYY-MM-DD")
+        elif (r.get("src_lat") or r.get("src_lon")) and (
+            num(r.get("src_lat")) is None or num(r.get("src_lon")) is None
+        ):
+            bad.append(f"line {i}: src_lat/src_lon are not both numeric")
+        elif "extent" in r and (r.get("extent") or "") not in ("point", "stretch", "road", "area", ""):
+            bad.append(f"line {i}: extent is not one of point/stretch/road/area")
     if bad:
         raise ValueError("invalid seed:\n" + "\n".join(bad[:20]))
 
@@ -97,39 +105,51 @@ def build(rows, city, geocoder):
             and jaccard(toks[i], toks[j]) >= SAME_NAME
         ]
 
+    def source_outcome(i):
+        """Confidence for a row whose own source coordinates fall inside the box."""
+        r = rows[i]
+        lat, lon = pts[i]
+        d = [dist_m(lat, lon, [(pts[j][1], pts[j][0])]) for j in peers(i)]
+        if d and min(d) <= AGREE_M:
+            method, conf = f"source_latlon;agrees_with_other_source_{round(min(d))}m", "high"
+        elif d and min(d) > CONFLICT_M:
+            method, conf = f"source_latlon;conflicts_with_other_source_{round(min(d))}m", "low"
+        else:
+            method, conf = (
+                ("source_latlon;other_source_" + f"{round(min(d))}m" if d else "source_latlon"),
+                "medium",
+            )
+        if (
+            len(names_at[pts[i]]) > 1
+        ):  # one printed point for several names: co-located, not exact
+            method += f";shared_by_{len(names_at[pts[i]])}_names"
+            conf = "medium" if conf == "high" else conf
+        if r["list_kind"] in AREA_KINDS and conf == "high":
+            conf = "medium"
+        if r.get("extent") in EXTENT_CAPPED and conf != "low":
+            method += f";capped_extent_{r['extent']}"
+            conf = "low"
+        return lat, lon, method, conf
+
     out, stats = [], Counter()
     for i, r in enumerate(rows):
         lat = lon = None
         method, conf = "", "none"
-        raw_bad = (r.get("src_lat") or r.get("src_lon")) and not pts[i]
         if pts[i]:
-            lat, lon = pts[i]
-            d = [dist_m(lat, lon, [(pts[j][1], pts[j][0])]) for j in peers(i)]
-            if d and min(d) <= AGREE_M:
-                method, conf = f"source_latlon;agrees_with_other_source_{round(min(d))}m", "high"
-            elif d and min(d) > CONFLICT_M:
-                method, conf = f"source_latlon;conflicts_with_other_source_{round(min(d))}m", "low"
-            else:
-                method, conf = (
-                    ("source_latlon;other_source_" + f"{round(min(d))}m" if d else "source_latlon"),
-                    "medium",
-                )
-            if (
-                len(names_at[pts[i]]) > 1
-            ):  # one printed point for several names: co-located, not exact
-                method += f";shared_by_{len(names_at[pts[i]])}_names"
-                conf = "medium" if conf == "high" else conf
-            if r["list_kind"] in AREA_KINDS and conf == "high":
-                conf = "medium"
+            lat, lon, method, conf = source_outcome(i)
         else:
-            note = (
-                f"source_latlon_rejected({r.get('src_lat')},{r.get('src_lon')} outside city box);"
-                if raw_bad
-                else ""
-            )
+            src_lat_raw, src_lon_raw = r.get("src_lat"), r.get("src_lon")
+            note = ""
+            if src_lat_raw or src_lon_raw:
+                la, lo = num(src_lat_raw), num(src_lon_raw)
+                if la is None or lo is None:
+                    note = f"source_latlon_rejected({src_lat_raw},{src_lon_raw} invalid coordinates);"
+                elif not inside(la, lo, box):
+                    note = f"source_latlon_rejected({src_lat_raw},{src_lon_raw} outside city box);"
             near = peers(i)
-            if near:
-                j = max(near, key=lambda j: jaccard(toks[i], toks[j]))
+            good = [j for j in near if source_outcome(j)[3] in ("high", "medium")]
+            if good:
+                j = max(good, key=lambda j: jaccard(toks[i], toks[j]))
                 lat, lon = pts[j]
                 method, conf = f"{note}name_match_{rows[j]['list_kind']}", "medium"
             else:
@@ -145,8 +165,8 @@ def build(rows, city, geocoder):
                 method += f";{why}" if why else ""
                 if conf != "none":
                     lat, lon = float(rs[0]["lat"]), float(rs[0]["lon"])
-                    if r.get("extent") in ("stretch", "road", "area") and conf != "low":
-                        conf, method = "low", method + f";capped_extent_{r['extent']}"
+        if r.get("extent") in EXTENT_CAPPED and conf in ("high", "medium"):
+            conf, method = "low", method + f";capped_extent_{r['extent']}"
         out.append(
             {
                 "name": r["name"],

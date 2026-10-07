@@ -5,8 +5,13 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from floodroute.bot.whatsapp import (
+    _RATE,
+    RATE_LIMIT_N,
+    RATE_LIMIT_WINDOW_S,
+    SESSION_CAP,
     handle_incoming_message,
     parse_meta_payload,
+    sender_allowed,
     verify_meta_webhook,
 )
 
@@ -160,3 +165,31 @@ def test_handle_language_and_vehicle_switching(app_db):
     }
     resp_veh = handle_incoming_message(app_db, p_veh)
     assert "two_wheeler" in resp_veh["text"]["body"].lower()
+
+
+def test_sender_allowed_prunes_expired_windows_past_cap():
+    _RATE.clear()
+    try:
+        now = datetime.now(UTC).timestamp()
+        stale_start = now - RATE_LIMIT_WINDOW_S - 1.0
+        for i in range(SESSION_CAP + 1):
+            _RATE[f"stale-{i}"] = (stale_start, RATE_LIMIT_N)
+        _RATE["live-sender"] = (now, 1)
+        assert sender_allowed("fresh-sender", now_ts=now) is True
+        assert "live-sender" in _RATE
+        assert "fresh-sender" in _RATE
+        assert not any(k.startswith("stale-") for k in _RATE)
+    finally:
+        _RATE.clear()
+
+
+def test_sender_allowed_keeps_stale_windows_below_cap():
+    _RATE.clear()
+    try:
+        now = datetime.now(UTC).timestamp()
+        _RATE["quiet-sender"] = (now - RATE_LIMIT_WINDOW_S - 1.0, RATE_LIMIT_N)
+        assert sender_allowed("other-sender", now_ts=now) is True
+        # Opportunistic only: below the cap nothing is pruned.
+        assert "quiet-sender" in _RATE
+    finally:
+        _RATE.clear()

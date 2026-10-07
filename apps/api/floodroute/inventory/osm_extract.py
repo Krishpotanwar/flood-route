@@ -119,13 +119,12 @@ def read_pbf(pbf, cities):
         if len(w.nodes) < 2:
             continue
         try:
-            mid = w.nodes[len(w.nodes) // 2]
-            lon, lat = mid.lon, mid.lat
+            pts = [(n.lon, n.lat) for n in w.nodes]
         except osmium.InvalidLocationError:
             continue  # edge of the extract
         for c in cities:
             west, south, east, north = CITIES[c]
-            if west <= lon <= east and south <= lat <= north:
+            if any(west <= lon <= east and south <= lat <= north for lon, lat in pts):
                 break
         else:
             continue
@@ -141,10 +140,6 @@ def read_pbf(pbf, cities):
             and ww not in WATER
             and not (rl == "rail" and has(w.tags, "bridge"))
         ):
-            continue
-        try:
-            pts = [(n.lon, n.lat) for n in w.nodes]
-        except osmium.InvalidLocationError:
             continue
         rec = {"id": w.id, "tags": t, "pts": pts}
         if hw is not None or (t.get("flood_prone") == "yes" and ww not in WATER):
@@ -316,7 +311,9 @@ def write(city, feats, out_dir, meta):
         wr = csv.writer(fh)
         wr.writerow(cols)
         for f in feats:
-            mid = f["pts"][len(f["pts"]) // 2]
+            xs = [p[0] for p in f["pts"]]
+            ys = [p[1] for p in f["pts"]]
+            mid = (sum(xs) / len(xs), sum(ys) / len(ys))  # vertex mean: exact centre of 2-pt clips
             t = f["tags"]
             wr.writerow(
                 [

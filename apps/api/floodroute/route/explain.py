@@ -43,6 +43,10 @@ MESSAGES: dict[str, dict[str, str]] = {
         "reroute.no_alternative": (
             "A road ahead may be flooded and no other route is open. Slow down and stay alert."
         ),
+        # Freeze key set by the kill-switch path in api/routes/route.py (not localisable flood keys).
+        "advisory_off": (
+            "Flood advisories are suspended. Follow on-ground traffic police directions."
+        ),
     },
 }
 

@@ -193,6 +193,23 @@ def test_note_closed_records_the_latest_time_per_segment():
     s = note_closed(TripState(), [3, 4], T0)
     s = note_closed(s, [3], T0 + mins(5))
     assert dict(s.closed_at) == {3: T0 + mins(5), 4: T0}
+
+
+def test_recently_closed_boundary_is_exclusive_at_exactly_15_minutes():
+    cur, alt = flooded_ahead(), clear_alt()
+    now = T0 + mins(30)
+    assert decide(TripState(closed_at={3: now - mins(15)}), cur, alt, now).action == "suggest"
+
+
+def test_note_closed_evicts_expired_entries_and_caps_size():
+    now = T0 + mins(30)
+    stale = TripState(closed_at={3: now - mins(16), 4: now - mins(14)})
+    pruned = note_closed(stale, [], now)
+    assert dict(pruned.closed_at) == {4: now - mins(14)}
+    big = TripState(closed_at={i: now for i in range(300)})
+    capped = note_closed(big, [1000], now, max_entries=10)
+    assert len(capped.closed_at) == 10
+    assert 1000 in capped.closed_at
     assert TripState().closed_at == {}  # the default state is not mutated
 
 

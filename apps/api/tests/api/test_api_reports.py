@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import pytest
+from psycopg import errors
+
 ZONE_GEOM = "SRID=4326;MULTIPOLYGON(((77.5 12.9, 77.7 12.9, 77.7 13.1, 77.5 13.1, 77.5 12.9)))"
 SEG_LINE = "SRID=4326;LINESTRING(77.580 12.970, 77.581 12.971)"
 
@@ -58,7 +61,8 @@ def test_submit_report_near_segment(client, app_db):
 
     # Verify evidence row in DB
     cur = app_db.execute(
-        "select segment_id, kind, depth_cm, source_id from evidence where segment_id = 5001"
+        "select segment_id, kind, depth_cm, source_id, report_id"
+        " from evidence where segment_id = 5001"
     )
     row = cur.fetchone()
     assert row is not None
@@ -66,6 +70,31 @@ def test_submit_report_near_segment(client, app_db):
     assert row[1] == "report"
     assert row[2] == 10.0  # Ankle depth = 10.0 cm
     assert row[3] == "user-abc-123"
+    assert str(row[4]) == data["report_id"]
+
+
+def test_evidence_failure_rolls_back_report(client, db, app_db):
+    app_db.execute(
+        "insert into segment (segment_id, osm_way_id, geom, road_class, city_id)"
+        " values (5001, 15001, %s, 'secondary', 1)",
+        (SEG_LINE,),
+    )
+    db.execute(
+        "alter table evidence add constraint reject_test_report"
+        " check (source_id <> 'fail-after-report')"
+    )
+    with pytest.raises(errors.CheckViolation, match="reject_test_report"):
+        client.post(
+            "/v1/reports",
+            json={
+                "lat": 12.9705,
+                "lon": 77.5805,
+                "depth_class": "ankle",
+                "reporter_id": "fail-after-report",
+            },
+        )
+    assert app_db.execute("select count(*) from report").fetchone()[0] == 0
+    assert app_db.execute("select count(*) from evidence").fetchone()[0] == 0
 
 
 def test_submit_report_isolated_location(client, app_db):

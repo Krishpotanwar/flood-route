@@ -6,6 +6,8 @@ import argparse
 import sys
 
 from .backtest import (
+    SUPPORTED_HORIZONS,
+    SUPPORTED_VCLASSES,
     run_db_backtest,
     run_full_calibration_audit,
     seed_benchmark_events,
@@ -24,8 +26,16 @@ def main(argv: list[str] | None = None) -> None:
 
     b = sub.add_parser("backtest", help="run backtest against observed ground-truth events")
     b.add_argument("--city-id", type=int, default=1, help="City ID (default: 1)")
-    b.add_argument("--vclass", default="car", help="Vehicle class (default: car)")
-    b.add_argument("--horizon", type=int, default=0, help="Forecast horizon (min, default: 0)")
+    b.add_argument(
+        "--vclass", default="car", choices=SUPPORTED_VCLASSES, help="Vehicle class (default: car)"
+    )
+    b.add_argument(
+        "--horizon",
+        type=int,
+        default=0,
+        choices=SUPPORTED_HORIZONS,
+        help="Forecast horizon (min, default: 0)",
+    )
     b.add_argument(
         "--threshold", type=float, default=0.30, help="Probability threshold (default: 0.30)"
     )

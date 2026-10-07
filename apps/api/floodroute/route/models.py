@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Literal
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
 
 VClass = Literal["two_wheeler", "car", "ambulance", "heavy"]
 Profile = Literal["citizen", "ambulance"]
@@ -99,8 +99,8 @@ class Edge:
     travel_time_s: float
     length_m: float = 0.0
     # A junction at the end of this edge where the driver could leave the route (FR-RT6).
-    # Unknown is True: with no junction data, offer a reroute rather than hold.
-    turn_off_after: bool = True
+    # Unknown is False: with no junction data, hold rather than suggest into water.
+    turn_off_after: bool = False
 
     def __post_init__(self) -> None:
         _finite_nonneg("travel_time_s", self.travel_time_s)
@@ -228,8 +228,18 @@ class EdgeIn(BaseModel):
     segment_id: int | None = None
     travel_time_s: float = Field(ge=0.0)
     length_m: float = Field(default=0.0, ge=0.0)
-    turn_off_after: bool = True
+    # Unknown is False (hold when the exits are unknown); the client must
+    # assert a way off explicitly.
+    turn_off_after: bool = False
     geometry: list[Point] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _length_needs_geometry(self) -> EdgeIn:
+        # A zero length with real geometry would pin the commit-zone distance
+        # at 0 and force a hold far from water. Reject it at the boundary.
+        if self.geometry and len(self.geometry) >= 2 and not self.length_m > 0:
+            raise ValueError("length_m must be > 0 when geometry is given")
+        return self
 
 
 class RerouteRequest(BaseModel):

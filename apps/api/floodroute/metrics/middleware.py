@@ -23,7 +23,11 @@ def sanitize_path(path: str) -> str:
     )
     # Replace numeric IDs
     p = re.sub(r"/\d+(?=/|$)", "/{id}", p)
-    return p or "/"
+    # Collapse open-ended string segments that would each mint a series.
+    p = re.sub(r"^/v1/cities/[^/]+", "/v1/cities/{city}", p)
+    p = re.sub(r"^/v1/cities/\{city\}/[^/]+", "/v1/cities/{city}/{op}", p)
+    p = re.sub(r"^/v1/reports/photo/[^/]+", "/v1/reports/photo/{id}", p)
+    return (p or "/")[:128]
 
 
 class PrometheusMetricsMiddleware(BaseHTTPMiddleware):

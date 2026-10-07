@@ -8,6 +8,7 @@ node_modules/
 *.osm
 data/raw/
 data/photos/
+data/snapshots/
 apps/data/
 .env
 apps/citizen/dist/

@@ -21,6 +21,13 @@ from floodroute.score.backtest import (
 )
 
 
+def test_allow_lists_come_from_the_db_module_single_source_of_truth():
+    from floodroute.score import backtest, db
+
+    assert backtest.SUPPORTED_VCLASSES is db.SUPPORTED_VCLASSES
+    assert backtest.SUPPORTED_HORIZONS is db.SUPPORTED_HORIZONS
+
+
 def test_contingency_table_metrics():
     # H=8, M=2, F=1, C=9 -> total=20
     ct = ContingencyTable(hits=8, misses=2, false_alarms=1, correct_negatives=9)
@@ -103,6 +110,50 @@ def test_brier_score_and_mae():
     # MAE depth: |30 - 35| + |10 - 15| = 5 + 5 = 10 / 2 = 5.0
     depth_pairs = [(30.0, 35.0), (10.0, 15.0)]
     assert compute_mae_depth(depth_pairs) == pytest.approx(5.0)
+
+
+def test_backtest_rejects_unknown_vclass_and_horizon(db):
+    with pytest.raises(ValueError, match="unknown vclass"):
+        run_db_backtest(db, vclass="pedestrian", horizon_min=0)
+    with pytest.raises(ValueError, match="unknown horizon"):
+        run_db_backtest(db, vclass="car", horizon_min=45)
+
+
+def test_backtest_ignores_missing_predictions_and_other_truth(db):
+    db.execute(
+        "insert into zone (zone_id, city_id, geom, params) "
+        "values (1, 1, 'SRID=4326;MULTIPOLYGON(((77.4 12.8, 77.85 12.8, 77.85 13.2, 77.4 13.2, 77.4 12.8)))', '{}')"
+    )
+    db.execute(
+        "insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed) "
+        "values (1001, 1, 'SRID=4326;LINESTRING(77.6841 12.9298, 77.6842 12.9299)', 'primary', 1, true), "
+        "       (1002, 2, 'SRID=4326;LINESTRING(77.6101 12.9165, 77.6102 12.9166)', 'primary', 1, true)"
+    )
+    now = datetime.now(UTC)
+    db.execute(
+        "insert into segment_risk (segment_id, vclass, horizon_min, p_unusable, state, confidence, evidence_age_s, model_version, updated_at, depth_p50_cm, depth_p90_cm) "
+        "values (1001, 'car', 0, 0.75, 'impassable', 'high', 60, 'v0.0.1', %s, NULL, NULL)",
+        (now,),
+    )
+    db.execute(
+        "insert into observed_event (city_id, observed_at, segment_id, kind, source_kind, label_tier, note) "
+        "values (1, %s, 1001, 'flooded', 'control_room', 'high', 'scored event'), "
+        "       (1, %s, 1002, 'flooded', 'control_room', 'high', 'never scored'), "
+        "       (1, %s, 1001, 'other', 'control_room', 'high', 'unclear truth')",
+        (now, now, now),
+    )
+    report = run_db_backtest(db, city_id=1, vclass="car", horizon_min=0, p_threshold=0.30)
+    assert report["metrics"]["samples"] == 1
+    assert report["metrics"]["hits"] == 1
+
+
+def test_cli_backtest_rejects_unknown_vclass_and_horizon():
+    from floodroute.score.__main__ import main
+
+    with pytest.raises(SystemExit):
+        main(["backtest", "--vclass", "bogus"])
+    with pytest.raises(SystemExit):
+        main(["backtest", "--horizon", "45"])
 
 
 def test_db_backtest_with_benchmark_events(db):

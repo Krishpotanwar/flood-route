@@ -248,6 +248,24 @@ def test_a_point_outside_india_fails_that_zone_without_a_request():
     assert http.calls == [BLR_URL] and {k[1] for k in conn.rain} == {1}
 
 
+def test_future_dated_forecast_warns_instead_of_reading_as_fresh():
+    body = tweak(lambda d: d["properties"]["meta"].update(updated_at="2026-10-05T21:00:00Z"))
+    out = metno.ingest(
+        FakeConn(), FakeHttp({BLR_URL: body}), points=[(1, 12.9716, 77.5946)], now=NOW
+    )
+    assert out.lag_s == 0
+    assert out.warn is not None and "in the future" in out.warn
+
+
+def test_missing_contact_warns_once(caplog, monkeypatch):
+    monkeypatch.delenv("FLOODROUTE_CONTACT", raising=False)
+    with caplog.at_level("WARNING", logger="floodroute.ingest.metno"):
+        metno.ingest(
+            FakeConn(), FakeHttp({BLR_URL: BLR}), points=[(1, 12.9716, 77.5946)], now=NOW
+        )
+    assert "FLOODROUTE_CONTACT is unset" in caplog.text
+
+
 def test_a_network_failure_stops_the_run_at_once():
     conn = FakeConn()
     points = [(1, 12.9716, 77.5946), (2, 13.0, 77.6)]

@@ -15,6 +15,9 @@ from psycopg.conninfo import make_conninfo
 
 from floodroute.db.migrate import migrate
 
+os.environ.setdefault("WHATSAPP_VERIFY_TOKEN", "test-only-verify-token-not-a-secret")
+os.environ.setdefault("WHATSAPP_APP_SECRET", "test-only-app-secret-not-a-secret")
+
 ADMIN_URL = os.environ.get("DATABASE_URL_ADMIN", "postgresql://postgres@127.0.0.1:54329/postgres")
 
 

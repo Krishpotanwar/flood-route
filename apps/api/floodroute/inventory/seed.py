@@ -18,7 +18,7 @@ from typing import Any
 
 import psycopg
 
-from floodroute.inventory import CITIES, CITY_IDS
+from floodroute.inventory import CITIES, get_city_id
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ VALID_STRUCTURES = frozenset({"underpass", "low_bridge", "culvert", "dip", "none
 def candidate_id_to_segment_id(candidate_id: str) -> int:
     """Deterministically map candidate_id (e.g. '15802887' or '8680571-x1') to positive 63-bit int."""
     digest = hashlib.sha256(candidate_id.encode("utf-8")).digest()
-    return int.from_bytes(digest[:8], "big") & 0x7FFFFFFFFFFFFFFF
+    return (int.from_bytes(digest[:8], "big") & 0x7FFFFFFFFFFFFFFF) or 1
 
 
 @dataclass(frozen=True)
@@ -58,6 +58,7 @@ def load_hotspot_counts(matched_path: Path | str) -> dict[str, int]:
     counts: Counter[str] = Counter()
     p = Path(matched_path)
     if not p.exists():
+        logger.warning("matched hotspots file not found: %s; seeding hotspot_count=0", p)
         return {}
     with p.open(encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
@@ -76,9 +77,9 @@ def ensure_city_zone(
 ) -> int:
     """Ensure a base zone exists for the given city. Returns zone_id."""
     city_norm = city.lower().strip()
-    city_id = CITY_IDS.get(city_norm, 1)
+    city_id = get_city_id(city_norm)
     zid = zone_id if zone_id is not None else city_id
-    west, south, east, north = CITIES.get(city_norm, (77.40, 12.80, 77.85, 13.20))
+    west, south, east, north = CITIES[city_norm]
     poly_wkt = f"MULTIPOLYGON((({west} {south}, {east} {south}, {east} {north}, {west} {north}, {west} {south})))"
     conn.execute(
         """
@@ -102,7 +103,7 @@ def seed_inventory(
 ) -> SeedStats:
     """Seed candidate segments and matched hotspots into segment and segment_static."""
     city_norm = city.lower().strip()
-    city_id = CITY_IDS.get(city_norm, 1)
+    city_id = get_city_id(city_norm)
 
     # Resolve paths if not specified
     repo_root = Path(__file__).resolve().parents[4]
@@ -141,13 +142,20 @@ def seed_inventory(
     segment_rows: list[tuple[Any, ...]] = []
     static_rows: list[tuple[Any, ...]] = []
 
-    for feat in features:
+    for n, feat in enumerate(features):
         props = feat.get("properties", {})
         geom = feat.get("geometry", {})
-        cid = str(props.get("candidate_id") or feat.get("id"))
+        cid_raw = props.get("candidate_id") or feat.get("id")
+        if cid_raw is None or str(cid_raw).strip() == "":
+            raise ValueError(f"candidate feature {n} has no candidate_id")
+        cid = str(cid_raw)
         seg_id = candidate_id_to_segment_id(cid)
 
-        osm_way_id = int(props.get("osm_way_id", 0))
+        try:
+            osm_way_id = int(props.get("osm_way_id", 0))
+        except (TypeError, ValueError):
+            logger.warning("candidate %s has non-numeric osm_way_id %r; using 0", cid, props.get("osm_way_id"))
+            osm_way_id = 0
         road_class = props.get("highway") or "unclassified"
         struct = props.get("structure") or "none"
         if struct not in VALID_STRUCTURES:
@@ -188,9 +196,13 @@ def seed_inventory(
     """
 
     with conn.cursor() as cur:
-        for i in range(0, len(segment_rows), batch_size):
-            cur.executemany(sql_segment, segment_rows[i : i + batch_size])
-            cur.executemany(sql_static, static_rows[i : i + batch_size])
+        try:
+            for i in range(0, len(segment_rows), batch_size):
+                cur.executemany(sql_segment, segment_rows[i : i + batch_size])
+                cur.executemany(sql_static, static_rows[i : i + batch_size])
+        except Exception:
+            conn.rollback()
+            raise
 
     conn.commit()
 

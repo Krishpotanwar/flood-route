@@ -192,6 +192,21 @@ def test_no_evidence_at_all_is_unknown_never_clear():
     assert (r.state, r.evidence_age_s, r.confidence) == ("unknown", None, "low")
 
 
+def test_unknown_wetness_withholds_one_confidence_level():
+    from floodroute.score import RainObs
+
+    reps = (
+        Evidence("report", at(minutes=-1), at(minutes=14), "u1", trust=0.9),
+        Evidence("report", at(minutes=-1), at(minutes=14), "u2", trust=0.9),
+    )
+    wet = (RainObs("gauge", at(), 0.0, 80.0),)
+    _, rows = step(at(), [seg(1, p=0.01, evidence=reps)], obs=wet)
+    assert row(rows).confidence == "high"
+    dry_unknown = (RainObs("gauge", at(), 0.0, None),)
+    _, rows = step(at(), [seg(1, p=0.01, evidence=reps)], obs=dry_unknown)
+    assert row(rows).confidence == "medium"
+
+
 # ---- TRD 5: no rain source in an active alert ------------------------------------------------
 
 

@@ -69,6 +69,7 @@ def _row(
             zr.obs_age_s,
             seg.covered,
             cfg,
+            wetness_unknown=zr.mm_24h is None,
         ),
         evidence_age_s=age,
         model_version=cfg.model_version,

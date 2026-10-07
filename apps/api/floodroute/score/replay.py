@@ -43,6 +43,8 @@ from .run import score_run
 def _dt(v: Any, name: str) -> datetime:
     if not isinstance(v, str):
         raise TypeError(f"{name} must be an ISO 8601 string")
+    if v.endswith(("Z", "z")):  # UTC suffix: fromisoformat on 3.11 needs +00:00
+        v = v[:-1] + "+00:00"
     return aware(datetime.fromisoformat(v), name)
 
 

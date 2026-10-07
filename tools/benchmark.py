@@ -6,6 +6,11 @@ live PostGIS database and FastAPI endpoints in accordance with TRD SLO specifica
 - Route calculation p95 < 500 ms (TRD Section 13)
 - Ambulance route calculation p95 < 300 ms (TRD Section 13)
 - Health check p95 < 50 ms
+
+Honesty note: in-process mode overrides get_router with benchmark_router, a
+fixed two-edge stub. Route and reroute scenarios therefore measure API
+and database processing, not the road router; they are labelled [stub router]
+in that mode. Remote mode uses the server's configured router.
 """
 
 from __future__ import annotations
@@ -13,6 +18,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import logging
 import math
 import os
 import sys
@@ -27,9 +33,12 @@ import httpx
 # Ensure project imports resolve
 sys.path.insert(0, os.path.abspath("apps/api"))
 
-from floodroute.api.deps import get_router
+from floodroute.api.deps import close_pool, get_router
 from floodroute.api.main import create_app
+from floodroute.db.conn import database_url
 from floodroute.route.models import Edge, LatLon, Polygon, Route
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -83,6 +92,8 @@ async def run_benchmark_scenario(
     total_requests: int,
     target_p95_ms: float,
 ) -> ScenarioResult:
+    if concurrency < 1 or total_requests < 1:
+        raise ValueError("concurrency and total_requests must be positive")
     latencies: list[float] = []
     success = 0
     failure = 0
@@ -92,7 +103,13 @@ async def run_benchmark_scenario(
     async def worker() -> None:
         nonlocal success, failure
         async with sem:
-            ok, elapsed_ms = await fn()
+            t0 = time.perf_counter()
+            try:
+                ok, elapsed_ms = await fn()
+            except httpx.RequestError as exc:
+                logger.warning("%s request failed: %s", name, type(exc).__name__)
+                elapsed_ms = (time.perf_counter() - t0) * 1000.0
+                ok = False
             latencies.append(elapsed_ms)
             if ok:
                 success += 1
@@ -130,8 +147,10 @@ async def execute_full_suite(
     client: httpx.AsyncClient,
     concurrency: int = 10,
     requests_per_scenario: int = 100,
+    stub_router: bool = False,
 ) -> list[ScenarioResult]:
     results: list[ScenarioResult] = []
+    router_label = " [stub router]" if stub_router else ""
 
     # Warm up pool connections
     print("[*] Warming up connection pool...")
@@ -163,7 +182,7 @@ async def execute_full_suite(
             params={
                 "bbox": "77.55,12.90,77.65,13.00",
                 "vclass": "car",
-                "horizon_min": 30,
+                "h": 30,
             },
         )
         dt = (time.perf_counter() - t0) * 1000.0
@@ -187,7 +206,7 @@ async def execute_full_suite(
             params={
                 "bbox": "77.62,12.91,77.69,12.96",
                 "vclass": "two_wheeler",
-                "horizon_min": 0,
+                "h": 0,
             },
         )
         dt = (time.perf_counter() - t0) * 1000.0
@@ -221,7 +240,7 @@ async def execute_full_suite(
 
     print(f"[*] Running Scenario: Route Planning ({requests_per_scenario} reqs, c={concurrency})...")
     res_route = await run_benchmark_scenario(
-        name="POST /v1/route (Standard Car)",
+        name=f"POST /v1/route (Standard Car){router_label}",
         fn=bench_route,
         concurrency=concurrency,
         total_requests=requests_per_scenario,
@@ -247,7 +266,7 @@ async def execute_full_suite(
 
     print(f"[*] Running Scenario: Ambulance Route ({requests_per_scenario} reqs, c={concurrency})...")
     res_route_amb = await run_benchmark_scenario(
-        name="POST /v1/route (Ambulance Profile)",
+        name=f"POST /v1/route (Ambulance){router_label}",
         fn=bench_route_amb,
         concurrency=concurrency,
         total_requests=requests_per_scenario,
@@ -286,7 +305,7 @@ async def execute_full_suite(
 
     print(f"[*] Running Scenario: Reroute Navigation Tick ({requests_per_scenario} reqs, c={concurrency})...")
     res_reroute = await run_benchmark_scenario(
-        name="POST /v1/route/reroute (Tick)",
+        name=f"POST /v1/route/reroute (Tick){router_label}",
         fn=bench_reroute,
         concurrency=concurrency,
         total_requests=requests_per_scenario,
@@ -368,28 +387,33 @@ def benchmark_router(
 
 
 async def async_main(args: argparse.Namespace) -> list[ScenarioResult]:
-    # Configure database environment if not already set
-    if "DATABASE_URL" not in os.environ:
-        os.environ["DATABASE_URL"] = "postgresql://postgres:postgres@localhost:54329/floodroute"
-
     if args.base_url:
         print(f"[*] Benchmarking remote server at: {args.base_url}")
         client = httpx.AsyncClient(base_url=args.base_url, timeout=30.0)
     else:
-        print("[*] Benchmarking in-process FastAPI application with live PostGIS pool...")
+        database_url()  # Require an actual configured database, not an invented default.
+        close_pool()
+        print("[*] Benchmarking in-process FastAPI (stub road router, real database processing)...")
         app = create_app()
         app.dependency_overrides[get_router] = lambda: benchmark_router
         client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://testserver", timeout=30.0)
+
+    operator_token = os.environ.get("FLOODROUTE_BENCHMARK_OPERATOR_TOKEN", "")
+    if operator_token:
+        client.headers["Authorization"] = f"Bearer {operator_token}"
 
     try:
         results = await execute_full_suite(
             client=client,
             concurrency=args.concurrency,
             requests_per_scenario=args.requests,
+            stub_router=not args.base_url,
         )
         return results
     finally:
         await client.aclose()
+        if not args.base_url:
+            close_pool()
 
 
 def main() -> None:

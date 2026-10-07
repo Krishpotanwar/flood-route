@@ -15,18 +15,36 @@ from typing import Annotated, Any, Literal
 
 import psycopg
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from psycopg.types.json import Jsonb
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
+from floodroute.api.auth import (
+    CoSignature,
+    Operator,
+    bind_actor,
+    require_cosigner,
+    require_operator,
+)
 from floodroute.api.deps import get_db
 
-router = APIRouter(prefix="/v1", tags=["overrides"])
+router = APIRouter(prefix="/v1", tags=["overrides"], dependencies=[Depends(require_operator)])
 
 ARTERIAL_ROAD_CLASSES = {"motorway", "trunk", "primary"}
 
 
+def _csv_cell(value: Any) -> str:
+    """Prefix spreadsheet-formula triggers per OWASP CSV guidance."""
+    text = "" if value is None else str(value)
+    if text.lstrip()[:1] in ("=", "+", "-", "@") or text[:1] in ("\t", "\r", "\n"):
+        return "'" + text
+    return text
+
+
 class OverrideCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    tenant_id: int = 1
+    # No default: every write names its tenant explicitly (there is no auth
+    # context to fall back to, so a silent default would misattribute rows).
+    tenant_id: int
     segment_id: int
     action: Literal["close", "reopen", "force_watch"]
     reason: str = Field(min_length=3, max_length=500)
@@ -46,10 +64,13 @@ class OverridePreviewRequest(BaseModel):
 def create_override(
     req: OverrideCreate,
     db: Annotated[psycopg.Connection, Depends(get_db)],
+    operator: Operator,
+    co_signature: CoSignature = None,
 ) -> dict[str, Any]:
     """Create a human operator override to close, reopen, or force-watch a road segment."""
     now = datetime.now(UTC)
     starts = req.starts_at or now
+    bind_actor(req.operator_id, operator)
 
     if req.expires_at <= starts:
         raise HTTPException(status_code=400, detail="expires_at must be after starts_at")
@@ -73,43 +94,58 @@ def create_override(
             detail=f"Arterial road '{road_class}' requires second operator confirmation",
         )
 
-    # Insert override
-    cur = db.execute(
-        """
-        insert into override (
-            tenant_id, segment_id, action, reason, operator_id,
-            second_operator_id, starts_at, expires_at
-        )
-        values (%s, %s, %s, %s, %s, %s, %s, %s)
-        returning override_id
-        """,
-        (
-            req.tenant_id,
-            req.segment_id,
-            req.action,
-            req.reason,
-            req.operator_id,
-            req.second_operator_id,
-            starts,
-            req.expires_at,
-        ),
-    )
-    override_id = cur.fetchone()[0]
+    if req.second_operator_id is not None:
+        require_cosigner(req.second_operator_id, operator, co_signature)
 
-    # Append to audit log
-    db.execute(
-        """
-        insert into audit_log (actor, action, segment_id, reason)
-        values (%s, %s, %s, %s)
-        """,
-        (
-            f"operator:{req.operator_id}",
-            f"override_{req.action}",
-            req.segment_id,
-            req.reason,
-        ),
-    )
-    db.commit()
+    with db.transaction():
+        # Insert override
+        cur = db.execute(
+            """
+            insert into override (
+                tenant_id, segment_id, action, reason, operator_id,
+                second_operator_id, starts_at, expires_at
+            )
+            values (%s, %s, %s, %s, %s, %s, %s, %s)
+            returning override_id
+            """,
+            (
+                req.tenant_id,
+                req.segment_id,
+                req.action,
+                req.reason,
+                req.operator_id,
+                req.second_operator_id,
+                starts,
+                req.expires_at,
+            ),
+        )
+        override_id = cur.fetchone()[0]
+
+        # Append to audit log. The after payload keeps the replay context the
+        # flat columns cannot: tenant, override id, expiry, and co-signer.
+        db.execute(
+            """
+            insert into audit_log (actor, action, segment_id, reason, after)
+            values (%s, %s, %s, %s, %s)
+            """,
+            (
+                f"operator:{req.operator_id}",
+                f"override_{req.action}",
+                req.segment_id,
+                req.reason,
+                Jsonb(
+                    {
+                        "tenant_id": req.tenant_id,
+                        "override_id": override_id,
+                        "action": req.action,
+                        "starts_at": starts.isoformat(),
+                        "expires_at": req.expires_at.isoformat(),
+                        "operator_id": req.operator_id,
+                        "second_operator_id": req.second_operator_id,
+                    }
+                ),
+            ),
+        )
 
     return {
         "override_id": override_id,
@@ -126,18 +162,30 @@ def create_override(
 @router.get("/overrides")
 def list_active_overrides(
     db: Annotated[psycopg.Connection, Depends(get_db)],
+    tenant_id: Annotated[int | None, Query(description="Filter by owning tenant id")] = None,
 ) -> list[dict[str, Any]]:
-    """List all currently active human overrides."""
+    """List currently active human overrides, scoped to a tenant when given."""
     now = datetime.now(UTC)
-    sql = """
-    select o.override_id, o.tenant_id, o.segment_id, s.road_class, o.action,
-           o.reason, o.operator_id, o.second_operator_id, o.starts_at, o.expires_at
-    from override o
-    join segment s on o.segment_id = s.segment_id
-    where o.expires_at > %s
-    order by o.starts_at desc
-    """
-    rows = db.execute(sql, (now,)).fetchall()
+    if tenant_id is None:
+        sql = """
+        select o.override_id, o.tenant_id, o.segment_id, s.road_class, o.action,
+               o.reason, o.operator_id, o.second_operator_id, o.starts_at, o.expires_at
+        from override o
+        join segment s on o.segment_id = s.segment_id
+        where o.expires_at > %s
+        order by o.starts_at desc
+        """
+        rows = db.execute(sql, (now,)).fetchall()
+    else:
+        sql = """
+        select o.override_id, o.tenant_id, o.segment_id, s.road_class, o.action,
+               o.reason, o.operator_id, o.second_operator_id, o.starts_at, o.expires_at
+        from override o
+        join segment s on o.segment_id = s.segment_id
+        where o.expires_at > %s and o.tenant_id = %s
+        order by o.starts_at desc
+        """
+        rows = db.execute(sql, (now, tenant_id)).fetchall()
     return [
         {
             "override_id": r[0],
@@ -159,38 +207,67 @@ def list_active_overrides(
 def revert_override(
     override_id: int,
     db: Annotated[psycopg.Connection, Depends(get_db)],
-    reason: str = Query("Operator manual cancellation", description="Reason for reverting override"),
-    operator_id: str = Query("operator-console", description="Identifier of reverting operator"),
+    operator: Operator,
+    reason: str = Query(
+        "Operator manual cancellation",
+        description="Reason for reverting override",
+        min_length=3,
+        max_length=500,
+    ),
+    operator_id: str | None = Query(
+        None,
+        description="Identifier of reverting operator",
+        min_length=1,
+        max_length=128,
+    ),
+    second_operator_id: str | None = Query(None, min_length=1, max_length=128),
+    co_signature: CoSignature = None,
 ) -> dict[str, Any]:
     """Revert an active override early and record the event in the audit log."""
     now = datetime.now(UTC)
-    cur = db.execute(
-        "select segment_id, action from override where override_id = %s and expires_at > %s",
-        (override_id, now),
-    )
-    row = cur.fetchone()
-    if not row:
-        raise HTTPException(status_code=404, detail=f"Active override {override_id} not found")
+    if operator_id is not None:
+        bind_actor(operator_id, operator)
+    operator_id = operator
+    with db.transaction():
+        cur = db.execute(
+            """update override o set expires_at = clock_timestamp()
+               from segment s
+               where o.override_id = %s and o.expires_at > clock_timestamp()
+                 and s.segment_id = o.segment_id
+               returning o.segment_id, o.action, o.tenant_id, o.expires_at, s.road_class""",
+            (override_id,),
+        )
+        row = cur.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail=f"Active override {override_id} not found")
 
-    seg_id, prev_action = row[0], row[1]
+        seg_id, prev_action, tenant_id, now, road_class = row
+        if road_class in ARTERIAL_ROAD_CLASSES or second_operator_id is not None:
+            require_cosigner(second_operator_id, operator, co_signature)
 
-    # Revert by expiring immediately
-    db.execute("update override set expires_at = %s where override_id = %s", (now, override_id))
-
-    # Append cancellation to audit log
-    db.execute(
-        """
-        insert into audit_log (actor, action, segment_id, reason)
-        values (%s, %s, %s, %s)
-        """,
-        (
-            f"operator:{operator_id}",
-            f"override_reverted_{prev_action}",
-            seg_id,
-            reason,
-        ),
-    )
-    db.commit()
+        # Append cancellation to audit log
+        db.execute(
+            """
+            insert into audit_log (actor, action, segment_id, reason, after)
+            values (%s, %s, %s, %s, %s)
+            """,
+            (
+                f"operator:{operator_id}",
+                f"override_reverted_{prev_action}",
+                seg_id,
+                reason,
+                Jsonb(
+                    {
+                        "tenant_id": tenant_id,
+                        "override_id": override_id,
+                        "prev_action": prev_action,
+                        "reverted_at": now.isoformat(),
+                        "operator_id": operator_id,
+                        "second_operator_id": second_operator_id,
+                    }
+                ),
+            ),
+        )
 
     return {
         "override_id": override_id,
@@ -267,7 +344,7 @@ def query_audit_log(
 
     where_clause = f"where {' and '.join(conditions)}" if conditions else ""
     sql = f"""
-    select audit_id, ts, actor, action, segment_id, reason
+    select audit_id, ts, actor, action, segment_id, reason, after
     from audit_log
     {where_clause}
     order by ts desc
@@ -282,7 +359,16 @@ def query_audit_log(
         writer.writerow(["audit_id", "timestamp", "actor", "action", "segment_id", "reason"])
         for r in rows:
             ts_str = r[1].isoformat() if r[1] else ""
-            writer.writerow([r[0], ts_str, r[2], r[3], r[4] or "", r[5] or ""])
+            writer.writerow(
+                [
+                    r[0],
+                    _csv_cell(ts_str),
+                    _csv_cell(r[2]),
+                    _csv_cell(r[3]),
+                    r[4] or "",
+                    _csv_cell(r[5] or ""),
+                ]
+            )
         return Response(content=output.getvalue(), media_type="text/csv")
 
     return [
@@ -293,6 +379,7 @@ def query_audit_log(
             "action": r[3],
             "segment_id": r[4],
             "reason": r[5],
+            "after": r[6],
         }
         for r in rows
     ]

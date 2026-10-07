@@ -553,6 +553,64 @@ def test_lag_is_the_age_of_the_newest_item():
     assert out.lag_s == int((NOW - utc("2026-10-05T19:55:05+00:00")).total_seconds()) == 2095
 
 
+def test_malformed_rss_items_reach_the_health_note():
+    guid = "1791229078945019"
+    feed = (
+        "<rss><channel>"
+        f"<item><guid>{guid}</guid><pubDate>Mon, 05 Oct 2026 19:55:05 GMT</pubDate></item>"
+        "<item><guid>abc</guid><pubDate>Mon, 05 Oct 2026 19:55:05 GMT</pubDate></item>"
+        f"<item><guid>{guid}</guid></item>"
+        "</channel></rss>"
+    ).encode()
+    out = run_ingest(FakeConn(), FakeHttp(sachet_routes(rss=feed)))
+    assert out.summary["bad_rss_items"] == 2
+    assert "2 RSS item(s) skipped as malformed" in out.warn
+
+
+def test_future_pubdate_warns_instead_of_reading_as_fresh():
+    guid = "1791229078945019"
+    feed = (
+        "<rss><channel>"
+        f"<item><guid>{guid}</guid><pubDate>Mon, 05 Oct 2026 23:00:00 GMT</pubDate></item>"
+        "</channel></rss>"
+    ).encode()
+    out = run_ingest(FakeConn(), FakeHttp(sachet_routes(rss=feed)))
+    assert out.lag_s == 0
+    assert "is in the future" in out.warn
+
+
+def test_seen_check_ignores_onset_so_old_alerts_are_not_refetched():
+    conn, http = FakeConn(), FakeHttp(sachet_routes())
+    run_ingest(conn, http, max_new=50)
+    n = len(http.calls)
+    out = sachet.ingest(conn, http, now=utc("2026-10-09T20:30:00+00:00"), max_new=50)
+    assert out.summary["new"] == 0
+    assert http.calls[n:] == [sachet.RSS_URL]
+
+
+def test_scalar_fields_with_child_nodes_are_refused():
+    import xml.etree.ElementTree as ET
+
+    ns = "urn:oasis:names:tc:emergency:cap:1.2"
+    el = ET.fromstring(
+        f'<info xmlns="{ns}"><event>Heavy <b>rain</b>tail</event></info>'
+    )
+    with pytest.raises(Rejected):
+        sachet._t(el, "event")
+
+
+def test_truncation_past_max_items_is_logged_in_the_note():
+    items = "".join(
+        f"<item><guid>{1791229000000000 + i}</guid>"
+        "<pubDate>Mon, 05 Oct 2026 19:00:00 GMT</pubDate></item>"
+        for i in range(sachet.MAX_ITEMS + 1)
+    )
+    feed = f"<rss><channel>{items}</channel></rss>".encode()
+    out = run_ingest(FakeConn(), FakeHttp({sachet.RSS_URL: feed}), max_new=0)
+    assert out.summary["items"] == sachet.MAX_ITEMS
+    assert f"considering newest {sachet.MAX_ITEMS} of {sachet.MAX_ITEMS + 1}" in out.warn
+
+
 def test_hostile_items_do_not_stop_the_run():
     routes = sachet_routes()
     routes[sachet.CAP_URL.format("1791229078945019")] = HOSTILE["xxe"]

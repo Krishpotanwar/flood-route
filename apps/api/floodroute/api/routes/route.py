@@ -9,9 +9,10 @@ from typing import Annotated, Any
 
 import httpx
 import psycopg
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException
 from psycopg.types.json import Jsonb
 
+from floodroute.api.auth import authorize_route_profile
 from floodroute.api.deps import (
     RouterCallable,
     db_risk_for,
@@ -20,12 +21,14 @@ from floodroute.api.deps import (
     get_router,
     get_score_config,
 )
+from floodroute.inventory import CITIES, CITY_IDS
 from floodroute.route.explain import pick_lang, say
 from floodroute.route.models import (
     Config as RouteConfig,
 )
 from floodroute.route.models import (
     Edge,
+    Guidance,
     RerouteRequest,
     RerouteResponse,
     Route,
@@ -50,6 +53,114 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/v1", tags=["route"])
 
 
+def _city_id_for(lat: float, lon: float) -> int | None:
+    """City id whose bbox contains the point, else None (outside all cities)."""
+    for name, (w, s, e, n) in CITIES.items():
+        if s <= lat <= n and w <= lon <= e:
+            return CITY_IDS[name]
+    return None
+
+
+def _route_city_ids(req: RouteRequest | RerouteRequest) -> set[int]:
+    """City ids touched by the request endpoints, for city-scoped freeze checks."""
+    ids = set()
+    for pt in (req.origin, req.destination):
+        cid = _city_id_for(pt.lat, pt.lon)
+        if cid is not None:
+            ids.add(cid)
+    return ids
+
+
+def _rejected_segment_ids(p) -> list[int]:
+    """Every violating segment id across all rejected routes (audit needs all,
+    not just the first edge, to replay which water blocked each option)."""
+    ids: list[int] = []
+    for assessment in p.rejected:
+        for edge_idx in assessment.violations:
+            sid = assessment.checks[edge_idx].segment_id
+            if sid is not None and sid not in ids:
+                ids.append(sid)
+    return ids
+
+
+def _record_route_decision(
+    db: psycopg.Connection,
+    decision_id: str,
+    now: datetime,
+    vclass: str,
+    depart_at: datetime | None,
+    model_version: str,
+    chosen: Any | None,
+    rejected: list[int],
+    advisories: Any | None,
+    no_safe_route: bool,
+) -> None:
+    """Best-effort audit write shared by /route and /reroute."""
+    # Retain segment decisions for watches/replay, not the caller's precise
+    # journey geometry. No origin/destination coordinates enter this audit.
+    if isinstance(chosen, dict):
+        chosen = {key: value for key, value in chosen.items() if key != "geometry"}
+    try:
+        db.execute(
+            """
+            insert into route_decision (
+                decision_id, ts, vclass, depart_at, model_version,
+                chosen, rejected, advisories, no_safe_route
+            )
+            values (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """,
+            (
+                decision_id,
+                now,
+                vclass,
+                depart_at,
+                model_version,
+                Jsonb(chosen) if chosen is not None else None,
+                Jsonb(rejected),
+                Jsonb(advisories) if advisories is not None else None,
+                no_safe_route,
+            ),
+        )
+    except psycopg.Error as e:
+        logger.warning("Could not record route_decision %s: %s", decision_id, e)
+
+
+def _frozen_route_response(
+    decision_id: str, req: RouteRequest, model_version: str
+) -> RouteResponse:
+    """Deterministic advisory_off answer when routing is frozen: no router call."""
+    lang = pick_lang(req.lang)
+    return RouteResponse(
+        decision_id=decision_id,
+        model_version=model_version,
+        no_safe_route=True,
+        valid_until=None,
+        routes=[],
+        guidance_when_no_route=Guidance(
+            keys=["advisory_off"],
+            text=[say("advisory_off", lang)],
+            actions=[],
+        ),
+        lang=lang,
+    )
+
+
+def _active_freeze(db: psycopg.Connection, req: RouteRequest | RerouteRequest):
+    """Global freeze, else the city freeze of either endpoint city.
+
+    Tenant identity is not available on these endpoints yet (handoff: API auth
+    batch), so tenant-scoped freezes still need that plumbing to take effect.
+    """
+    hit = get_active_kill_switch(db)
+    if hit is not None:
+        return hit
+    for cid in _route_city_ids(req):
+        hit = get_active_kill_switch(db, city_id=cid)
+        if hit is not None:
+            return hit
+    return None
+
+
 @router.post("/route", response_model=RouteResponse)
 def compute_route(
     req: RouteRequest,
@@ -57,10 +168,30 @@ def compute_route(
     route_cfg: Annotated[RouteConfig, Depends(get_route_config)],
     score_cfg: Annotated[ScoreConfig, Depends(get_score_config)],
     router_fn: Annotated[RouterCallable, Depends(get_router)],
+    authorization: Annotated[str | None, Header()] = None,
 ) -> RouteResponse:
     """Route calculation with arrival-time validation loop."""
+    authorize_route_profile(req.profile, authorization)
     now = datetime.now(UTC)
     decision_id = uuid.uuid4().hex
+
+    # Safety Case: freeze short-circuits before any external routing call, so
+    # a frozen advisory never waits on (or 502s from) the router (TRD 16).
+    if _active_freeze(db, req) is not None:
+        frozen = _frozen_route_response(decision_id, req, score_cfg.model_version)
+        _record_route_decision(
+            db,
+            decision_id,
+            now,
+            req.vclass,
+            req.depart_at,
+            score_cfg.model_version,
+            None,
+            [],
+            frozen.guidance_when_no_route.model_dump() if frozen.guidance_when_no_route else None,
+            frozen.no_safe_route,
+        )
+        return frozen
 
     def risk_for(segment_id: int, vclass: str):
         return db_risk_for(db, segment_id, vclass)
@@ -78,49 +209,77 @@ def compute_route(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except (RuntimeError, httpx.HTTPError, psycopg.Error) as e:
-        raise HTTPException(status_code=502, detail=f"routing error: {e}")
+        logger.warning("Routing failure for decision %s: %s", decision_id, e)
+        raise HTTPException(status_code=502, detail="routing temporarily unavailable")
 
-    # Safety Case: check emergency kill switch freeze (TRD 16)
-    active_kill = get_active_kill_switch(db)
+    # Safety Case: a freeze engaged mid-computation still stamps the answer.
+    active_kill = _active_freeze(db, req)
     if active_kill:
-        freeze_msg = "Emergency advisory freeze active. Obey on-ground traffic signs and instructions."
-        if p.response.routes:
-            for rt in p.response.routes:
-                rt.reasons = [freeze_msg]
-        if p.response.guidance_when_no_route:
-            p.response.guidance_when_no_route.keys = ["advisory_off"]
-            p.response.guidance_when_no_route.text = [
-                "Flood advisories are currently suspended. Follow on-ground traffic police directions. In an emergency call 112."
-            ]
+        frozen = _frozen_route_response(decision_id, req, score_cfg.model_version)
+        _record_route_decision(
+            db,
+            decision_id,
+            now,
+            req.vclass,
+            req.depart_at,
+            score_cfg.model_version,
+            None,
+            [],
+            frozen.guidance_when_no_route.model_dump(),
+            True,
+        )
+        return frozen
 
     # Record decision for audit / FR-M1 privacy-safe logging
-    try:
-        db.execute(
-            """
-            insert into route_decision (
-                decision_id, ts, vclass, depart_at, model_version,
-                chosen, rejected, advisories, no_safe_route
-            )
-            values (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """,
-            (
-                decision_id,
-                now,
-                req.vclass,
-                req.depart_at,
-                score_cfg.model_version,
-                Jsonb(p.response.routes[0].model_dump()) if p.response.routes else None,
-                Jsonb([r.route.edges[0].segment_id for r in p.rejected if r.route.edges]),
-                Jsonb(p.response.guidance_when_no_route.model_dump())
-                if p.response.guidance_when_no_route
-                else None,
-                p.response.no_safe_route,
-            ),
-        )
-    except psycopg.Error as e:
-        logger.warning("Could not record route_decision %s: %s", decision_id, e)
+    _record_route_decision(
+        db,
+        decision_id,
+        now,
+        req.vclass,
+        req.depart_at,
+        score_cfg.model_version,
+        p.response.routes[0].model_dump() if p.response.routes else None,
+        _rejected_segment_ids(p),
+        p.response.guidance_when_no_route.model_dump()
+        if p.response.guidance_when_no_route
+        else None,
+        p.response.no_safe_route,
+    )
 
     return p.response
+
+
+def _frozen_reroute_response(
+    decision_id: str,
+    req: RerouteRequest,
+    db: psycopg.Connection,
+    now: datetime,
+    model_version: str,
+) -> RerouteResponse:
+    _record_route_decision(
+        db,
+        decision_id,
+        now,
+        req.vclass,
+        req.depart_at or now,
+        model_version,
+        None,
+        [],
+        {"keys": ["advisory_off"]},
+        True,
+    )
+    return RerouteResponse(
+        decision_id=decision_id,
+        action="keep",
+        code="advisory_off",
+        warn=True,
+        reasons=["Emergency advisory freeze active. Follow on-ground traffic directions."],
+        reason_keys=["advisory_off"],
+        trip_state=req.trip_state or TripStatePayload(),
+        suggested_route=None,
+        current_worst_state="unknown",
+        lang=pick_lang(req.lang),
+    )
 
 
 @router.post("/route/reroute", response_model=RerouteResponse)
@@ -130,29 +289,22 @@ def compute_reroute(
     route_cfg: Annotated[RouteConfig, Depends(get_route_config)],
     score_cfg: Annotated[ScoreConfig, Depends(get_score_config)],
     router_fn: Annotated[RouterCallable, Depends(get_router)],
+    authorization: Annotated[str | None, Header()] = None,
 ) -> RerouteResponse:
     """Evaluate live position tick against route conditions and propose reroutes."""
+    authorize_route_profile(req.profile, authorization)
     now = req.depart_at or datetime.now(UTC)
     decision_id = uuid.uuid4().hex
 
-    # Safety Case: check emergency kill switch freeze (TRD 16)
-    active_kill = get_active_kill_switch(db)
+    # Safety Case: check emergency kill switch freeze (TRD 16); same scoping note as /route.
+    active_kill = _active_freeze(db, req)
     if active_kill:
-        return RerouteResponse(
-            decision_id=decision_id,
-            action="keep",
-            code="advisory_off",
-            warn=True,
-            reasons=[
-                "Emergency advisory freeze active. Do not rely on automated flood guidance. Obey on-ground traffic directions and call 112 in emergencies."
-            ],
-            reason_keys=["advisory_off"],
-            trip_state=req.trip_state or TripStatePayload(),
-            suggested_route=None,
-            current_worst_state="unknown",
-            current_worst_band=0,
-            current_violations_count=0,
-            lang=req.lang,
+        return _frozen_reroute_response(
+            decision_id,
+            req,
+            db,
+            now,
+            score_cfg.model_version,
         )
 
     if not req.current_edges:
@@ -186,14 +338,22 @@ def compute_reroute(
         cfg=route_cfg,
         in_rain=True,
     )
-    current_assessment = assess(current_route, ctx, now)
+    try:
+        current_assessment = assess(current_route, ctx, now)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e)) from None
+    except (RuntimeError, httpx.HTTPError, psycopg.Error) as e:
+        logger.warning("Reroute assessment failure for decision %s: %s", decision_id, e)
+        raise HTTPException(status_code=502, detail="routing temporarily unavailable") from None
 
     state_in = req.trip_state or TripStatePayload()
-    closed_at = {
-        int(k): v
-        for k, v in state_in.closed_at.items()
-        if k.isdigit() or (k.startswith("-") and k[1:].isdigit())
-    }
+    try:
+        closed_at = {int(k): v for k, v in state_in.closed_at.items()}
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail="trip_state.closed_at keys must be integer segment ids",
+        )
     st = TripState(
         last_suggestion_at=state_in.last_suggestion_at,
         baseline_band=state_in.baseline_band,
@@ -205,7 +365,7 @@ def compute_reroute(
         for c in current_assessment.checks
         if c.segment_id is not None and c.state == "impassable"
     ]
-    st = note_closed(st, impassable_ids, now)
+    st = note_closed(st, impassable_ids, now, cfg=route_cfg)
 
     candidate_request = RouteRequest(
         origin=req.origin,
@@ -228,7 +388,17 @@ def compute_reroute(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except (RuntimeError, httpx.HTTPError, psycopg.Error) as e:
-        raise HTTPException(status_code=502, detail=f"routing error: {e}")
+        logger.warning("Reroute failure for decision %s: %s", decision_id, e)
+        raise HTTPException(status_code=502, detail="routing temporarily unavailable")
+
+    if _active_freeze(db, req) is not None:
+        return _frozen_reroute_response(
+            decision_id,
+            req,
+            db,
+            now,
+            score_cfg.model_version,
+        )
 
     decision = decide(st, current_assessment, p.accepted, now, cfg=route_cfg)
 
@@ -244,6 +414,25 @@ def compute_reroute(
         last_suggestion_at=decision.state.last_suggestion_at,
         baseline_band=decision.state.baseline_band,
         closed_at=updated_closed_at,
+    )
+
+    # Persist the reroute decision on the same audit path as /route: the
+    # rejected list carries the currently violating segment ids.
+    _record_route_decision(
+        db,
+        decision_id,
+        now,
+        req.vclass,
+        req.depart_at or now,
+        score_cfg.model_version,
+        suggested_route.model_dump() if suggested_route else None,
+        [
+            c.segment_id
+            for c in current_assessment.checks
+            if c.violation and c.segment_id is not None
+        ],
+        None,
+        False,
     )
 
     return RerouteResponse(
@@ -270,6 +459,14 @@ def watch_route_endpoint(
     db: Annotated[psycopg.Connection, Depends(get_db)],
 ) -> WatchResponse:
     """Subscribe to material risk change alerts for a planned route."""
+    # A global freeze suspends new watch promises (alerts cannot be trusted
+    # while advisories are off). City scoping needs segment-city mapping that
+    # does not exist at this endpoint yet; parked with tenant plumbing.
+    if get_active_kill_switch(db) is not None:
+        raise HTTPException(
+            status_code=503,
+            detail="Emergency advisory freeze active. Watch subscriptions are suspended until operators lift the freeze.",
+        )
     try:
         return create_route_watch(db, decision_id, req)
     except ValueError as e:
@@ -288,7 +485,9 @@ def get_route_watch_endpoint(
     """Check active watch subscription status for a route decision."""
     watch = get_route_watch(db, decision_id)
     if not watch:
-        raise HTTPException(status_code=404, detail=f"No active watch found for route {decision_id}")
+        raise HTTPException(
+            status_code=404, detail=f"No active watch found for route {decision_id}"
+        )
     return watch
 
 
@@ -301,6 +500,7 @@ def cancel_route_watch_endpoint(
     """Unsubscribe and cancel active watch subscription for a route decision."""
     cancelled = cancel_route_watch(db, decision_id)
     if not cancelled:
-        raise HTTPException(status_code=404, detail=f"No active watch found for route {decision_id}")
+        raise HTTPException(
+            status_code=404, detail=f"No active watch found for route {decision_id}"
+        )
     return {"decision_id": str(decision_id), "cancelled": True}
-

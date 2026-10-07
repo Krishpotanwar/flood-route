@@ -120,6 +120,7 @@ CASES = [
     bad("evidence", "evidence_trust_check", trust=1.5),
     bad("evidence", "evidence_trust_check", trust=NAN),
     bad("evidence", "evidence_expires_after_ts", expires=NOW),
+    bad("evidence", "evidence_contributors_check", contributors=-1),
     bad("segment_risk", "segment_risk_vclass_check", vclass="bus"),
     bad("segment_risk", "segment_risk_horizon_min_check", horizon_min=45),
     bad("segment_risk", "segment_risk_p_unusable_check", p_unusable=1.01),
@@ -189,6 +190,76 @@ def test_optional_columns_and_valid_alternatives_are_accepted(seeded):
     )
     insert(seeded, "segment_risk", **{**RISK, "horizon_min": 30, "p_unusable": 1.0})
     insert(seeded, "override", **{**GOOD["override"], "second_operator_id": None})
+    insert(
+        seeded,
+        "segment_risk",
+        **{**RISK, "vclass": "ambulance", "horizon_min": 0, "evidence_age_s": None},
+    )  # unknown age is NULL, never 0
+
+
+def test_evidence_carries_verification_and_report_link(seeded):
+    report_id = uuid.uuid4()
+    insert(seeded, "report", **{**GOOD["report"], "report_id": report_id})
+    insert(
+        seeded,
+        "evidence",
+        **{
+            **GOOD["evidence"],
+            "verified": True,
+            "contributors": 9,
+            "report_id": report_id,
+        },
+    )
+    got = seeded.execute(
+        "select verified, contributors, report_id from evidence where source_id = 'r1'"
+    ).fetchone()
+    assert (got[0], got[1], str(got[2])) == (True, 9, str(report_id))
+    with pytest.raises(errors.ForeignKeyViolation):
+        insert(
+            seeded,
+            "evidence",
+            **{**GOOD["evidence"], "source_id": "r2", "report_id": uuid.uuid4()},
+        )
+
+
+def test_kill_switch_scope_must_match_its_id_columns(seeded):
+    good_global = {
+        "switch_id": uuid.uuid4(),
+        "scope": "global",
+        "reason": "storm drill freeze",
+        "operator_id": "op1",
+    }
+    insert(seeded, "kill_switch", **good_global)
+    insert(
+        seeded,
+        "kill_switch",
+        **{**good_global, "switch_id": uuid.uuid4(), "scope": "tenant", "tenant_id": 1},
+    )
+    insert(
+        seeded,
+        "kill_switch",
+        **{**good_global, "switch_id": uuid.uuid4(), "scope": "city", "city_id": 1},
+    )
+    for bad_ids in ({"tenant_id": 1}, {"city_id": 1}, {"tenant_id": 1, "city_id": 1}):
+        with pytest.raises(errors.CheckViolation) as err:
+            insert(
+                seeded,
+                "kill_switch",
+                **{**good_global, "switch_id": uuid.uuid4(), **bad_ids},
+            )
+        assert err.value.diag.constraint_name == "kill_switch_scope_ids_check"
+    with pytest.raises(errors.CheckViolation):
+        insert(
+            seeded,
+            "kill_switch",
+            **{**good_global, "switch_id": uuid.uuid4(), "scope": "tenant"},
+        )
+    with pytest.raises(errors.CheckViolation):
+        insert(
+            seeded,
+            "kill_switch",
+            **{**good_global, "switch_id": uuid.uuid4(), "scope": "city"},
+        )
 
 
 def test_every_trd_table_exists(db):

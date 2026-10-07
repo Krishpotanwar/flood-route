@@ -272,6 +272,47 @@ def cli_env(db_url, monkeypatch):
     return use
 
 
+def test_alerts_without_an_expiry_count_as_active_without_an_area(app):
+    from psycopg.types.json import Jsonb
+
+    app.execute(
+        "insert into official_alert (cap_id, sender, event, severity, certainty, onset, expires, area, raw)"
+        " values ('NULL-EXPIRY-1', 'Test-SDMA', 'Flood', 'Severe', 'Likely', %s, NULL, NULL, %s)",
+        (NOW, Jsonb({"rss_key": "k", "cap": {"status": "Actual", "msgType": "Alert"}})),
+    )
+    out = ingest_all(app)
+    # 3 fixture alerts without an area plus the NULL-expiry row.
+    assert "4 active alert(s) have no area" in out.warn
+
+
+def test_command_line_returns_the_last_code_on_interrupt(cli_env, db, monkeypatch):
+    cli_env(FakeHttp(sachet_routes()))
+    calls = []
+
+    def flaky(conn, source, work):
+        calls.append(1)
+        if len(calls) == 1:
+            return 1
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(cli, "run", flaky)
+    monkeypatch.setattr(cli.time, "sleep", lambda s: None)
+    assert cli.main(["sachet"]) == 1
+
+
+def test_sigterm_stops_the_loop_after_the_current_run(cli_env, db, monkeypatch):
+    cli_env(FakeHttp(sachet_routes()))
+    handlers = {}
+    monkeypatch.setattr(cli.signal, "signal", lambda sig, h: handlers.setdefault(sig, h))
+
+    def stop_after_first_run(s):
+        handlers[cli.signal.SIGTERM](None, None)
+
+    monkeypatch.setattr(cli.time, "sleep", stop_after_first_run)
+    assert cli.main(["sachet"]) == 0
+    assert db.execute("select count(*) from official_alert").fetchone()[0] == 8
+
+
 def test_command_line_stores_alerts_and_exits_zero(cli_env, db):
     cli_env(FakeHttp(sachet_routes()))
     assert cli.main(["sachet", "--once"]) == 0
@@ -295,7 +336,7 @@ def test_without_once_the_command_line_loops_at_the_adapter_cadence(cli_env, db,
     monkeypatch.setattr(cli.time, "sleep", stop)
     assert cli.main(["sachet"]) == 0
     assert (
-        naps == [sachet.INTERVAL_S]
+        naps == [1]  # cadence sliced to 1 s so SIGTERM stops promptly; fake sleep stops at once
         and db.execute("select count(*) from official_alert").fetchone()[0] == 8
     )
 

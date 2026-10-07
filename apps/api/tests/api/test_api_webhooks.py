@@ -14,6 +14,7 @@ from floodroute.webhook.signing import (
     compute_signature,
     generate_webhook_secret,
     verify_signature,
+    verify_timestamp_fresh,
 )
 
 
@@ -36,20 +37,63 @@ def test_webhook_signing_utilities():
     assert verify_signature("wrong-secret-12345678", payload, headers["X-FloodRoute-Signature-256"]) is False
 
 
+def test_delivery_timestamp_freshness_window():
+    now = datetime.now(UTC)
+    assert verify_timestamp_fresh(now.isoformat()) is True
+    assert verify_timestamp_fresh("2020-01-01T00:00:00+00:00") is False
+    assert verify_timestamp_fresh("not-a-time") is False
+    assert verify_timestamp_fresh("2020-01-01T00:00:00") is False  # naive never counts
+
+
+def test_failed_delivery_logs_null_delivered_at_and_the_loop_continues(app_db):
+    good_id, bad_id = uuid4(), uuid4()
+    now = datetime.now(UTC)
+    app_db.execute(
+        """
+        insert into webhook_subscription (subscription_id, target_url, secret, events, is_active, created_at)
+        values (%s, 'https://good.example.com/hook', 'good-secret-12345678', array['segment.state_changed'], true, %s),
+               (%s, 'https://bad.example.com/hook', 'bad-secret-12345678', array['segment.state_changed'], true, %s)
+        """,
+        (good_id, now, bad_id, now),
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if "bad" in request.headers["host"]:
+            raise httpx.ConnectError("unreachable", request=request)
+        return httpx.Response(200, json={"received": True})
+
+    event = WebhookEvent(
+        event_type="segment.state_changed", timestamp=now, payload={"ping": True}
+    )
+    results = dispatch_event(
+        app_db, event, client=httpx.Client(transport=httpx.MockTransport(handler))
+    )
+    assert len(results) == 2  # the bad subscription never aborts the loop
+    assert {r["status"] for r in results} == {"success", "failed"}
+    rows = app_db.execute(
+        "select status, delivered_at from webhook_delivery order by status"
+    ).fetchall()
+    by_status = {r[0]: r[1] for r in rows}
+    assert by_status["success"] is not None
+    assert by_status["failed"] is None
+
+
 def test_webhook_crud(client, app_db):
+    app_db.execute("insert into tenant (tenant_id, name, kind) values (7, 'Acme', 'fleet')")
     # 1. Create subscription
     create_body = {
         "target_url": "https://example.com/flood-webhook",
-        "secret": "my-secret-key-1234567890",
+        "secret": "my-secret-key-1234567890abcdef12",
         "events": ["segment.state_changed", "route.invalidated"],
     }
-    r_create = client.post("/v1/webhooks", json=create_body)
+    r_create = client.post("/v1/webhooks?tenant_id=7", json=create_body)
     assert r_create.status_code == 201
     data = r_create.json()
     sub_id = data["subscription_id"]
     assert data["target_url"] == "https://example.com/flood-webhook"
-    assert data["secret_preview"] == "****7890"
+    assert data["secret_preview"] == "****ef12"
     assert data["is_active"] is True
+    assert data["tenant_id"] == 7
     assert set(data["events"]) == {"segment.state_changed", "route.invalidated"}
 
     # 2. List subscriptions
@@ -58,6 +102,13 @@ def test_webhook_crud(client, app_db):
     subs = r_list.json()
     assert len(subs) == 1
     assert subs[0]["subscription_id"] == sub_id
+
+    # 2b. Tenant-scoped list filters out other tenants
+    r_tenant = client.get("/v1/webhooks?tenant_id=8")
+    assert r_tenant.status_code == 200
+    assert r_tenant.json() == []
+    r_tenant7 = client.get("/v1/webhooks?tenant_id=7")
+    assert len(r_tenant7.json()) == 1
 
     # 3. Deactivate subscription
     r_del = client.delete(f"/v1/webhooks/{sub_id}")

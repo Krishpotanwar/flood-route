@@ -1,6 +1,6 @@
 # Backend runbook
 
-This records the pending local backend delivery. Runtime checks used the current working tree, including uncommitted API governance changes and migrations 0007/0008. Those API changes are not included in the frontend push; these backend setup/smoke commands require that pending source work. The frontend can be deployed independently.
+Last verified: **7 October 2026**. The current source builds a complete Docker API image and runs against an isolated PostGIS database with nine migrations and a self-hosted Bengaluru Valhalla graph. Local endpoint and source-ingestion checks are recorded below. Public hosting, current rain observations, calibration, and field validation remain separate requirements. The frontend can be deployed independently.
 
 The local stack is FastAPI, PostGIS, a scoring/snapshot worker, and an optional Valhalla road router. The API image builds the citizen frontend from source and serves it at `/app/`. Raw OSM files and routing tiles stay outside Git.
 
@@ -11,6 +11,8 @@ Run from the repository root with Docker Desktop or a Docker engine running. The
 ```sh
 export WHATSAPP_VERIFY_TOKEN="$(openssl rand -hex 32)"
 export WHATSAPP_APP_SECRET="$(openssl rand -hex 32)"
+export FLOODROUTE_OPERATOR_TOKENS="$(python3 -c 'import json,secrets; print(json.dumps({"operator-one": secrets.token_hex(32), "operator-two": secrets.token_hex(32)}))')"
+export FLOODROUTE_CONTACT=https://github.com/Krishpotanwar/flood-route
 docker compose config --quiet
 docker compose build api
 docker compose up -d api
@@ -23,6 +25,16 @@ Open [the citizen app](http://127.0.0.1:8080/app/?live=1), [API documentation](h
 The defaults bind only loopback: API `8080`, PostGIS `54330`, optional Valhalla `8002`. The existing test database can keep port `54329`. Set `FLOODROUTE_API_PORT`, `FLOODROUTE_DB_PORT`, or `FLOODROUTE_ROUTING_PORT` to avoid conflicts. Named volumes persist database rows, snapshots, and photos. `docker compose down` preserves them. Change the local database password with `FLOODROUTE_DB_PASSWORD` before its first initialization; this value must be URL-safe because it appears in the local connection URL.
 
 The migration service applies forward-only migrations before API/worker startup. A migration failure prevents those services from starting. After pulling code with new migrations, rebuild and run `docker compose up -d api worker` again.
+
+## Operator controls and request limits
+
+`FLOODROUTE_OPERATOR_TOKENS` is a JSON object mapping operator names to unique secrets. Each secret must contain 32–512 ASCII characters with no whitespace; the registry accepts at most 100 operators. Keep it in the backend environment or a private environment file. An absent or invalid registry disables operator administration with HTTP 503; public citizen endpoints remain available.
+
+Send `Authorization: Bearer <operator-secret>` for override, safety, webhook-administration, and city-seeding controls, and for the privileged `ambulance` route/reroute profile. A supplied `operator_id` must match the authenticated registry name. Arterial reopening or cancellation and kill-switch release require a distinct registered second operator: provide that operator's name as `second_operator_id` and their secret in `X-FloodRoute-Co-Signature`. The API reference documents whether the name belongs in a JSON body or query parameter.
+
+The [operator console](http://127.0.0.1:8080/console) keeps entered keys in memory for the open page; reloading clears them. The citizen frontend does not acquire these credentials automatically. Never put operator or WhatsApp secrets into `VITE_` variables or the frontend's Vercel environment. For a separate frontend origin, configure `FLOODROUTE_CORS_ORIGINS` on the API; allowing CORS does not supply authorization headers.
+
+API request bodies are bounded before parsing or photo processing: 1 MiB for `/v1/*` JSON/webhook requests and 5 MiB for `/v1/reports/photo`. Oversized bodies return HTTP 413, including chunked requests.
 
 ## Self-hosted road routing
 
@@ -61,6 +73,8 @@ Check `/v1/health` source timestamps and errors plus `/v1/feed/snapshot/closures
 
 A full inventory pass currently takes several minutes because the scorer writes risk, history, and audit rows individually. The database supports the four frontend vehicle classes. The scoring configuration also includes `auto_rickshaw`, `pedestrian`, and `suv`; their research rows are explicitly omitted from persistence rather than remapped to another vehicle class.
 
+Worker statistics report watch `alerts_generated`: these are computed alert objects, not messages delivered to subscribers. Actual SMS, WhatsApp, or push delivery needs a configured provider integration and its delivery handling. The inbound WhatsApp webhook and outbound event-webhook mechanism do not establish subscriber-message delivery.
+
 ## Smoke check
 
 The script uses only Python's standard library. The default tolerates an unavailable router only if the API returns its documented `502` error. `--require-route` demands real route geometry from a configured router. `--report` writes one explicitly synthetic pending report outside the seeded inventory; it must remain unmatched and therefore adds no road evidence.
@@ -74,7 +88,7 @@ python3 tools/dev-backend.py --url http://127.0.0.1:8090 --require-route
 
 ## Native development fallback
 
-When registries or package indexes are unavailable, the existing local Python environment can run current source against the same isolated Compose database. These commands do not claim a successful container image build.
+For source-level development, the existing local Python environment can run against the same isolated Compose database. The complete Docker image is now verified; this fallback remains useful for editing without rebuilding it.
 
 ```sh
 # On a fresh machine, create the environment first when PyPI is reachable.
@@ -86,6 +100,8 @@ export PYTHONPATH=apps/api
 export FLOODROUTE_SNAPSHOT_DIR="$HOME/.cache/floodroute-routing/snapshots"
 export WHATSAPP_VERIFY_TOKEN="$(openssl rand -hex 32)"
 export WHATSAPP_APP_SECRET="$(openssl rand -hex 32)"
+export FLOODROUTE_OPERATOR_TOKENS="$(python3 -c 'import json,secrets; print(json.dumps({"operator-one": secrets.token_hex(32), "operator-two": secrets.token_hex(32)}))')"
+export FLOODROUTE_CONTACT=https://github.com/Krishpotanwar/flood-route
 docker compose up -d db
 apps/api/.venv/bin/python -m floodroute.db.migrate
 apps/api/.venv/bin/python -m floodroute.inventory.seed --db-url "$DATABASE_URL" --city bengaluru
@@ -96,7 +112,20 @@ apps/api/.venv/bin/python -m uvicorn floodroute.api.main:app --host 127.0.0.1 --
 
 For a small integration probe using only public landmark presets, the official [Valhalla public demo documentation](https://valhalla.github.io/valhalla/valhalla-intro/) lists `https://valhalla1.openstreetmap.de`. Its fair-use limits apply. It is an external demo service; use self-hosted routing for deployment. Publishing an app that uses it also requires following its operator's identification/contact guidance.
 
-## Verification checkpoint — 6 October 2026
+## Verification checkpoint — 7 October 2026
+
+- A fresh complete API image built successfully. Its Compose API served `/app/`, health, closure snapshots, and the route/report smoke checks on loopback port `8080`.
+- The isolated PostGIS database on `54330` is healthy with all nine migrations applied, 5,383 genuine OSM-derived Bengaluru road segments, and 233 hotspot matches.
+- The pinned official Valhalla image built the local Bengaluru graph and is healthy on `8002`. The route-required smoke check returned real road geometry from this self-hosted router. It did not substitute a frontend illustration or an external demo route.
+- MET Norway ingestion stored 62 forecast rows for the database's one configured Bengaluru zone. Source-issued lag was 9,977 seconds at ingestion and 10,041 seconds during the worker run. Forecasts are not rain observations.
+- SACHET fetched 99 feed items and stored 10 CAP alerts in its first bounded pass. It reported a catch-up warning with 89 items pending. A second pass brought the stored total to 20 alerts; these bounded passes do not establish a fully current alert feed.
+- The subsequent `worker --once` cycle completed both source adapters with status 0, reported 64,596 score changes and zero generated watch alerts, and built four city snapshots with zero features. Retention removed zero rows.
+- The database then contained 86,128 `segment_risk` rows, all `unknown`, and zero `rain_obs` observations. The Bengaluru closure snapshot remained stale. Empty closure geometry does not show that roads are clear.
+- The final backend suite passed **843 tests**, and Ruff passed. The only reported warning was the existing Starlette TestClient/httpx deprecation warning.
+
+These checks establish local service integration, including a browser route request to the Docker API with no response interception ([captured route](../output/backend-verification/2026-10-07/self-hosted-route.png)). They do not verify public deployment, production source coverage, calibrated flood accuracy, or subscriber-message delivery. Release status is maintained in [Progress checkpoints](../PROGRESS_CHECKPOINTS.md); the [G0 evidence pack](G0-evidence.md) tracks observation, terms, calibration, and field-validation gates.
+
+## Historical verification — 6 October 2026
 
 Verified with the current local source, not a newly built API image:
 
@@ -110,4 +139,4 @@ Verified with the current local source, not a newly built API image:
 - Source Docker build completed its frontend stage, but Python installation failed on an unreachable PyPI endpoint. A second logged attempt was stopped after another network stall; no new API image is verified. The official Valhalla image manifest resolved, but its registry blob transfers failed with EOF on bounded attempts. Local routing graph construction is therefore **not verified**.
 - The 532 MB regional source and 11 MB city clip are cached outside the repository. The city clip contains 234,787 highway ways and 879,946 referenced nodes, retaining 416 turn restrictions.
 
-Local API logs and smoke evidence are in `/tmp/floodroute-backend-check/`, including `api.log`, `smoke.log`, `worker-local.log`, `unavailable-route.log`, `docker-build.log`, and the captured audited `bengaluru-route.json`; these are temporary runtime evidence, not committed deployment artifacts. Deployment, source credentials/contact, self-hosted graph construction, field calibration, and public-service authorization remain external requirements.
+The 6 October local API logs and smoke evidence are in `/tmp/floodroute-backend-check/`, including `api.log`, `smoke.log`, `worker-local.log`, `unavailable-route.log`, `docker-build.log`, and the captured audited `bengaluru-route.json`; these are temporary runtime evidence, not committed deployment artifacts. The PyPI/image-pull and graph-construction blockers in this historical check were resolved in the 7 October verification above. Public hosting, rain-observation access, calibration, terms review, and field validation remain open.

@@ -9,6 +9,13 @@ import psycopg
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
+from floodroute.api.auth import (
+    CoSignature,
+    Operator,
+    bind_actor,
+    require_cosigner,
+    require_operator,
+)
 from floodroute.api.deps import get_db
 from floodroute.safety.kill_switch import (
     disengage_kill_switch,
@@ -19,7 +26,7 @@ from floodroute.safety.kill_switch import (
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/v1/safety", tags=["safety"])
+router = APIRouter(prefix="/v1/safety", tags=["safety"], dependencies=[Depends(require_operator)])
 
 
 class EngageKillSwitchRequest(BaseModel):
@@ -57,18 +64,21 @@ def get_kill_switch_status(
 def engage_emergency_kill_switch(
     req: EngageKillSwitchRequest,
     db: Annotated[psycopg.Connection, Depends(get_db)],
+    operator: Operator,
 ) -> dict[str, Any]:
     """Engage emergency kill switch, freezing routing outputs to advisory off."""
+    bind_actor(req.operator_id, operator)
     try:
-        record = engage_kill_switch(
-            conn=db,
-            scope=req.scope,
-            reason=req.reason,
-            operator_id=req.operator_id,
-            tenant_id=req.tenant_id,
-            city_id=req.city_id,
-            notes=req.notes,
-        )
+        with db.transaction():
+            record = engage_kill_switch(
+                conn=db,
+                scope=req.scope,
+                reason=req.reason,
+                operator_id=req.operator_id,
+                tenant_id=req.tenant_id,
+                city_id=req.city_id,
+                notes=req.notes,
+            )
         return {
             "status": "engaged",
             "message": "Emergency kill switch engaged. Advisories frozen to off.",
@@ -84,17 +94,22 @@ def disengage_emergency_kill_switch(
     switch_id: str,
     req: DisengageKillSwitchRequest,
     db: Annotated[psycopg.Connection, Depends(get_db)],
+    operator: Operator,
+    co_signature: CoSignature = None,
 ) -> dict[str, Any]:
     """Disengage emergency kill switch. Enforces two-operator co-verification."""
+    bind_actor(req.operator_id, operator)
+    require_cosigner(req.second_operator_id, operator, co_signature)
     try:
-        record = disengage_kill_switch(
-            conn=db,
-            switch_id=switch_id,
-            reason=req.reason,
-            operator_id=req.operator_id,
-            second_operator_id=req.second_operator_id,
-            notes=req.notes,
-        )
+        with db.transaction():
+            record = disengage_kill_switch(
+                conn=db,
+                switch_id=switch_id,
+                reason=req.reason,
+                operator_id=req.operator_id,
+                second_operator_id=req.second_operator_id,
+                notes=req.notes,
+            )
         return {
             "status": "disengaged",
             "message": "Emergency kill switch disengaged. Normal advisory routing restored.",
