@@ -2,7 +2,7 @@
 
 Last verified: **7 October 2026**. The HHGoa submission deadline, portal, and required assets still need to be supplied by the project owner.
 
-Track completed work and verification in [Progress checkpoints](../PROGRESS_CHECKPOINTS.md). The current frontend source passes TypeScript, 18 Node tests, and the production build. The [backend runbook](BACKEND_RUNBOOK.md) documents the verified Docker API, nine migrations, self-hosted Bengaluru router, and source-data limits. The backend suite passed 842 tests and Ruff. Current [desktop](../output/frontend-preview/2026-10-06-dots/desktop.png), [mobile](../output/frontend-preview/2026-10-06-dots/mobile.png), and [black theme](../output/frontend-preview/2026-10-06-dots/black-planner.png) captures show the dotted background and labelled hero route illustration.
+Track completed work and verification in [Progress checkpoints](../PROGRESS_CHECKPOINTS.md). The current frontend source passes TypeScript, 18 Node tests, and the production build. The [backend runbook](BACKEND_RUNBOOK.md) documents the verified Docker API, nine migrations, self-hosted Bengaluru router, and source-data limits. The backend suite passed 843 tests and Ruff. Current [desktop](../output/frontend-preview/2026-10-06-dots/desktop.png), [mobile](../output/frontend-preview/2026-10-06-dots/mobile.png), and [black theme](../output/frontend-preview/2026-10-06-dots/black-planner.png) captures show the dotted background and labelled hero route illustration.
 
 ## Run the frontend
 

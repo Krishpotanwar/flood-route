@@ -23,7 +23,7 @@ The public-landmark journey from Indiranagar to Silk Board returned HTTP 200, 20
 
 - MET Norway requests succeeded and stored 62 rainfall forecast rows for the one configured zone. Forecast issue age was 10,041 seconds during the worker pass; successful HTTP access does not establish current flood observations.
 - Two bounded SACHET passes stored 20 official alerts. The second pass flagged 79 pending items for later passes; the feed was still catching up.
-- A complete worker `--once` cycle finished ingestion, scoring, retention, and four-city snapshots. It persisted 86,128 road-risk rows, all `unknown`. Unsupported research vehicle classes were omitted from persistence without remapping.
+- A complete worker `--once` cycle finished ingestion, scoring, retention, and four-city snapshots. The database then contained 86,128 road-risk rows, all `unknown`. Unsupported research vehicle classes were omitted from persistence without remapping.
 - `rain_obs` remained empty. Source health was `degraded`; the Bengaluru snapshot contained zero closure features and remained `stale: true`. An empty snapshot is not evidence that roads are clear.
 - The worker generated zero watch alert objects. No subscriptions or route watches were configured, and no subscriber message was sent. SMS/WhatsApp/push delivery still requires a provider integration.
 
