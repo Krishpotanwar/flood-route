@@ -78,7 +78,9 @@ The current frontend check passed TypeScript, 18 Node tests, and the production 
 
 ## Deploy the frontend on Vercel
 
-Import this repository with **Root Directory `.`** and **Node.js `24.x`**. Add the environment variable `ENABLE_EXPERIMENTAL_COREPACK=1`; Vercel uses it to honor the pinned pnpm version. Install, build, and output settings are provided by [vercel.json](vercel.json). See [Vercel's Corepack guidance](https://vercel.com/docs/builds/configure-a-build#corepack).
+**Live frontend:** [flood-route-rosy.vercel.app](https://flood-route-rosy.vercel.app/). Vercel built the GitHub default branch at `c11f78d` on 8 October 2026; the public page and static assets returned HTTP 200. The site currently opens in its clearly labelled presentation Demo mode.
+
+The Vercel project imports this repository with **Root Directory `.`**. Install, build, and output settings are provided by [vercel.json](vercel.json). The initial build succeeded without additional environment variables. For a new project, use Node.js 24 and the repository's pinned pnpm version. See [Vercel's Corepack guidance](https://vercel.com/docs/builds/configure-a-build#corepack).
 
 The frontend starts in Demo mode without an API environment variable. A separate live API can be connected later with `VITE_API_BASE_URL`; Vercel's static frontend deployment does not start the Python backend.
 
@@ -122,4 +124,4 @@ The [published API CI run](https://github.com/Krishpotanwar/flood-route/actions/
 - [Original visual references and generation prompts](output/design-samples/2026-10-06-white-minimal/prompts.md)
 - [Product and engineering documentation](docs/README.md)
 
-Frontend: React, TypeScript, Vite, and MapLibre. Backend: FastAPI, PostGIS, Valhalla, and a scoring worker. Public hosting, observations, city coverage, provider messaging, and field calibration remain tracked in the [backend runbook](docs/BACKEND_RUNBOOK.md) and [G0 evidence pack](docs/G0-evidence.md).
+Frontend: React, TypeScript, Vite, and MapLibre. Backend: FastAPI, PostGIS, Valhalla, and a scoring worker. Public backend hosting, observations, city coverage, provider messaging, and field calibration remain tracked in the [backend runbook](docs/BACKEND_RUNBOOK.md) and [G0 evidence pack](docs/G0-evidence.md).

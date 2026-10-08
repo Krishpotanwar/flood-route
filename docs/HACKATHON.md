@@ -39,9 +39,9 @@ corepack pnpm --filter @floodroute/citizen preview --host 0.0.0.0
 
 ## Static hosting and API configuration
 
-For Vercel repository import, keep **Root Directory `.`**, select **Node.js `24.x`**, and set `ENABLE_EXPERIMENTAL_COREPACK=1`. The root `vercel.json` supplies the install command, citizen build command, and output directory. Leave `VITE_API_BASE_URL` unset for the presentation demo. [Corepack setup](https://vercel.com/docs/builds/configure-a-build#corepack).
+The frontend is deployed at [flood-route-rosy.vercel.app](https://flood-route-rosy.vercel.app/) from the repository default branch. Vercel imported **Root Directory `.`** and used the root `vercel.json` for the install command, citizen build command, and output directory. The initial build succeeded without extra environment variables; `VITE_API_BASE_URL` remains unset for the presentation demo. For a new project, use Node.js 24 and follow [Corepack setup](https://vercel.com/docs/builds/configure-a-build#corepack) if its build environment needs it.
 
-If using the Vercel CLI, upgrade the installed `50.37.3` before deploying (`62.7.0` is the current recommended version): `npm i -g vercel@latest` or `pnpm add -g vercel@latest`. Repository import through the dashboard does not require the local CLI.
+The globally installed Vercel CLI is `50.37.3`; `npm exec --yes --package vercel@latest -- vercel --version` verified `63.1.0` without changing that global installation. For CLI deployments, update with `npm i -g vercel@latest` or `pnpm add -g vercel@latest`. Repository import through the dashboard does not require the local CLI.
 
 Configure a static host with repository root as the working directory, Node.js 24, pnpm 10.28.0, build command `pnpm install --frozen-lockfile && pnpm --filter @floodroute/citizen build`, and publish directory `apps/citizen/dist`.
 
@@ -89,7 +89,7 @@ For a connected-source demo, the verified Docker API on port `8080` serves real 
 
 ## Remaining work before a live pilot
 
-1. Deploy the frontend and supply its hosted URL for browser verification. Provision the public API, PostGIS, worker, and routing services if the submission needs connected functionality; local health checks do not establish a hosted deployment.
+1. Verify the [deployed frontend](https://flood-route-rosy.vercel.app/) in a browser on desktop and mobile. Provision the public API, PostGIS, worker, and routing services if the submission needs connected functionality; local health checks do not establish a hosted backend deployment.
 2. Obtain current rain observations, finish alert-feed catch-up, and validate forecast freshness, scored coverage, and road-to-segment matching for every submitted city. Forecast rows and road geometry alone do not establish live flood assessments.
 3. Confirm data terms, model calibration, and field accuracy. The [G0 evidence pack](G0-evidence.md) records the remaining human-dependent observation, terms, and validation gates. Verify vehicle overlays and detours against real conditions before a live pilot.
 4. Connect and verify actual SMS, WhatsApp, or push delivery if subscriber alerts are required. Worker `alerts_generated` counts computed objects; provider delivery is still pending. Confirm production report moderation, photo storage/retention, privacy, and delivery retries. The hackathon frontend remains an advisory demonstration.
