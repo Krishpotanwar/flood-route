@@ -1,0 +1,34 @@
+# shortcut: this free-tier API deployment omits the worker and self-hosted router; use the
+# Docker Compose stack on a VM when persistent snapshots and live road routing are required.
+services:
+  - type: web
+    name: floodroute-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    dockerCommand: /bin/sh -c 'python -m floodroute.db.migrate && exec uvicorn floodroute.api.main:app --host 0.0.0.0 --port ${PORT:-8080}'
+    healthCheckPath: /v1/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: floodroute-db
+          property: connectionString
+      - key: WHATSAPP_VERIFY_TOKEN
+        generateValue: true
+      - key: WHATSAPP_APP_SECRET
+        generateValue: true
+      - key: FLOODROUTE_CORS_ORIGINS
+        value: https://flood-route-rosy.vercel.app
+      - key: FLOODROUTE_CONTACT
+        value: https://github.com/Krishpotanwar/flood-route
+
+databases:
+  - name: floodroute-db
+    databaseName: floodroute
+    user: floodroute
+    postgresMajorVersion: "16"
+    plan: free
+    region: singapore
+    ipAllowList: []
