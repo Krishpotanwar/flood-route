@@ -110,7 +110,7 @@ FLOODROUTE_REQUIRE_DB=1 .venv/bin/pytest -q
 .venv/bin/ruff check floodroute tests
 ```
 
-The full API suite passed **879 tests** with one expected skip for the opt-in external graph test before a small HTTP-client cleanup. After that cleanup, 71 focused route/API tests and the opt-in live graph test passed; Python lint passed. A later full rerun was interrupted when Docker Desktop shut down, so it is not counted as a pass. The suite needs PostGIS at `DATABASE_URL_ADMIN` (default `postgresql://postgres@127.0.0.1:54329/postgres`). Requiring the database makes an unavailable test database fail instead of skipping integration checks. Build the frontend first for the `/app/` serving tests. The API and frontend CI workflows perform that build from source.
+The [published API CI run](https://github.com/Krishpotanwar/flood-route/actions/runs/37809981322) passed **879 tests**, with two expected skips: the opt-in live graph test and an optional `osmium` test. The [frontend CI run](https://github.com/Krishpotanwar/flood-route/actions/runs/37809981418) also passed. Locally, the live graph test and 71 focused tests passed; Ruff passed. A later local full rerun was interrupted when Docker Desktop shut down, so it is not counted as a pass. The suite needs PostGIS at `DATABASE_URL_ADMIN` (default `postgresql://postgres@127.0.0.1:54329/postgres`). Requiring the database makes an unavailable test database fail instead of skipping integration checks. Build the frontend first for the `/app/` serving tests.
 
 ## Submission material
 
