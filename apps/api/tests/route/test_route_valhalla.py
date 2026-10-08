@@ -1,13 +1,25 @@
+"""Graph mapping checked against a genuine local Valhalla public-landmark recording.
+
+fixtures/indiranagar_silk_board.json was recorded 2026-10-07 on Valhalla3.9.1-f28832966
+with a Bengaluru OSM graph. It contains route costing/geometry, without flood observations.
+"""
+
 import json
 import random
+from copy import deepcopy
+from datetime import UTC, datetime
+from pathlib import Path
 
 import httpx
+import psycopg
 import pytest
-from route_testkit import T0, request, risk, risk_for
+from route_testkit import T0, risk, risk_for
 
-from floodroute.route.models import IST
+from floodroute.api.deps import db_segment_of, get_router
+from floodroute.route.models import IST, RouteRequest
 from floodroute.route.valhalla import (
     COSTING,
+    TRACE_ATTRIBUTES,
     ValhallaRouter,
     decode_polyline6,
     encode_polyline6,
@@ -16,61 +28,35 @@ from floodroute.route.valhalla import (
 )
 from floodroute.route.validate import plan
 
-# HAND-WRITTEN AND UNVERIFIED. This sample is shaped from the Valhalla route API reference
-# (https://valhalla.github.io/valhalla/api/route/api-reference/, read 2026-10-05). It is not a
-# recording of a live Valhalla. Spike S1 must replace it with a real recording and re-run these
-# tests; until then the mapping is only known to match the docs, not the server.
-SHAPE = "ovjsWgf}_sC_uCwuBwyEg{CwvIgxG_aMwvI"
-POINTS = [
-    (12.9166, 77.6101),
-    (12.919, 77.612),
-    (12.9225, 77.6145),
-    (12.928, 77.619),
-    (12.9352, 77.6245),
-]
-SAMPLE = {
-    "trip": {
-        "locations": [
-            {"type": "break", "lat": 12.9166, "lon": 77.6101, "original_index": 0},
-            {"type": "break", "lat": 12.9352, "lon": 77.6245, "original_index": 1},
-        ],
-        "legs": [
-            {
-                "maneuvers": [
-                    {"type": 2, "time": 90.0, "length": 0.45, "begin_shape_index": 0,
-                     "end_shape_index": 2, "travel_mode": "drive", "travel_type": "motorcycle"},
-                    {"type": 10, "time": 240.0, "length": 1.2, "begin_shape_index": 2,
-                     "end_shape_index": 4, "travel_mode": "drive", "travel_type": "motorcycle"},
-                    {"type": 4, "time": 0.0, "length": 0.0, "begin_shape_index": 4,
-                     "end_shape_index": 4, "travel_mode": "drive", "travel_type": "motorcycle"},
-                ],
-                "summary": {"time": 330.0, "length": 1.65},
-                "shape": SHAPE,
-            }
-        ],
-        "summary": {"time": 330.0, "length": 1.65},
-        "status_message": "Found route between points",
-        "status": 0,
-        "units": "kilometers",
-        "language": "en-US",
-    }
-}  # fmt: skip
-O, D = POINTS[0], POINTS[-1]
+RECORDING = json.loads((Path(__file__).parent / "fixtures/indiranagar_silk_board.json").read_text())
+SAMPLE, TRACE = RECORDING["route"], RECORDING["trace"]
+SHAPE = SAMPLE["trip"]["legs"][0]["shape"]
+POINTS = decode_polyline6(SHAPE)
+LOCATIONS = RECORDING["route_request"]["locations"]
+O, D = [(p["lat"], p["lon"]) for p in LOCATIONS]
 
 
-def segment_of(geometry):
-    return {12.9166: 101, 12.9225: 102}.get(geometry[0][0])
+def segment_of(way_id, geometry):
+    return way_id
+
+
+def _router(handler):
+    client = httpx.Client(base_url="http://valhalla.test", transport=httpx.MockTransport(handler))
+    return ValhallaRouter("http://valhalla.test", segment_of, client=client)
+
+
+def _recorded_response(req):
+    return httpx.Response(200, json=SAMPLE if req.url.path == "/route" else TRACE)
 
 
 def test_decoder_matches_the_valhalla_docs_vector():
     # https://valhalla.github.io/valhalla/api/decoding/ (Rust example test, precision 1e6)
-    got = decode_polyline6("e~epoA|jfpOiDaK")
-    assert got == [(42.225139, -8.670911), (42.225224, -8.670718)]
+    assert decode_polyline6("e~epoA|jfpOiDaK") == [(42.225139, -8.670911), (42.225224, -8.670718)]
 
 
-def test_encoder_reproduces_the_docs_vector_and_the_sample_shape():
+def test_encoder_reproduces_the_docs_vector_and_recorded_shape():
     assert encode_polyline6([(42.225139, -8.670911), (42.225224, -8.670718)]) == "e~epoA|jfpOiDaK"
-    assert decode_polyline6(SHAPE) == POINTS
+    assert encode_polyline6(POINTS) == SHAPE
 
 
 def test_round_trip_random_india_points():
@@ -88,8 +74,11 @@ def test_malformed_polyline_raises(bad):
 
 def test_costing_per_class():
     assert COSTING == {
-        "two_wheeler": "motor_scooter", "car": "auto", "ambulance": "auto", "heavy": "truck",
-    }  # fmt: skip
+        "two_wheeler": "motor_scooter",
+        "car": "auto",
+        "ambulance": "auto",
+        "heavy": "truck",
+    }
     for vclass, costing in COSTING.items():
         assert request_body(O, D, vclass)["costing"] == costing
     with pytest.raises(KeyError):
@@ -100,80 +89,120 @@ def test_request_body_swaps_polygon_rings_to_lon_lat():
     ring = ((12.0, 77.0), (12.0, 77.1), (12.1, 77.1), (12.0, 77.0))
     body = request_body(O, D, "car", [ring])
     assert body["exclude_polygons"] == [[[77.0, 12.0], [77.1, 12.0], [77.1, 12.1], [77.0, 12.0]]]
-    assert body["locations"] == [{"lat": 12.9166, "lon": 77.6101}, {"lat": 12.9352, "lon": 77.6245}]
+    assert body["locations"] == LOCATIONS
     assert "exclude_polygons" not in request_body(O, D, "car")
 
 
-def test_maps_maneuvers_to_edges_and_skips_the_arrive_marker():
-    r = route_from_response(SAMPLE, segment_of)
-    assert [e.segment_id for e in r.edges] == [101, 102]
-    assert [e.travel_time_s for e in r.edges] == [90.0, 240.0]
-    assert [e.length_m for e in r.edges] == [450.0, 1200.0]
-    assert r.edges[0].geometry == tuple(POINTS[0:3]) and r.edges[1].geometry == tuple(POINTS[2:5])
-    assert r.total_time_s == SAMPLE["trip"]["summary"]["time"]
+def test_recorded_graph_edges_preserve_every_way_geometry_and_cumulative_eta():
+    route = route_from_response(SAMPLE, [TRACE], segment_of)
+    assert len(route.edges) == 102
+    assert [e.segment_id for e in route.edges] == [e["way_id"] for e in TRACE["edges"]]
+    elapsed = 0
+    for edge, traced in zip(route.edges, TRACE["edges"], strict=True):
+        assert edge.geometry == tuple(
+            POINTS[traced["begin_shape_index"] : traced["end_shape_index"] + 1]
+        )
+        assert edge.length_m == traced["length"] * 1000
+        assert edge.travel_time_s == traced["end_node"]["elapsed_time"] - elapsed
+        elapsed = traced["end_node"]["elapsed_time"]
+    assert route.total_time_s == pytest.approx(SAMPLE["trip"]["summary"]["time"], abs=0.01)
 
 
 @pytest.mark.parametrize(
     "mutate",
     [
-        lambda t: t.pop("legs"),
-        lambda t: t["legs"][0].pop("shape"),
-        lambda t: t["legs"][0]["maneuvers"][0].pop("time"),
-        lambda t: t["legs"][0]["maneuvers"][0].update(end_shape_index=99),
-        lambda t: t["legs"][0]["maneuvers"][0].update(begin_shape_index=3, end_shape_index=1),
-        lambda t: t["legs"][0]["maneuvers"][0].update(time=float("nan")),
-        lambda t: t["legs"][0].update(maneuvers=[]),
+        lambda r, t: r["trip"].pop("legs"),
+        lambda r, t: r["trip"].update(legs=[]),
+        lambda r, t: r["trip"].update(units="miles"),
+        lambda r, t: r["trip"]["summary"].update(time=1),
+        lambda r, t: r["trip"]["legs"][0]["summary"].update(time=float("nan")),
+        lambda r, t: r["trip"]["legs"][0].pop("shape"),
+        lambda r, t: t.pop("shape"),
+        lambda r, t: t.update(shape=encode_polyline6([(0, 0), *POINTS[1:]])),
+        lambda r, t: t.update(units="miles"),
+        lambda r, t: t.pop("edges"),
+        lambda r, t: t.update(edges=[]),
+        lambda r, t: t["edges"][0].update(way_id=0),
+        lambda r, t: t["edges"][0].update(way_id=-1),
+        lambda r, t: t["edges"][0].update(way_id=True),
+        lambda r, t: t["edges"][0].update(begin_shape_index=True),
+        lambda r, t: t["edges"][0].update(end_shape_index=len(POINTS)),
+        lambda r, t: t["edges"][0].update(end_shape_index=0),
+        lambda r, t: t["edges"][1].update(begin_shape_index=3),
+        lambda r, t: t["edges"][1].update(begin_shape_index=1),
+        lambda r, t: t["edges"][0].update(length=-1),
+        lambda r, t: t["edges"][0].update(length=float("inf")),
+        lambda r, t: t["edges"][0].update(length=10**400),
+        lambda r, t: t["edges"][0].update(length=True),
+        lambda r, t: t["edges"][0]["end_node"].pop("elapsed_time"),
+        lambda r, t: t["edges"][0]["end_node"].update(elapsed_time=float("nan")),
+        lambda r, t: t["edges"][1]["end_node"].update(elapsed_time=0),
+        lambda r, t: t["edges"][-1]["end_node"].update(elapsed_time=2000),
+        lambda r, t: t["edges"].pop(),
     ],
 )
-def test_malformed_response_raises_never_guesses(mutate):
-    resp = json.loads(json.dumps(SAMPLE))
-    mutate(resp["trip"])
+def test_malformed_or_incomplete_graph_response_never_guesses(mutate):
+    response, trace = deepcopy(SAMPLE), deepcopy(TRACE)
+    mutate(response, trace)
     with pytest.raises(ValueError):
-        route_from_response(resp, segment_of)
+        route_from_response(response, [trace], segment_of)
 
 
-def _router(handler):
-    client = httpx.Client(base_url="http://valhalla.test", transport=httpx.MockTransport(handler))
-    return ValhallaRouter("http://valhalla.test", segment_of, client=client)
-
-
-def test_router_posts_to_route_and_maps_the_response():
+def test_router_walks_the_exact_route_with_matching_costing_departure_and_units():
     seen = []
 
-    def handler(request):
-        seen.append(request)
-        return httpx.Response(200, json=SAMPLE)
+    def handler(req):
+        seen.append(req)
+        return _recorded_response(req)
 
     ring = ((12.0, 77.0), (12.1, 77.1), (12.0, 77.0))
-    r = _router(handler)(O, D, "two_wheeler", T0.astimezone(IST), [ring])
-    assert (seen[0].method, seen[0].url.path) == ("POST", "/route")
-    body = json.loads(seen[0].content)
-    assert body["costing"] == "motor_scooter" and body["exclude_polygons"][0][0] == [77.0, 12.0]
-    assert [e.segment_id for e in r.edges] == [101, 102]
+    route = _router(handler)(O, D, "two_wheeler", T0.astimezone(IST), [ring])
+    assert [(r.method, r.url.path) for r in seen] == [
+        ("POST", "/route"),
+        ("POST", "/trace_attributes"),
+    ]
+    requested, traced = [json.loads(r.content) for r in seen]
+    assert requested["exclude_polygons"][0][0] == [77.0, 12.0]
+    assert traced["costing"] == requested["costing"] == "motor_scooter"
+    assert traced["date_time"] == requested["date_time"]
+    assert requested["date_time"] == {"type": 1, "value": "2027-05-18T17:40"}
+    assert traced["units"] == requested["units"] == "kilometers"
+    assert traced["shape_match"] == "edge_walk" and traced["encoded_polyline"] == SHAPE
+    assert traced["filters"] == {"action": "include", "attributes": list(TRACE_ATTRIBUTES)}
+    assert len(route.edges) == 102
 
 
-@pytest.mark.parametrize("code", [442, 170, 171, 441])
-def test_no_path_errors_return_none(code):
-    # error_code values from the docs error table; the JSON body shape is [U] until S1 records one
+@pytest.mark.parametrize("code", [442, 170, 171, 441, 167, 176])
+def test_route_no_path_and_exclusion_limits_return_none(code):
     body = {"error_code": code, "error": "No path could be found for input"}
-    response = httpx.Response(400, json=body)
-    assert _router(lambda req: response)(O, D, "car", T0) is None
-
-
-@pytest.mark.parametrize("code", [167, 176])
-def test_exclude_polygon_limits_return_none_instead_of_502(code):
-    # 167/176 mean the avoid-boxes blew the Valhalla service limits on the
-    # flooded path: fail closed to no-route, never raise to a 502.
-    body = {"error_code": code, "error": "Exclude polygons exceed the limit"}
-    response = httpx.Response(400, json=body)
-    assert _router(lambda req: response)(O, D, "car", T0) is None
+    assert _router(lambda req: httpx.Response(400, json=body))(O, D, "car", T0) is None
 
 
 def test_naive_depart_raises_instead_of_reading_as_utc():
-    from datetime import datetime
-
     with pytest.raises(ValueError, match="timezone-aware"):
         request_body(O, D, "car", depart=datetime(2026, 10, 5, 12, 0))  # noqa: DTZ001
+
+
+@pytest.mark.parametrize(
+    "depart",
+    [
+        datetime(2026, 10, 7, 6, 30, tzinfo=UTC),
+        datetime(2026, 10, 7, 12, 0, tzinfo=IST),
+    ],
+)
+def test_equivalent_instants_encode_the_same_origin_local_clock(depart):
+    assert request_body(O, D, "car", depart=depart)["date_time"] == {
+        "type": 1,
+        "value": "2026-10-07T12:00",
+    }
+
+
+def test_departure_conversion_preserves_the_origin_local_calendar_day():
+    depart = datetime(2026, 10, 7, 23, 50, tzinfo=UTC)
+    assert request_body(O, D, "car", depart=depart)["date_time"] == {
+        "type": 1,
+        "value": "2026-10-08T05:20",
+    }
 
 
 @pytest.mark.parametrize(
@@ -185,63 +214,143 @@ def test_naive_depart_raises_instead_of_reading_as_utc():
         httpx.Response(503),
     ],
 )
-def test_other_failures_raise_so_no_route_goes_out_unchecked(response):
+def test_route_failure_propagates(response):
     with pytest.raises(httpx.HTTPStatusError):
         _router(lambda req: response)(O, D, "car", T0)
 
 
-def test_timeout_propagates():
-    def handler(request):
-        raise httpx.ReadTimeout("slow", request=request)
+@pytest.mark.parametrize(
+    "response",
+    [
+        httpx.Response(400, json={"error_code": 442, "error": "No trace path"}),
+        httpx.Response(400, json={"error_code": 443, "error": "Edge walk failed"}),
+        httpx.Response(503),
+    ],
+)
+def test_trace_failure_never_falls_back_or_reads_as_no_path(response):
+    def handler(req):
+        return httpx.Response(200, json=SAMPLE) if req.url.path == "/route" else response
+
+    with pytest.raises(httpx.HTTPStatusError):
+        _router(handler)(O, D, "car", T0)
+
+
+@pytest.mark.parametrize("path", ["/route", "/trace_attributes"])
+def test_success_status_with_invalid_json_is_an_upstream_failure(path):
+    def handler(req):
+        return (
+            httpx.Response(200, text="not json")
+            if req.url.path == path
+            else _recorded_response(req)
+        )
+
+    with pytest.raises(RuntimeError, match="unexpected Valhalla response"):
+        _router(handler)(O, D, "car", T0)
+
+
+def test_malformed_trace_is_an_upstream_failure():
+    def handler(req):
+        trace = deepcopy(TRACE)
+        trace["edges"] = []
+        return httpx.Response(200, json=SAMPLE if req.url.path == "/route" else trace)
+
+    with pytest.raises(RuntimeError, match="Valhalla graph edges"):
+        _router(handler)(O, D, "car", T0)
+
+
+@pytest.mark.parametrize("path", ["/route", "/trace_attributes"])
+def test_timeout_propagates(path):
+    def handler(req):
+        if req.url.path == path:
+            raise httpx.ReadTimeout("slow", request=req)
+        return _recorded_response(req)
 
     with pytest.raises(httpx.ReadTimeout):
         _router(handler)(O, D, "car", T0)
 
 
-# ---- plan() over ValhallaRouter, no live server -----------------------------------------
-
-ALT_POINTS = [(12.9166, 77.6101), (12.915, 77.619), (12.92, 77.626), (12.9352, 77.6245)]
-ALT = json.loads(json.dumps(SAMPLE))  # hand-written like SAMPLE: same shape, a different road
-ALT["trip"]["legs"][0].update(shape=encode_polyline6(ALT_POINTS))
-ALT["trip"]["legs"][0]["maneuvers"] = [
-    {"type": 2, "time": 150.0, "length": 0.8, "begin_shape_index": 0, "end_shape_index": 1},
-    {"type": 10, "time": 270.0, "length": 1.5, "begin_shape_index": 1, "end_shape_index": 3},
-    {"type": 4, "time": 0.0, "length": 0.0, "begin_shape_index": 3, "end_shape_index": 3},
-]
-SEGMENTS = {POINTS[1]: 101, POINTS[3]: 102, ALT_POINTS[1]: 201, ALT_POINTS[2]: 202}
+def test_request_router_closes_its_http_client():
+    dependency = get_router(None)
+    router = next(dependency)
+    assert not router.client.is_closed
+    dependency.close()
+    assert router.client.is_closed
 
 
-def test_plan_over_the_valhalla_router_reroutes_around_a_flooded_maneuver():
+def test_flooded_interior_graph_edge_is_checked_inside_one_long_maneuver():
+    flooded = TRACE["edges"][41]
+    geometry = tuple(POINTS[flooded["begin_shape_index"] : flooded["end_shape_index"] + 1])
+    maneuver = SAMPLE["trip"]["legs"][0]["maneuvers"][0]
+    assert maneuver["begin_shape_index"] < flooded["begin_shape_index"]
+    assert flooded["end_shape_index"] < maneuver["end_shape_index"]
     seen = []
 
     def handler(req):
         body = json.loads(req.content)
-        seen.append(body)
-        return httpx.Response(200, json=ALT if "exclude_polygons" in body else SAMPLE)
+        if req.url.path == "/route":
+            seen.append(body)
+            if "exclude_polygons" in body:
+                return httpx.Response(400, json={"error_code": 442, "error": "No path"})
+        return _recorded_response(req)
 
     client = httpx.Client(base_url="http://valhalla.test", transport=httpx.MockTransport(handler))
-    router = ValhallaRouter("http://valhalla.test", lambda g: SEGMENTS.get(g[1]), client=client)
-    table = {101: risk(0.01), 102: risk(0.9), 201: risk(0.01), 202: risk(0.02)}
-    out = plan(
-        request("two_wheeler"), router, risk_for(table),
-        now=T0, model_version="v0", decision_id="d1",
-    )  # fmt: skip
+    router = ValhallaRouter(
+        "http://valhalla.test", lambda way, g: 101 if g == geometry else None, client
+    )
+    req = RouteRequest(origin=LOCATIONS[0], destination=LOCATIONS[1], vclass="car", depart_at=T0)
+    result = plan(
+        req,
+        router,
+        risk_for({101: risk(0.9)}),
+        now=T0,
+        model_version="test",
+        decision_id="interior",
+    )
+    assert result.response.no_safe_route
+    assert all(not route.is_default for route in result.response.routes)
+    assert any(
+        s.segment_id == "101" and s.over_limit
+        for route in result.response.routes
+        for s in route.segments
+    )
+    ring = seen[1]["exclude_polygons"][0]
+    assert all(
+        min(p[0] for p in ring) < lon < max(p[0] for p in ring)
+        and min(p[1] for p in ring) < lat < max(p[1] for p in ring)
+        for lat, lon in geometry
+    )
+    assert not min(p[1] for p in ring) < POINTS[0][0] < max(p[1] for p in ring)
 
-    assert ["exclude_polygons" in b for b in seen] == [False, True]
-    (ring,) = seen[1]["exclude_polygons"]  # [lon, lat] pairs around the flooded maneuver
-    for lat, lon in POINTS[2:5]:
-        assert min(p[0] for p in ring) < lon < max(p[0] for p in ring)
-        assert min(p[1] for p in ring) < lat < max(p[1] for p in ring)
-    assert seen[0]["costing"] == "motor_scooter"
 
-    safest, fastest = out.response.routes
-    assert (safest.kind, safest.is_default, safest.eta_min) == ("safest", True, 7)
-    assert [s.segment_id for s in safest.segments] == ["201", "202"]
-    assert (fastest.kind, fastest.is_default, fastest.eta_min) == ("fastest", False, 6)
-    assert [(s.segment_id, s.over_limit) for s in fastest.segments] == [
-        ("101", False),
-        ("102", True),
-    ]
-    assert safest.reasons[:2] == ["Avoiding a road where water is likely now.", "1 min longer."]
-    expected = [pt for i, j in ((0, 1), (1, 3)) for pt in ALT_POINTS[i : j + 1]]
-    assert decode_polyline6(safest.geometry) == expected
+def test_inventory_match_requires_same_way_and_proximity(app_db):
+    coords = ((12.97, 77.64), (12.971, 77.64))
+    app_db.execute("""insert into segment
+        (segment_id, osm_way_id, geom, road_class, city_id, assessed) values
+        (9001, 12345, 'SRID=4326;LINESTRING(77.6401 12.97,77.6401 12.971)', 'primary',1,true),
+        (9002, 67890, 'SRID=4326;LINESTRING(77.64 12.97,77.64 12.971)', 'primary',1,true),
+        (9003, 12345, 'SRID=4326;LINESTRING(77.65 12.97,77.65 12.971)', 'primary',1,true),
+        (9004, 12345, 'SRID=4326;LINESTRING(77.64 12.97,77.64 12.971)', 'primary',1,false)
+    """)
+    assert db_segment_of(app_db, 12345, coords) == 9001
+    assert db_segment_of(app_db, 67890, coords) == 9002
+    assert db_segment_of(app_db, 88888, coords) is None
+    assert db_segment_of(app_db, 12345, ((13, 78), (13.001, 78))) is None
+
+
+def test_same_way_adjacent_assessed_rows_fail_closed_instead_of_picking_one(app_db):
+    app_db.execute("""insert into segment
+        (segment_id, osm_way_id, geom, road_class, city_id, assessed) values
+        (9001,12345,'SRID=4326;LINESTRING(77.64 12.97,77.64 12.971)','primary',1,true),
+        (9002,12345,'SRID=4326;LINESTRING(77.64 12.971,77.64 12.972)','primary',1,true)
+    """)
+    with pytest.raises(RuntimeError, match="ambiguous assessed inventory"):
+        db_segment_of(app_db, 12345, ((12.97, 77.64), (12.971, 77.64)))
+
+
+def test_inventory_database_failure_propagates():
+    class BrokenConnection:
+        def execute(self, *args):
+            raise psycopg.OperationalError("database unavailable")
+
+    with pytest.raises(psycopg.OperationalError):
+        db_segment_of(BrokenConnection(), 12345, ((12.97, 77.64), (12.971, 77.64)))

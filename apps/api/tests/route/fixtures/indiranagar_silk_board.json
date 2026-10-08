@@ -1,0 +1,1492 @@
+{
+  "route_request": {
+    "locations": [
+      {
+        "lat": 12.9719,
+        "lon": 77.6412
+      },
+      {
+        "lat": 12.9172,
+        "lon": 77.6228
+      }
+    ],
+    "costing": "auto",
+    "directions_type": "maneuvers",
+    "units": "kilometers",
+    "date_time": {
+      "type": 1,
+      "value": "2026-10-07T10:37"
+    }
+  },
+  "route": {
+    "trip": {
+      "locations": [
+        {
+          "type": "break",
+          "lat": 12.9719,
+          "lon": 77.6412,
+          "date_time": "2026-10-07T10:37",
+          "time_zone_offset": "+05:30",
+          "time_zone_name": "Asia/Kolkata",
+          "original_index": 0
+        },
+        {
+          "type": "break",
+          "lat": 12.9172,
+          "lon": 77.6228,
+          "date_time": "2026-10-07T10:54",
+          "time_zone_offset": "+05:30",
+          "time_zone_name": "Asia/Kolkata",
+          "side_of_street": "right",
+          "original_index": 1
+        }
+      ],
+      "legs": [
+        {
+          "maneuvers": [
+            {
+              "type": 1,
+              "instruction": "",
+              "street_names": [
+                "100 Feet Road",
+                "SK Karim Khan Road"
+              ],
+              "bearing_after": 177,
+              "time": 897.276,
+              "length": 6.706,
+              "cost": 1236.16,
+              "begin_shape_index": 0,
+              "end_shape_index": 174,
+              "travel_mode": "drive",
+              "travel_type": "car"
+            },
+            {
+              "type": 15,
+              "instruction": "",
+              "street_names": [
+                "AH43"
+              ],
+              "begin_street_names": [
+                "Hosur Road",
+                "AH43"
+              ],
+              "bearing_before": 243,
+              "bearing_after": 149,
+              "time": 126.661,
+              "length": 0.963,
+              "cost": 219.022,
+              "begin_shape_index": 174,
+              "end_shape_index": 201,
+              "travel_mode": "drive",
+              "travel_type": "car"
+            },
+            {
+              "type": 5,
+              "instruction": "",
+              "bearing_before": 149,
+              "time": 0.0,
+              "length": 0.0,
+              "cost": 0.0,
+              "begin_shape_index": 201,
+              "end_shape_index": 201,
+              "travel_mode": "drive",
+              "travel_type": "car"
+            }
+          ],
+          "summary": {
+            "has_time_restrictions": false,
+            "has_toll": false,
+            "has_highway": false,
+            "has_ferry": false,
+            "min_lat": 12.917223,
+            "min_lon": 77.618251,
+            "max_lat": 12.971902,
+            "max_lon": 77.641791,
+            "time": 1023.938,
+            "length": 7.67,
+            "cost": 1455.182
+          },
+          "shape": "{vvvWy`zasCf_B}ClAClCGzAEbQe@`rAmClBElaAmB|HIp]a@~l@_At`DmGfAAlACvBEbCCbg@_@`EE~DO``@q@|LYpo@yAhDEzWpAvSfD|OlBf[fCn}@jEbHT~FFpABbNRtb@uAlY]~[Lz^Ln[d@rj@fBbS^rKrAvKhDd`@dQjGpCp^hQpXlNfc@dTbGtDfDxAbJlElNfGpK|DjE`B`Cv@vPpGtG`BdH|@dIP`K}@bGoBhJiE|DwCdFiEzZ{[zOwTxGgH|CcDzC_CvLsFbIkBhIw@zOKdGVdCPdBZpD|@fKdEh]zP`XnOjBdAXNdD`BjAl@fz@tc@ny@|b@|o@v\\fr@f_@pq@t]jq@t]xUxLdIbEfXzOhLtHhFfEzO|OdMpOrEvHdFxJlEvLfEvMbEfQjAnHdAzGn@zFb@bIRzPMfQO`WA`ACzBA|Bo@~{@JbFj@`a@@tNRtPIjOIjMY`[BrId@|H|@xGtE|R|@rDx@vDpBdHvBpFlBbFbCbGbFzLhGrNtGtMrFhJrJhL\\d@nAdBfB|B~LfP~EpGno@r|@vp@ly@~DhFv@bA|MbQhQfL`Al@rCnA~cAb^lk@hQdkA|\\rLfDp_AfXvWxHjSbG~[fKf\\|Jt[fKxTzGv@VbF`BvCz@`EnAnBj@hJjCxlAd\\zIbCtBj@rMtJn@d@`B~AjB`DpEdIr_@nnAlFrNhApCvd@mUzY_OpFe@xIwEd`@qSlTuL`WwN`i@aY~@i@jAm@r@a@lAq@`G{CrQkIjPuHjB{@bAk@rJkFnCqAdE}Cv`@aVpCeBrIaDhe@a[lC}Aha@iUfr@k^"
+        }
+      ],
+      "summary": {
+        "has_time_restrictions": false,
+        "has_toll": false,
+        "has_highway": false,
+        "has_ferry": false,
+        "min_lat": 12.917223,
+        "min_lon": 77.618251,
+        "max_lat": 12.971902,
+        "max_lon": 77.641791,
+        "time": 1023.938,
+        "length": 7.67,
+        "cost": 1455.182
+      },
+      "status_message": "Found route between points",
+      "status": 0,
+      "units": "kilometers",
+      "language": "en-US"
+    }
+  },
+  "trace_request": {
+    "encoded_polyline": "{vvvWy`zasCf_B}ClAClCGzAEbQe@`rAmClBElaAmB|HIp]a@~l@_At`DmGfAAlACvBEbCCbg@_@`EE~DO``@q@|LYpo@yAhDEzWpAvSfD|OlBf[fCn}@jEbHT~FFpABbNRtb@uAlY]~[Lz^Ln[d@rj@fBbS^rKrAvKhDd`@dQjGpCp^hQpXlNfc@dTbGtDfDxAbJlElNfGpK|DjE`B`Cv@vPpGtG`BdH|@dIP`K}@bGoBhJiE|DwCdFiEzZ{[zOwTxGgH|CcDzC_CvLsFbIkBhIw@zOKdGVdCPdBZpD|@fKdEh]zP`XnOjBdAXNdD`BjAl@fz@tc@ny@|b@|o@v\\fr@f_@pq@t]jq@t]xUxLdIbEfXzOhLtHhFfEzO|OdMpOrEvHdFxJlEvLfEvMbEfQjAnHdAzGn@zFb@bIRzPMfQO`WA`ACzBA|Bo@~{@JbFj@`a@@tNRtPIjOIjMY`[BrId@|H|@xGtE|R|@rDx@vDpBdHvBpFlBbFbCbGbFzLhGrNtGtMrFhJrJhL\\d@nAdBfB|B~LfP~EpGno@r|@vp@ly@~DhFv@bA|MbQhQfL`Al@rCnA~cAb^lk@hQdkA|\\rLfDp_AfXvWxHjSbG~[fKf\\|Jt[fKxTzGv@VbF`BvCz@`EnAnBj@hJjCxlAd\\zIbCtBj@rMtJn@d@`B~AjB`DpEdIr_@nnAlFrNhApCvd@mUzY_OpFe@xIwEd`@qSlTuL`WwN`i@aY~@i@jAm@r@a@lAq@`G{CrQkIjPuHjB{@bAk@rJkFnCqAdE}Cv`@aVpCeBrIaDhe@a[lC}Aha@iUfr@k^",
+    "shape_match": "edge_walk",
+    "filters": {
+      "action": "include",
+      "attributes": [
+        "shape",
+        "edge.way_id",
+        "edge.begin_shape_index",
+        "edge.end_shape_index",
+        "edge.length",
+        "node.elapsed_time"
+      ]
+    },
+    "costing": "auto",
+    "date_time": {
+      "type": 1,
+      "value": "2026-10-07T10:37"
+    },
+    "units": "kilometers"
+  },
+  "trace": {
+    "units": "kilometers",
+    "shape": "{vvvWy`zasCf_B}ClAClCGzAEbQe@`rAmClBElaAmB|HIp]a@~l@_At`DmGfAAlACvBEbCCbg@_@`EE~DO``@q@|LYpo@yAhDEzWpAvSfD|OlBf[fCn}@jEbHT~FFpABbNRtb@uAlY]~[Lz^Ln[d@rj@fBbS^rKrAvKhDd`@dQjGpCp^hQpXlNfc@dTbGtDfDxAbJlElNfGpK|DjE`B`Cv@vPpGtG`BdH|@dIP`K}@bGoBhJiE|DwCdFiEzZ{[zOwTxGgH|CcDzC_CvLsFbIkBhIw@zOKdGVdCPdBZpD|@fKdEh]zP`XnOjBdAXNdD`BjAl@fz@tc@ny@|b@|o@v\\fr@f_@pq@t]jq@t]xUxLdIbEfXzOhLtHhFfEzO|OdMpOrEvHdFxJlEvLfEvMbEfQjAnHdAzGn@zFb@bIRzPMfQO`WA`ACzBA|Bo@~{@JbFj@`a@@tNRtPIjOIjMY`[BrId@|H|@xGtE|R|@rDx@vDpBdHvBpFlBbFbCbGbFzLhGrNtGtMrFhJrJhL\\d@nAdBfB|B~LfP~EpGno@r|@vp@ly@~DhFv@bA|MbQhQfL`Al@rCnA~cAb^lk@hQdkA|\\rLfDp_AfXvWxHjSbG~[fKf\\|Jt[fKxTzGv@VbF`BvCz@`EnAnBj@hJjCxlAd\\zIbCtBj@rMtJn@d@`B~AjB`DpEdIr_@nnAlFrNhApCvd@mUzY_OpFe@xIwEd`@qSlTuL`WwN`i@aY~@i@jAm@r@a@lAq@`G{CrQkIjPuHjB{@bAk@rJkFnCqAdE}Cv`@aVpCeBrIaDhe@a[lC}Aha@iUfr@k^",
+    "edges": [
+      {
+        "way_id": 543470376,
+        "end_shape_index": 2,
+        "begin_shape_index": 0,
+        "length": 0.175,
+        "source_percent_along": 0.068,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 23.461,
+          "elapsed_cost": 28.74
+        }
+      },
+      {
+        "way_id": 543470376,
+        "end_shape_index": 3,
+        "begin_shape_index": 2,
+        "length": 0.008,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 24.535,
+          "elapsed_cost": 30.046
+        }
+      },
+      {
+        "way_id": 1151934209,
+        "end_shape_index": 4,
+        "begin_shape_index": 3,
+        "length": 0.005,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 25.209,
+          "elapsed_cost": 37.863
+        }
+      },
+      {
+        "way_id": 543470389,
+        "end_shape_index": 6,
+        "begin_shape_index": 4,
+        "length": 0.18,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 49.227,
+          "elapsed_cost": 74.263
+        }
+      },
+      {
+        "way_id": 543470389,
+        "end_shape_index": 7,
+        "begin_shape_index": 6,
+        "length": 0.006,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 50.034,
+          "elapsed_cost": 82.243
+        }
+      },
+      {
+        "way_id": 543470389,
+        "end_shape_index": 8,
+        "begin_shape_index": 7,
+        "length": 0.118,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 65.775,
+          "elapsed_cost": 101.516
+        }
+      },
+      {
+        "way_id": 543470389,
+        "end_shape_index": 10,
+        "begin_shape_index": 8,
+        "length": 0.072,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 75.383,
+          "elapsed_cost": 113.276
+        }
+      },
+      {
+        "way_id": 543470389,
+        "end_shape_index": 11,
+        "begin_shape_index": 10,
+        "length": 0.082,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 86.323,
+          "elapsed_cost": 126.67
+        }
+      },
+      {
+        "way_id": 543470389,
+        "end_shape_index": 14,
+        "begin_shape_index": 11,
+        "length": 0.297,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 125.931,
+          "elapsed_cost": 175.18
+        }
+      },
+      {
+        "way_id": 1109947891,
+        "end_shape_index": 15,
+        "begin_shape_index": 14,
+        "length": 0.007,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 126.871,
+          "elapsed_cost": 183.323
+        }
+      },
+      {
+        "way_id": 1109947892,
+        "end_shape_index": 16,
+        "begin_shape_index": 15,
+        "length": 0.007,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 127.812,
+          "elapsed_cost": 191.466
+        }
+      },
+      {
+        "way_id": 1109947892,
+        "end_shape_index": 17,
+        "begin_shape_index": 16,
+        "length": 0.072,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 137.431,
+          "elapsed_cost": 203.226
+        }
+      },
+      {
+        "way_id": 1314297631,
+        "end_shape_index": 18,
+        "begin_shape_index": 17,
+        "length": 0.011,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 138.906,
+          "elapsed_cost": 205.023
+        }
+      },
+      {
+        "way_id": 1286537540,
+        "end_shape_index": 19,
+        "begin_shape_index": 18,
+        "length": 0.011,
+        "sign": {},
+        "end_node": {
+          "elapsed_time": 140.381,
+          "elapsed_cost": 211.82
+        }
+      },
+      {
+        "way_id": 423269031,
+        "end_shape_index": 20,
+        "begin_shape_index": 19,
+        "length": 0.059,
+        "sign": {},
+        "end_node": {
+          "elapsed_time": 148.248,
+          "elapsed_cost": 221.456
+        }
+      },
+      {
+        "way_id": 15802887,
+        "end_shape_index": 21,
+        "begin_shape_index": 20,
+        "length": 0.025,
+        "sign": {},
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 151.581,
+          "elapsed_cost": 225.54
+        }
+      },
+      {
+        "way_id": 15802887,
+        "end_shape_index": 22,
+        "begin_shape_index": 21,
+        "length": 0.087,
+        "sign": {},
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 163.188,
+          "elapsed_cost": 239.75
+        }
+      },
+      {
+        "way_id": 15802887,
+        "end_shape_index": 27,
+        "begin_shape_index": 22,
+        "length": 0.174,
+        "sign": {},
+        "end_node": {
+          "elapsed_time": 186.413,
+          "elapsed_cost": 273.42
+        }
+      },
+      {
+        "way_id": 1286537528,
+        "end_shape_index": 28,
+        "begin_shape_index": 27,
+        "length": 0.112,
+        "end_node": {
+          "elapsed_time": 201.346,
+          "elapsed_cost": 291.34
+        }
+      },
+      {
+        "way_id": 1302988906,
+        "end_shape_index": 29,
+        "begin_shape_index": 28,
+        "length": 0.016,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 203.479,
+          "elapsed_cost": 293.9
+        }
+      },
+      {
+        "way_id": 1314297630,
+        "end_shape_index": 30,
+        "begin_shape_index": 29,
+        "length": 0.014,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 205.354,
+          "elapsed_cost": 302.69
+        }
+      },
+      {
+        "way_id": 1314297630,
+        "end_shape_index": 31,
+        "begin_shape_index": 30,
+        "length": 0.005,
+        "end_node": {
+          "elapsed_time": 206.041,
+          "elapsed_cost": 303.49
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 33,
+        "begin_shape_index": 31,
+        "length": 0.091,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 218.175,
+          "elapsed_cost": 318.05
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 35,
+        "begin_shape_index": 33,
+        "length": 0.099,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 231.394,
+          "elapsed_cost": 333.89
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 36,
+        "begin_shape_index": 35,
+        "length": 0.057,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 239.013,
+          "elapsed_cost": 343.01
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 38,
+        "begin_shape_index": 36,
+        "length": 0.129,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 256.232,
+          "elapsed_cost": 363.65
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 41,
+        "begin_shape_index": 38,
+        "length": 0.083,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 267.306,
+          "elapsed_cost": 378.48
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 42,
+        "begin_shape_index": 41,
+        "length": 0.067,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 276.265,
+          "elapsed_cost": 388.976
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 43,
+        "begin_shape_index": 42,
+        "length": 0.017,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 278.55,
+          "elapsed_cost": 391.64
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 44,
+        "begin_shape_index": 43,
+        "length": 0.065,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 287.234,
+          "elapsed_cost": 401.823
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 45,
+        "begin_shape_index": 44,
+        "length": 0.053,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 294.318,
+          "elapsed_cost": 410.126
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 46,
+        "begin_shape_index": 45,
+        "length": 0.074,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 304.203,
+          "elapsed_cost": 421.72
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 47,
+        "begin_shape_index": 46,
+        "length": 0.018,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 306.627,
+          "elapsed_cost": 424.54
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 49,
+        "begin_shape_index": 47,
+        "length": 0.032,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 311.037,
+          "elapsed_cost": 429.71
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 73,
+        "begin_shape_index": 49,
+        "length": 0.535,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 382.379,
+          "elapsed_cost": 511.743
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 80,
+        "begin_shape_index": 73,
+        "length": 0.165,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 404.427,
+          "elapsed_cost": 537.043
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 81,
+        "begin_shape_index": 80,
+        "length": 0.011,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 405.902,
+          "elapsed_cost": 538.73
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 82,
+        "begin_shape_index": 81,
+        "length": 0.005,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 406.587,
+          "elapsed_cost": 543.246
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 89,
+        "begin_shape_index": 82,
+        "length": 0.709,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 501.138,
+          "elapsed_cost": 651.96
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 92,
+        "begin_shape_index": 89,
+        "length": 0.104,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 515.012,
+          "elapsed_cost": 668.253
+        }
+      },
+      {
+        "way_id": 217565204,
+        "end_shape_index": 99,
+        "begin_shape_index": 92,
+        "length": 0.196,
+        "end_node": {
+          "elapsed_time": 541.174,
+          "elapsed_cost": 698.96
+        }
+      },
+      {
+        "way_id": 545610202,
+        "end_shape_index": 106,
+        "begin_shape_index": 99,
+        "length": 0.161,
+        "end_node": {
+          "elapsed_time": 562.641,
+          "elapsed_cost": 724.183
+        }
+      },
+      {
+        "way_id": 1099850917,
+        "end_shape_index": 110,
+        "begin_shape_index": 106,
+        "length": 0.059,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 570.507,
+          "elapsed_cost": 733.623
+        }
+      },
+      {
+        "way_id": 545604694,
+        "end_shape_index": 112,
+        "begin_shape_index": 110,
+        "length": 0.118,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 586.249,
+          "elapsed_cost": 758.703
+        }
+      },
+      {
+        "way_id": 545604695,
+        "end_shape_index": 113,
+        "begin_shape_index": 112,
+        "length": 0.059,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 594.123,
+          "elapsed_cost": 768.34
+        }
+      },
+      {
+        "way_id": 545604695,
+        "end_shape_index": 114,
+        "begin_shape_index": 113,
+        "length": 0.027,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 597.742,
+          "elapsed_cost": 772.75
+        }
+      },
+      {
+        "way_id": 545604695,
+        "end_shape_index": 115,
+        "begin_shape_index": 114,
+        "length": 0.031,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 601.884,
+          "elapsed_cost": 777.813
+        }
+      },
+      {
+        "way_id": 545604695,
+        "end_shape_index": 117,
+        "begin_shape_index": 115,
+        "length": 0.053,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 608.97,
+          "elapsed_cost": 786.47
+        }
+      },
+      {
+        "way_id": 545604695,
+        "end_shape_index": 120,
+        "begin_shape_index": 117,
+        "length": 0.084,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 620.188,
+          "elapsed_cost": 800.19
+        }
+      },
+      {
+        "way_id": 545604695,
+        "end_shape_index": 123,
+        "begin_shape_index": 120,
+        "length": 0.063,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 628.599,
+          "elapsed_cost": 810.48
+        }
+      },
+      {
+        "way_id": 545604695,
+        "end_shape_index": 124,
+        "begin_shape_index": 123,
+        "length": 0.01,
+        "end_node": {
+          "elapsed_time": 629.953,
+          "elapsed_cost": 812.113
+        }
+      },
+      {
+        "way_id": 208944725,
+        "end_shape_index": 125,
+        "begin_shape_index": 124,
+        "length": 0.017,
+        "end_node": {
+          "elapsed_time": 632.22,
+          "elapsed_cost": 814.89
+        }
+      },
+      {
+        "way_id": 208944726,
+        "end_shape_index": 127,
+        "begin_shape_index": 125,
+        "length": 0.029,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 636.087,
+          "elapsed_cost": 819.626
+        }
+      },
+      {
+        "way_id": 208944726,
+        "end_shape_index": 131,
+        "begin_shape_index": 127,
+        "length": 0.104,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 649.961,
+          "elapsed_cost": 836.613
+        }
+      },
+      {
+        "way_id": 208944726,
+        "end_shape_index": 134,
+        "begin_shape_index": 131,
+        "length": 0.058,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 657.703,
+          "elapsed_cost": 846.086
+        }
+      },
+      {
+        "way_id": 208944726,
+        "end_shape_index": 135,
+        "begin_shape_index": 134,
+        "length": 0.007,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 658.657,
+          "elapsed_cost": 847.23
+        }
+      },
+      {
+        "way_id": 545603936,
+        "end_shape_index": 136,
+        "begin_shape_index": 135,
+        "length": 0.009,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 659.865,
+          "elapsed_cost": 867.7
+        }
+      },
+      {
+        "way_id": 27777244,
+        "end_shape_index": 138,
+        "begin_shape_index": 136,
+        "length": 0.058,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 667.606,
+          "elapsed_cost": 891.173
+        }
+      },
+      {
+        "way_id": 27777244,
+        "end_shape_index": 139,
+        "begin_shape_index": 138,
+        "length": 0.138,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 686.024,
+          "elapsed_cost": 913.713
+        }
+      },
+      {
+        "way_id": 1302194007,
+        "end_shape_index": 141,
+        "begin_shape_index": 139,
+        "length": 0.151,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 706.165,
+          "elapsed_cost": 938.376
+        }
+      },
+      {
+        "way_id": 1159872649,
+        "end_shape_index": 142,
+        "begin_shape_index": 141,
+        "length": 0.005,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 706.84,
+          "elapsed_cost": 946.193
+        }
+      },
+      {
+        "way_id": 1159872649,
+        "end_shape_index": 146,
+        "begin_shape_index": 142,
+        "length": 0.095,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 719.514,
+          "elapsed_cost": 968.71
+        }
+      },
+      {
+        "way_id": 1159872649,
+        "end_shape_index": 147,
+        "begin_shape_index": 146,
+        "length": 0.134,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 737.393,
+          "elapsed_cost": 992.346
+        }
+      },
+      {
+        "way_id": 1159872649,
+        "end_shape_index": 148,
+        "begin_shape_index": 147,
+        "length": 0.085,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 748.735,
+          "elapsed_cost": 1007.98
+        }
+      },
+      {
+        "way_id": 1159872649,
+        "end_shape_index": 149,
+        "begin_shape_index": 148,
+        "length": 0.145,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 768.076,
+          "elapsed_cost": 1031.663
+        }
+      },
+      {
+        "way_id": 1150874214,
+        "end_shape_index": 151,
+        "begin_shape_index": 149,
+        "length": 0.149,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 789.96,
+          "elapsed_cost": 1063.0
+        }
+      },
+      {
+        "way_id": 1110164319,
+        "end_shape_index": 153,
+        "begin_shape_index": 151,
+        "length": 0.086,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 801.445,
+          "elapsed_cost": 1077.046
+        }
+      },
+      {
+        "way_id": 1110164319,
+        "end_shape_index": 154,
+        "begin_shape_index": 153,
+        "length": 0.056,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 808.929,
+          "elapsed_cost": 1086.193
+        }
+      },
+      {
+        "way_id": 1110164319,
+        "end_shape_index": 155,
+        "begin_shape_index": 154,
+        "length": 0.056,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 816.404,
+          "elapsed_cost": 1095.34
+        }
+      },
+      {
+        "way_id": 1110164319,
+        "end_shape_index": 156,
+        "begin_shape_index": 155,
+        "length": 0.055,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 823.755,
+          "elapsed_cost": 1104.323
+        }
+      },
+      {
+        "way_id": 1110164319,
+        "end_shape_index": 159,
+        "begin_shape_index": 156,
+        "length": 0.059,
+        "end_node": {
+          "elapsed_time": 831.629,
+          "elapsed_cost": 1113.96
+        }
+      },
+      {
+        "way_id": 1110178545,
+        "end_shape_index": 160,
+        "begin_shape_index": 159,
+        "length": 0.009,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 832.829,
+          "elapsed_cost": 1115.43
+        }
+      },
+      {
+        "way_id": 1110164313,
+        "end_shape_index": 161,
+        "begin_shape_index": 160,
+        "length": 0.012,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 834.447,
+          "elapsed_cost": 1138.39
+        }
+      },
+      {
+        "way_id": 1335925202,
+        "end_shape_index": 162,
+        "begin_shape_index": 161,
+        "length": 0.007,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 835.388,
+          "elapsed_cost": 1160.533
+        }
+      },
+      {
+        "way_id": 1387944292,
+        "end_shape_index": 163,
+        "begin_shape_index": 162,
+        "length": 0.022,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 838.339,
+          "elapsed_cost": 1164.126
+        }
+      },
+      {
+        "way_id": 111814614,
+        "end_shape_index": 164,
+        "begin_shape_index": 163,
+        "length": 0.148,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 858.08,
+          "elapsed_cost": 1188.3
+        }
+      },
+      {
+        "way_id": 111814614,
+        "end_shape_index": 167,
+        "begin_shape_index": 164,
+        "length": 0.061,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 866.231,
+          "elapsed_cost": 1198.263
+        }
+      },
+      {
+        "way_id": 111814614,
+        "end_shape_index": 169,
+        "begin_shape_index": 167,
+        "length": 0.011,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 867.722,
+          "elapsed_cost": 1200.06
+        }
+      },
+      {
+        "way_id": 111814614,
+        "end_shape_index": 170,
+        "begin_shape_index": 169,
+        "length": 0.011,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 869.245,
+          "elapsed_cost": 1201.856
+        }
+      },
+      {
+        "way_id": 111814614,
+        "end_shape_index": 172,
+        "begin_shape_index": 170,
+        "length": 0.171,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 892.064,
+          "elapsed_cost": 1229.786
+        }
+      },
+      {
+        "way_id": 111814614,
+        "end_shape_index": 174,
+        "begin_shape_index": 172,
+        "length": 0.039,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 897.273,
+          "elapsed_cost": 1236.156
+        }
+      },
+      {
+        "way_id": 684917326,
+        "end_shape_index": 175,
+        "begin_shape_index": 174,
+        "length": 0.078,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 916.105,
+          "elapsed_cost": 1266.89
+        }
+      },
+      {
+        "way_id": 684917326,
+        "end_shape_index": 176,
+        "begin_shape_index": 175,
+        "length": 0.055,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 927.773,
+          "elapsed_cost": 1282.908
+        }
+      },
+      {
+        "way_id": 684917326,
+        "end_shape_index": 177,
+        "begin_shape_index": 176,
+        "length": 0.014,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 930.827,
+          "elapsed_cost": 1289.165
+        }
+      },
+      {
+        "way_id": 172853382,
+        "end_shape_index": 178,
+        "begin_shape_index": 177,
+        "length": 0.022,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 933.791,
+          "elapsed_cost": 1303.008
+        }
+      },
+      {
+        "way_id": 172853382,
+        "end_shape_index": 179,
+        "begin_shape_index": 178,
+        "length": 0.069,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 943.009,
+          "elapsed_cost": 1314.278
+        }
+      },
+      {
+        "way_id": 172853382,
+        "end_shape_index": 180,
+        "begin_shape_index": 179,
+        "length": 0.045,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 949.016,
+          "elapsed_cost": 1321.628
+        }
+      },
+      {
+        "way_id": 172853382,
+        "end_shape_index": 181,
+        "begin_shape_index": 180,
+        "length": 0.051,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 955.824,
+          "elapsed_cost": 1329.958
+        }
+      },
+      {
+        "way_id": 172853382,
+        "end_shape_index": 182,
+        "begin_shape_index": 181,
+        "length": 0.088,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 967.578,
+          "elapsed_cost": 1344.331
+        }
+      },
+      {
+        "way_id": 172853382,
+        "end_shape_index": 184,
+        "begin_shape_index": 182,
+        "length": 0.009,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 968.796,
+          "elapsed_cost": 1345.801
+        }
+      },
+      {
+        "way_id": 172853382,
+        "end_shape_index": 186,
+        "begin_shape_index": 184,
+        "length": 0.009,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 970.003,
+          "elapsed_cost": 1347.271
+        }
+      },
+      {
+        "way_id": 1109968033,
+        "end_shape_index": 187,
+        "begin_shape_index": 186,
+        "length": 0.017,
+        "end_node": {
+          "intersecting_edges": [
+            {},
+            {}
+          ],
+          "elapsed_time": 971.771,
+          "elapsed_cost": 1377.413
+        }
+      },
+      {
+        "way_id": 1148717038,
+        "end_shape_index": 188,
+        "begin_shape_index": 187,
+        "length": 0.038,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 975.702,
+          "elapsed_cost": 1396.201
+        }
+      },
+      {
+        "way_id": 1148717038,
+        "end_shape_index": 189,
+        "begin_shape_index": 188,
+        "length": 0.035,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 979.309,
+          "elapsed_cost": 1400.611
+        }
+      },
+      {
+        "way_id": 1148717038,
+        "end_shape_index": 191,
+        "begin_shape_index": 189,
+        "length": 0.011,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 980.458,
+          "elapsed_cost": 1401.997
+        }
+      },
+      {
+        "way_id": 1148717038,
+        "end_shape_index": 192,
+        "begin_shape_index": 191,
+        "length": 0.024,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 982.934,
+          "elapsed_cost": 1405.021
+        }
+      },
+      {
+        "way_id": 40696223,
+        "end_shape_index": 194,
+        "begin_shape_index": 192,
+        "length": 0.023,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 985.308,
+          "elapsed_cost": 1407.919
+        }
+      },
+      {
+        "way_id": 40696223,
+        "end_shape_index": 195,
+        "begin_shape_index": 194,
+        "length": 0.072,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 992.721,
+          "elapsed_cost": 1416.991
+        }
+      },
+      {
+        "way_id": 40696223,
+        "end_shape_index": 196,
+        "begin_shape_index": 195,
+        "length": 0.01,
+        "end_node": {
+          "intersecting_edges": [
+            {}
+          ],
+          "elapsed_time": 993.757,
+          "elapsed_cost": 1418.251
+        }
+      },
+      {
+        "way_id": 1167293940,
+        "end_shape_index": 197,
+        "begin_shape_index": 196,
+        "length": 0.021,
+        "end_node": {
+          "elapsed_time": 995.95,
+          "elapsed_cost": 1420.897
+        }
+      },
+      {
+        "way_id": 1208112303,
+        "end_shape_index": 198,
+        "begin_shape_index": 197,
+        "length": 0.084,
+        "end_node": {
+          "elapsed_time": 1004.59,
+          "elapsed_cost": 1431.481
+        }
+      },
+      {
+        "way_id": 40696221,
+        "end_shape_index": 201,
+        "begin_shape_index": 198,
+        "length": 0.188,
+        "target_percent_along": 0.412,
+        "end_node": {
+          "elapsed_time": 1023.933,
+          "elapsed_cost": 1455.177
+        }
+      }
+    ],
+    "alternate_paths": []
+  },
+  "provenance": {
+    "recorded_at": "2026-10-07T05:07:28.822355+00:00",
+    "valhalla_version": "3.9.1-f28832966",
+    "source": "http://127.0.0.1:8002",
+    "landmarks": [
+      "Indiranagar",
+      "Silk Board"
+    ],
+    "graph": "local Bengaluru OpenStreetMap extract",
+    "risk_data": "none; route geometry and costing only",
+    "departure_clock": "origin local time (Asia/Kolkata, UTC+05:30)"
+  }
+}

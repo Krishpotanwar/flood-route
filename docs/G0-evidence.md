@@ -288,10 +288,11 @@ Each line maps one G0 criterion to done or blocked-human.
    and getting the advisory wording view needs a human; not attempted here).
 5. At least 6 interviews done plus ranked design-partner candidates: blocked-human
    (human outreach; no interview records exist in this engineering scope).
-6. S1 returned go or an agreed fallback: blocked-human (the Valhalla spike needs
-   a live Bengaluru-graph benchmark; `tests/route/test_route_valhalla.py` states
-   its sample is hand-written from the API reference and "Spike S1 must replace
-   it with a real recording").
+6. S1 returned go or an agreed fallback: in progress. On 8 October the
+   self-hosted Bengaluru graph supplied a genuine 102-edge route recording;
+   an opt-in live test passed a synthetic interior closure detour and an
+   origin-closure `no_safe_route` check. The planned India-graph load benchmark,
+   per-class overlays, refresh latency, and pilot accuracy gate remain open.
 7. IMERG adapter live: blocked-human (NASA Earthdata login is human-gated; per
    plan no adapter was built here).
 
@@ -313,7 +314,8 @@ Each line maps one G0 criterion to done or blocked-human.
    label capture starts there.
 3. `rain_obs` is empty and `rain_fcst` is aging; the next shadow run will keep
    reporting unknown unless ingestion refreshes these tables.
-4. S1, counsel, and interviews remain human-gated G0 items (see checklist).
+4. S1's remaining benchmark and pilot gate, counsel, and interviews remain
+   open G0 items (see checklist).
 
 ## 8. Task 4 refresh (2026-10-06): Chennai rain inputs, benchmark dedupe
 

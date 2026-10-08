@@ -275,6 +275,16 @@ def test_every_trd_table_exists(db):
     assert trd | {"shadow_run", "observed_event", "schema_migrations"} <= {r[0] for r in rows}
 
 
+def test_assessed_graph_edge_lookup_has_a_partial_way_index(db):
+    row = db.execute(
+        "select pg_get_indexdef(i.indexrelid), pg_get_expr(i.indpred, i.indrelid)"
+        " from pg_index i join pg_class c on c.oid = i.indexrelid"
+        " where c.relname = 'segment_assessed_osm_way_idx'"
+    ).fetchone()
+    assert row is not None and "USING btree (osm_way_id)" in row[0]
+    assert row[1] == "assessed"
+
+
 # ------------------------------------------------------------------ segment_risk upsert and history
 
 UPSERT = """

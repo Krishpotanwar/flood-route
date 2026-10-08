@@ -49,13 +49,14 @@ def submit_report(
     now = datetime.now(UTC)
     report_id = str(uuid.uuid4())
 
-    # Map match to nearest segment within 100m
+    # Retired inventory rows must not capture reports intended for an assessed road.
     cur = db.execute(
         """
         select segment_id,
                ST_Distance(geom::geography, ST_SetSRID(ST_Point(%s, %s), 4326)::geography) as dist_m
         from segment
-        where ST_DWithin(geom::geography, ST_SetSRID(ST_Point(%s, %s), 4326)::geography, 100)
+        where assessed = true
+          and ST_DWithin(geom::geography, ST_SetSRID(ST_Point(%s, %s), 4326)::geography, 100)
         order by dist_m
         limit 1
         """,

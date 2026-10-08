@@ -1,6 +1,6 @@
 # Backend runbook
 
-Last verified: **7 October 2026**. The current source builds a complete Docker API image and runs against an isolated PostGIS database with nine migrations and a self-hosted Bengaluru Valhalla graph. Local endpoint and source-ingestion checks are recorded below. Public hosting, current rain observations, calibration, and field validation remain separate requirements. The frontend can be deployed independently.
+Last verified: **8 October 2026**. The current source builds a complete Docker API image and runs against an isolated PostGIS database with ten migrations and a self-hosted Bengaluru Valhalla graph. Local endpoint and source-ingestion checks are recorded below. Public hosting, current rain observations, calibration, and field validation remain separate requirements. The frontend can be deployed independently.
 
 The local stack is FastAPI, PostGIS, a scoring/snapshot worker, and an optional Valhalla road router. The API image builds the citizen frontend from source and serves it at `/app/`. Raw OSM files and routing tiles stay outside Git.
 
@@ -57,6 +57,14 @@ docker compose --profile routing logs -f valhalla
 
 Initial graph construction takes time. Check [routing status](http://127.0.0.1:8002/status), then run the route-required smoke check below. Changing the host routing port does not change the internal API URL, which remains `http://valhalla:8002`. For another trusted Valhalla instance, set `VALHALLA_URL` before creating the API container. This graph supplies road geometry and baseline travel estimates, not live traffic or flood observations. OpenStreetMap data must retain [its attribution and licence](../data/inventory/NOTICE.md).
 
+The API follows each Valhalla route with a strict `edge_walk` trace and checks each graph edge against an assessed inventory row on the same OSM way within 50 m. Missing matches remain unassessed; ambiguous same-way matches stop the route instead of silently choosing one. The route and trace must agree on geometry and travel time. This is a conservative local mapping, not nationwide inventory coverage or field calibration. To exercise a real graph with synthetic risk confined to a disposable test database:
+
+```sh
+cd apps/api
+FLOODROUTE_REQUIRE_DB=1 FLOODROUTE_LIVE_ROUTER_URL=http://127.0.0.1:8002 \
+  .venv/bin/pytest -q tests/route/test_route_live.py
+```
+
 ## Observations and the worker
 
 Set `FLOODROUTE_CONTACT` to an actual contact email or project URL before using MET Norway. The API source adapters fetch SACHET alerts and MET Norway rainfall forecasts; source access can fail independently of API/database health. Missing rainfall/observations, unreviewed inventory matches, and uncalibrated risk coefficients limit flood guidance even when roads can be routed.
@@ -112,7 +120,15 @@ apps/api/.venv/bin/python -m uvicorn floodroute.api.main:app --host 127.0.0.1 --
 
 For a small integration probe using only public landmark presets, the official [Valhalla public demo documentation](https://valhalla.github.io/valhalla/valhalla-intro/) lists `https://valhalla1.openstreetmap.de`. Its fair-use limits apply. It is an external demo service; use self-hosted routing for deployment. Publishing an app that uses it also requires following its operator's identification/contact guidance.
 
-## Verification checkpoint — 7 October 2026
+## Verification checkpoint — 8 October 2026
+
+- The refreshed API image built and served the route-required smoke check on `8080`; the isolated database applied migration 0010 and has the assessed OSM-way lookup index. A recorded Bengaluru route has 102 graph edges. The opt-in test against the actual local graph passed a synthetic interior closure detour and an origin-closure `no_safe_route` check, using only a disposable database.
+- Departure time is sent in the origin's local IST clock to Valhalla. The graph trace uses that same time and the same costing as the route. Unknown, ambiguous, or inconsistent edge mappings fail closed.
+- The previous full API run passed 879 tests with one expected external-graph skip. After the final HTTP-client lifecycle fix, 71 focused route/API tests and the opt-in live test passed, and Ruff passed. A subsequent full rerun stopped when Docker Desktop shut down; it is not counted as a pass. The rebuilt image includes the lifecycle fix.
+- A bounded SACHET catch-up on 7 October stored 100 alerts; 80 had no polygon because SACHET's polygon endpoint returned HTTP 403. The 8 October worker step succeeded and stored ten new feed items, with 89 more flagged for later runs. MET Norway returned 62 forecast rows. The worker reported 64,596 score changes, zero watch alerts, and four empty city snapshots. There were no active route watches or webhook subscriptions. These counts do not imply current rainfall observations or verified road states.
+- The 8 October connected-browser recapture could not complete after Docker Desktop was quit externally. The genuine earlier browser screenshot remains labelled with its 7 October date. See [the graph-edge verification record](../output/backend-verification/2026-10-08-graph-edges/verification.md).
+
+## Historical verification checkpoint — 7 October 2026
 
 - A fresh complete API image built successfully. Its Compose API served `/app/`, health, closure snapshots, and the route/report smoke checks on loopback port `8080`.
 - The isolated PostGIS database on `54330` is healthy with all nine migrations applied, 5,383 genuine OSM-derived Bengaluru road segments, and 233 hotspot matches.

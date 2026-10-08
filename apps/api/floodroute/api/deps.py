@@ -6,6 +6,7 @@ import os
 from collections.abc import Callable, Generator, Sequence
 from typing import Annotated
 
+import httpx
 import psycopg
 from fastapi import Depends
 from psycopg_pool import ConnectionPool
@@ -79,28 +80,30 @@ def get_route_config() -> RouteConfig:
     return ROUTE_CONFIG
 
 
-def db_segment_of(conn: psycopg.Connection, coords: Sequence[LatLon]) -> int | None:
-    """Find the nearest assessed segment for a route maneuver geometry."""
+def db_segment_of(
+    conn: psycopg.Connection, osm_way_id: int, coords: Sequence[LatLon]
+) -> int | None:
+    """Match an assessed inventory row on the graph edge's OSM way and geometry."""
+    if type(osm_way_id) is not int or osm_way_id <= 0:
+        raise ValueError("a graph edge requires a positive OSM way ID")
     if len(coords) < 2:
         return None
     pts = ", ".join(f"{lon} {lat}" for lat, lon in coords)
     line_wkt = f"SRID=4326;LINESTRING({pts})"
-    try:
-        cur = conn.execute(
-            """
-            select segment_id
-            from segment
-            where assessed = true
-              and ST_DWithin(geom::geography, ST_GeogFromText(%s), 50)
-            order by ST_Distance(geom::geography, ST_GeogFromText(%s))
-            limit 1
-            """,
-            (line_wkt, line_wkt),
-        )
-        row = cur.fetchone()
-        return row[0] if row else None
-    except (psycopg.Error, ValueError):
-        return None
+    rows = conn.execute(
+        """
+        select segment_id
+        from segment
+        where assessed = true and osm_way_id = %s
+          and ST_DWithin(geom::geography, ST_GeogFromText(%s), 50)
+        """,
+        (osm_way_id, line_wkt),
+    ).fetchall()
+    # ponytail: one inventory row per graph edge; split overlapping same-way intervals if
+    # inventory density requires it. Picking the nearest row could discard a flooded interval.
+    if len(rows) > 1:
+        raise RuntimeError(f"ambiguous assessed inventory for OSM way {osm_way_id}")
+    return rows[0][0] if rows else None
 
 
 def db_risk_for(conn: psycopg.Connection, segment_id: int, vclass: str) -> SegmentRisk | None:
@@ -156,10 +159,12 @@ def db_risk_for(conn: psycopg.Connection, segment_id: int, vclass: str) -> Segme
 
 def get_router(
     conn: Annotated[psycopg.Connection, Depends(get_db)],
-) -> RouterCallable:
+) -> Generator[RouterCallable, None, None]:
     """Create Valhalla router connected to VALHALLA_URL."""
     base_url = os.environ.get("VALHALLA_URL", "http://127.0.0.1:8002").rstrip("/")
-    return ValhallaRouter(
-        base_url=base_url,
-        segment_of=lambda coords: db_segment_of(conn, coords),
-    )
+    with httpx.Client(base_url=base_url, timeout=3.0) as client:
+        yield ValhallaRouter(
+            base_url=base_url,
+            segment_of=lambda way_id, coords: db_segment_of(conn, way_id, coords),
+            client=client,
+        )

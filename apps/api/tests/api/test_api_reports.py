@@ -75,8 +75,8 @@ def test_submit_report_near_segment(client, app_db):
 
 def test_evidence_failure_rolls_back_report(client, db, app_db):
     app_db.execute(
-        "insert into segment (segment_id, osm_way_id, geom, road_class, city_id)"
-        " values (5001, 15001, %s, 'secondary', 1)",
+        "insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed)"
+        " values (5001, 15001, %s, 'secondary', 1, true)",
         (SEG_LINE,),
     )
     db.execute(
@@ -95,6 +95,29 @@ def test_evidence_failure_rolls_back_report(client, db, app_db):
         )
     assert app_db.execute("select count(*) from report").fetchone()[0] == 0
     assert app_db.execute("select count(*) from evidence").fetchone()[0] == 0
+
+
+def test_report_ignores_nearer_retired_inventory(client, app_db):
+    app_db.execute(
+        "insert into segment (segment_id, osm_way_id, geom, road_class, city_id, assessed)"
+        " values (5000, 15000, %s, 'secondary', 1, false),"
+        " (5001, 15001, 'SRID=4326;LINESTRING(77.580 12.9704,77.581 12.9714)',"
+        " 'secondary', 1, true)",
+        (SEG_LINE,),
+    )
+    response = client.post(
+        "/v1/reports",
+        json={
+            "lat": 12.9705,
+            "lon": 77.5805,
+            "depth_class": "ankle",
+            "reporter_id": "active-road-report",
+        },
+    )
+    assert response.status_code == 201
+    assert response.json()["segment_id"] == 5001
+    rows = app_db.execute("select segment_id, report_id from evidence").fetchall()
+    assert [(sid, str(rid)) for sid, rid in rows] == [(5001, response.json()["report_id"])]
 
 
 def test_submit_report_isolated_location(client, app_db):
