@@ -1,5 +1,16 @@
 # shortcut: this free-tier API deployment omits the worker and self-hosted router; use the
 # Docker Compose stack on a VM when persistent snapshots and live road routing are required.
+#
+# Post-deploy manual steps (one-time after first successful deploy):
+#
+# 1. Set FLOODROUTE_OPERATOR_TOKENS in the Render dashboard as a JSON object:
+#      {"operator-one": "<64-hex-chars>", "operator-two": "<64-hex-chars>"}
+#    Generate values with: python3 -c 'import json,secrets; print(json.dumps({"operator-one": secrets.token_hex(32), "operator-two": secrets.token_hex(32)}))'
+#    Without this variable the operator console returns 503; citizen endpoints are unaffected.
+#
+# 2. Seed the Bengaluru road inventory via Render Shell or a one-off job:
+#      python -m floodroute.inventory.seed --city bengaluru
+#    The API starts without inventory but route assessments will remain unknown until seeded.
 services:
   - type: web
     name: floodroute-api
@@ -23,6 +34,9 @@ services:
         value: https://flood-route-rosy.vercel.app
       - key: FLOODROUTE_CONTACT
         value: https://github.com/Krishpotanwar/flood-route
+      # Set FLOODROUTE_OPERATOR_TOKENS manually in the Render dashboard after deploy.
+      # Value must be a JSON object: {"op-name": "<32+ char secret>", "op-name-2": "<32+ char secret>"}
+      # Omitting this variable disables operator endpoints (HTTP 503) but does not affect citizen endpoints.
 
 databases:
   - name: floodroute-db
