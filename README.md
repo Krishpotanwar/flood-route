@@ -86,9 +86,30 @@ The frontend starts in Demo mode without an API environment variable. A separate
 
 ## Connect the backend
 
-The backend now builds and runs as a local Docker stack: API, PostGIS, worker, and self-hosted Bengaluru routing. Its source and migration changes have passed review and testing. Public deployment remains a separate step.
+The backend now builds and runs as a local Docker stack: API, PostGIS, worker, and self-hosted Bengaluru routing. Its source and migration changes have passed review and testing. A `render.yaml` is included for free-tier Render deployment.
 
-Follow the [backend runbook](docs/BACKEND_RUNBOOK.md) for API dependencies, PostGIS setup, migrations, routing configuration, and container commands. The current source API serves the built app at `http://127.0.0.1:8080/app/?live=1`. In Vite, select **Live data** or open `http://localhost:5173/?live=1`. Both development and preview servers proxy `/v1` to `http://127.0.0.1:8080`; override the local API target when needed:
+### Deploy to Render
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Krishpotanwar/flood-route)
+
+The `render.yaml` provisions a free Docker web service and a managed PostgreSQL 16 database in Singapore. Migrations run automatically at startup. After the first successful deploy:
+
+1. Open the Render dashboard, set `FLOODROUTE_OPERATOR_TOKENS` to a JSON object:
+   ```
+   {"operator-one": "<64-hex-chars>", "operator-two": "<64-hex-chars>"}
+   ```
+   Generate values: `python3 -c 'import json,secrets; print(json.dumps({"operator-one": secrets.token_hex(32), "operator-two": secrets.token_hex(32)}))'`
+2. Open the Render Shell and seed the Bengaluru road inventory:
+   ```sh
+   python -m floodroute.inventory.seed --city bengaluru
+   ```
+3. Copy the service URL (e.g. `https://floodroute-api.onrender.com`) and add it as `VITE_API_BASE_URL` in the Vercel project environment, then redeploy the frontend.
+
+The free Render tier sleeps after 15 minutes idle and the Postgres instance expires after 30 days. These limits are suitable for a hackathon demo. For sustained use, upgrade to a paid plan or use the Docker Compose stack on a VM with self-hosted Valhalla routing.
+
+### Local Docker stack
+
+Follow the [backend runbook](docs/BACKEND_RUNBOOK.md) for full setup including PostGIS, migrations, routing configuration, and container commands. The current source API serves the built app at `http://127.0.0.1:8080/app/?live=1`. In Vite, select **Live data** or open `http://localhost:5173/?live=1`. Both development and preview servers proxy `/v1` to `http://127.0.0.1:8080`; override the local API target when needed:
 
 ```sh
 FLOODROUTE_DEV_API_URL=http://127.0.0.1:8000 corepack pnpm --filter @floodroute/citizen dev
@@ -113,6 +134,7 @@ FLOODROUTE_REQUIRE_DB=1 .venv/bin/pytest -q
 ```
 
 The [published API CI run](https://github.com/Krishpotanwar/flood-route/actions/runs/37809981322) passed **879 tests**, with two expected skips: the opt-in live graph test and an optional `osmium` test. The [frontend CI run](https://github.com/Krishpotanwar/flood-route/actions/runs/37809981418) also passed. Locally, the live graph test and 71 focused tests passed; Ruff passed. A later local full rerun was interrupted when Docker Desktop shut down, so it is not counted as a pass. The suite needs PostGIS at `DATABASE_URL_ADMIN` (default `postgresql://postgres@127.0.0.1:54329/postgres`). Requiring the database makes an unavailable test database fail instead of skipping integration checks. Build the frontend first for the `/app/` serving tests.
+
 
 ## Submission material
 
