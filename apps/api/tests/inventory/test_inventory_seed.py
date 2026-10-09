@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from floodroute.inventory.seed import (
     candidate_id_to_segment_id,
     ensure_city_zone,
     load_hotspot_counts,
     seed_inventory,
+)
+from floodroute.inventory.seed import (
+    main as seed_main,
 )
 
 
@@ -207,3 +211,55 @@ def test_seed_inventory_bengaluru_sample(db):
         "select count(*) from segment where ST_Within(geom, ST_MakeEnvelope(77.4, 12.8, 77.85, 13.2, 4326))"
     )
     assert cur.fetchone()[0] == 20
+
+
+def test_seed_inventory_if_empty_mock():
+    """Verify that if_empty=True returns early without querying files or inserting."""
+    mock_conn = MagicMock()
+    mock_cur = MagicMock()
+    mock_cur.fetchone.return_value = (100,)
+    mock_conn.execute.return_value = mock_cur
+
+    stats = seed_inventory(
+        conn=mock_conn,
+        city="bengaluru",
+        if_empty=True,
+    )
+
+    assert stats.city == "bengaluru"
+    assert stats.city_id == 1
+    assert stats.total_candidates == 100
+    assert stats.inserted_segments == 0
+    assert stats.inserted_static == 0
+    # Exactly one query executed: the count(*) query
+    assert mock_conn.execute.call_count == 1
+    assert "count(*)" in mock_conn.execute.call_args[0][0]
+
+
+def test_seed_inventory_cli_if_empty(monkeypatch):
+    """Verify that --if-empty CLI flag is parsed and passed to seed_inventory."""
+    monkeypatch.setattr("sys.argv", ["seed.py", "--city", "bengaluru", "--if-empty"])
+    monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@localhost:5432/db")
+
+    mock_conn = MagicMock()
+    mock_connect = MagicMock()
+    mock_connect.return_value.__enter__.return_value = mock_conn
+
+    with (
+        patch("floodroute.inventory.seed.psycopg.connect", mock_connect),
+        patch("floodroute.inventory.seed.seed_inventory") as mock_seed,
+    ):
+        mock_seed.return_value = MagicMock(
+            city="bengaluru",
+            city_id=1,
+            total_candidates=5383,
+            inserted_segments=0,
+            inserted_static=0,
+            matched_hotspots=0,
+            by_structure={},
+        )
+        seed_main()
+
+        mock_seed.assert_called_once()
+        assert mock_seed.call_args[1]["if_empty"] is True
+

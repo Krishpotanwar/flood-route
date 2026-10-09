@@ -11,6 +11,7 @@ import csv
 import hashlib
 import json
 import logging
+import os
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -100,10 +101,35 @@ def seed_inventory(
     zone_id: int | None = None,
     limit: int | None = None,
     batch_size: int = 500,
+    if_empty: bool = False,
 ) -> SeedStats:
     """Seed candidate segments and matched hotspots into segment and segment_static."""
     city_norm = city.lower().strip()
     city_id = get_city_id(city_norm)
+
+    if if_empty:
+        cur = conn.execute(
+            "select count(*) from segment where city_id = %s and assessed = true",
+            (city_id,),
+        )
+        existing_row = cur.fetchone()
+        existing_count = existing_row[0] if existing_row else 0
+        if existing_count > 0:
+            logger.info(
+                "City %s (city_id=%d) already has %d assessed segments; skipping seeding (if_empty=True).",
+                city_norm,
+                city_id,
+                existing_count,
+            )
+            return SeedStats(
+                city=city_norm,
+                city_id=city_id,
+                total_candidates=existing_count,
+                inserted_segments=0,
+                inserted_static=0,
+                matched_hotspots=0,
+                by_structure={},
+            )
 
     # Resolve paths if not specified
     repo_root = Path(__file__).resolve().parents[4]
@@ -111,6 +137,18 @@ def seed_inventory(
 
     if candidates_path is None:
         cand_p = inv_dir / f"{city_norm}_candidates.geojson"
+        if not cand_p.exists():
+            for alt in [
+                Path(os.environ.get("FLOODROUTE_INVENTORY_DIR", "")),
+                Path("data/inventory"),
+                Path("../data/inventory"),
+                Path("../../data/inventory"),
+                Path("/app/data/inventory"),
+            ]:
+                if alt and alt.exists() and (alt / f"{city_norm}_candidates.geojson").exists():
+                    inv_dir = alt
+                    cand_p = inv_dir / f"{city_norm}_candidates.geojson"
+                    break
     else:
         cand_p = Path(candidates_path)
 
@@ -227,13 +265,22 @@ def main() -> None:
     parser.add_argument("--zone-id", type=int, help="Zone ID to associate segments with")
     parser.add_argument("--limit", type=int, help="Max candidates to load")
     parser.add_argument(
+        "--if-empty",
+        action="store_true",
+        help="Skip seeding if segments already exist for the city in the database",
+    )
+    parser.add_argument(
         "--db-url",
-        default="postgresql://postgres:postgres@localhost:54329/floodroute",
-        help="PostgreSQL connection URL",
+        default=None,
+        help="PostgreSQL connection URL (defaults to DATABASE_URL environment variable)",
     )
     args = parser.parse_args()
 
-    with psycopg.connect(args.db_url) as conn:
+    url = (args.db_url or os.environ.get("DATABASE_URL") or "").strip()
+    if not url:
+        url = "postgresql://postgres:postgres@localhost:54329/floodroute"
+
+    with psycopg.connect(url) as conn:
         stats = seed_inventory(
             conn,
             city=args.city,
@@ -241,12 +288,16 @@ def main() -> None:
             matched_path=args.matched,
             zone_id=args.zone_id,
             limit=args.limit,
+            if_empty=args.if_empty,
         )
-        print(f"Seeded {stats.city} (city_id={stats.city_id}):")
-        print(f"  Segments: {stats.inserted_segments}")
-        print(f"  Static entries: {stats.inserted_static}")
-        print(f"  Matched hotspots: {stats.matched_hotspots}")
-        print(f"  By structure: {stats.by_structure}")
+        if stats.inserted_segments > 0:
+            print(f"Seeded {stats.city} (city_id={stats.city_id}):")
+            print(f"  Segments: {stats.inserted_segments}")
+            print(f"  Static entries: {stats.inserted_static}")
+            print(f"  Matched hotspots: {stats.matched_hotspots}")
+            print(f"  By structure: {stats.by_structure}")
+        else:
+            print(f"City {stats.city} (city_id={stats.city_id}) already has {stats.total_candidates} segments; skipped.")
 
 
 if __name__ == "__main__":

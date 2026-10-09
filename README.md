@@ -92,18 +92,17 @@ The backend now builds and runs as a local Docker stack: API, PostGIS, worker, a
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Krishpotanwar/flood-route)
 
-The `render.yaml` provisions a free Docker web service and a managed PostgreSQL 16 database in Singapore. Migrations run automatically at startup. After the first successful deploy:
+The `render.yaml` provisions a free Docker web service and a managed PostgreSQL 16 database in Singapore. Container startup automatically applies migrations, seeds the 5,383 Bengaluru road inventory segments idempotently, and primes initial offline closure snapshots with zero manual shell commands required.
 
-1. Open the Render dashboard, set `FLOODROUTE_OPERATOR_TOKENS` to a JSON object:
+Optional post-deploy configuration:
+
+1. (Optional) In the Render dashboard, set `FLOODROUTE_OPERATOR_TOKENS` to a JSON object to enable authenticated operator endpoints:
    ```
    {"operator-one": "<64-hex-chars>", "operator-two": "<64-hex-chars>"}
    ```
    Generate values: `python3 -c 'import json,secrets; print(json.dumps({"operator-one": secrets.token_hex(32), "operator-two": secrets.token_hex(32)}))'`
-2. Open the Render Shell and seed the Bengaluru road inventory:
-   ```sh
-   python -m floodroute.inventory.seed --city bengaluru
-   ```
-3. Copy the service URL (e.g. `https://floodroute-api.onrender.com`) and add it as `VITE_API_BASE_URL` in the Vercel project environment, then redeploy the frontend.
+   (Citizen endpoints function normally without this variable; operator endpoints return HTTP 503 until set.)
+2. Copy the service URL (e.g. `https://floodroute-api.onrender.com`) and add it as `VITE_API_BASE_URL` in the Vercel project environment, then redeploy the frontend.
 
 The free Render tier sleeps after 15 minutes idle and the Postgres instance expires after 30 days. These limits are suitable for a hackathon demo. For sustained use, upgrade to a paid plan or use the Docker Compose stack on a VM with self-hosted Valhalla routing.
 

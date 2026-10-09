@@ -37,7 +37,7 @@ services:
 
   migrate:
     <<: *backend
-    command: ["python", "-m", "floodroute.db.migrate"]
+    command: ["python", "-m", "floodroute.startup"]
     depends_on:
       db:
         condition: service_healthy
