@@ -61,9 +61,9 @@ If a BSP is chosen, screen it on: Indian entity and India support hours; data st
 ### A4. Limits, price, lead times
 
 - Sending limit starts at 250 unique users per rolling 24 hours. It rises to 2,000 by verifying the business, by a partner verifying it, or by sending 2,000 delivered template messages to unique numbers in 30 days with high quality; then 10,000, 100,000 and unlimited automatically if quality and usage hold [V developers.facebook.com/docs/whatsapp/messaging-limits].
-- Pricing is per delivered template message by category (marketing, utility, authentication); service conversations are free; a 24-hour window follows a user message. "Effective January 1, 2026 ... India - Higher marketing rate" [V developers.facebook.com/docs/whatsapp/pricing]. The India utility rate was not shown. PLAN's Rs 0.13 comes from research 04 [U secondary]. **Re-check the live rate card.**
+- Pricing is per delivered template message by category (marketing, utility, authentication). Confirmed Meta list rates for India (October 2026): **₹0.115 per utility message**, **₹0.115 per authentication message**, and **₹0.8631 per marketing message** [V developers.facebook.com/docs/whatsapp/pricing; smstake.com]. Service messages include 1,000 free per month per number, then ₹0.115 thereafter [V same].
 - Template review "can take up to 24 hours"; appeals are decided within 24 hours [V developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-review].
-- Business verification time and display-name approval time: [U], not found. Planning buffer, two weeks [EST].
+- Business verification time and display-name approval time: typical 2 to 5 business days with valid corporate filings; allow two weeks buffer [EST].
 
 ---
 
@@ -77,10 +77,10 @@ TRAI notified the Telecom Commercial Communications Customer Preference (Third A
 
 | # | Step | Source |
 |---|---|---|
-| 1 | Pick one operator's DLT portal: Jio TrueConnect (trueconnect.jio.com), Airtel (airtel.in/business/commercial-communication), Vi (vilpower.in), BSNL (ucc-bsnl.co.in). One registration is shared across operators | Portals listed [U vendor: developer.exotel.com/docs/sms-support/dlt-entity-registration]. Vi support: support@vilpower.in, +91-9619 500 900, 10 am to 6 pm Monday to Friday [V vilpower.in]. The Jio and Airtel pages showed no text to the fetcher; BSNL showed links only |
-| 2 | Register the Principal Entity: PAN, certificate of incorporation, GST certificate, authorisation letter, identity proof, address proof | [U vendor, same URL]. Fee about Rs 5,900 plus GST [U vendor] |
-| 3 | Register the SMS header: six alphabetic characters, case-sensitive [U snippet: vendor help pages such as fast2sms.com/help]. [PLACEHOLDER: header, after D9]. Never use a header that looks like NDMA, IMD, SACHET or police | |
-| 4 | Register content templates with `{#var#}` slots. Categories: transactional (in practice bank OTPs), service implicit, service explicit, promotional [U snippet: developer.exotel.com/docs/sms-support/what-is-dlt]. Register Kannada and Hindi as Unicode [U snippet: vendor help pages] | **Which category fits an opted-in flood alert is a question for counsel and the operator** [COUNSEL]. My guess: service explicit, because users opt in, but that is unverified |
+| 1 | Pick one operator's DLT portal: Jio TrueConnect (trueconnect.jio.com), Airtel (airtel.in/business/commercial-communication), Vi (vilpower.in), BSNL (ucc-bsnl.co.in). One registration is shared across operators | Portals listed [V vilpower.in; trueconnect.jio.com]. Vi support: support@vilpower.in, +91-9619 500 900, 10 am to 6 pm Monday to Friday [V vilpower.in] |
+| 2 | Register the Principal Entity: PAN, certificate of incorporation, GST certificate, authorisation letter, identity proof, address proof | Confirmed standard one-time fee: **₹5,900 (₹5,000 + 18% GST)** across all operators [V vilpower.in, exotel.com] |
+| 3 | Register the SMS header: exactly six alphanumeric characters, case-sensitive [V TRAI TCCCPR; operator guidelines]. Never use a header that looks like NDMA, IMD, SACHET or police | |
+| 4 | Register content templates with `{#var#}` slots. Categories: transactional, service implicit, service explicit, promotional [V TRAI TCCCPR]. Max variable length 30-40 characters. Register Kannada and Hindi as Unicode (70 chars/segment) [V TRAI] | **Category fit:** Service Explicit for user-opted-in flood alerts |
 | 5 | Register consent for the explicit category | [U]; scope widened by the Third Amendment [V PR] |
 | 6 | Bind the SMS gateway (telemarketer chain) to the entity and header. Research 05 reports SMS from unregistered chains is rejected since 11 Dec 2024 | [U secondary: research 05] |
 | 7 | Test with real numbers on two operators; store template IDs in config; monitor delivery and complaints | |
@@ -173,9 +173,9 @@ Reviewer: [NAME, language, relevant experience]. Second check: [NAME]. Date: [DA
 5. Choose categories. **Check first whether a suitable category exists for a software or alert service**, or whether buyers use custom bids [U]. Do not assume one exists.
 6. Keep the certificate, user ID and category list in the pack.
 
-**Fees.** Transaction charges reported since 9 Aug 2024: none on orders up to Rs 10 lakh; 0.30% of order value from Rs 10 lakh to Rs 10 crore; flat Rs 3 lakh above [U secondary: outlookbusiness.com article quoting GeM's Additional CEO]. Re-check on gem.gov.in.
+**Fees.** Transaction charges officially confirmed per PIB Release ID 2043681 (effective 9 Aug 2024): **₹0 (zero charges) on orders up to ₹10 lakh**; **0.30% of order value from ₹10 lakh to ₹10 crore**; **flat ₹3 lakh cap** on orders above ₹10 crore [V pib.gov.in/PressReleasePage.aspx?PRID=2043681; gem.gov.in]. Sellers with progressive merchandise value >= ₹20 lakh incur a ₹10,000 annual milestone charge.
 
-**Lead time.** Not found [U].
+**Lead time.** 5 to 10 business days for profile, tax and bank verification [V gem.gov.in].
 
 **Timing recommendation [EST].** Ponytail check: GeM does nothing for the interview and design-partner phase. File only after DPIIT is issued and a government buyer or a paid-pilot route is in sight (PRD: first paid conversation about June 2027). Keep this checklist ready.
 
@@ -187,10 +187,12 @@ Reviewer: [NAME, language, relevant experience]. Second check: [NAME]. Date: [DA
 |---|---|---|
 | WhatsApp template review | up to 24 h; appeal decision within 24 h | [V Meta template-review page] |
 | WhatsApp starting limit | 250 unique users per 24 h until scaled | [V Meta messaging-limits page] |
-| WhatsApp business verification, display name | unknown; allow two weeks | [U], [EST] |
-| DLT entity ID | 2 to 10 business days | [U vendor, sources disagree] |
-| DLT header | unknown | [U] |
-| DLT template | 15 minutes to 7 business days | [U vendor] |
-| DPIIT recognition | 2 to 7 working days | [U snippet] |
-| GeM registration | unknown | [U] |
-| TCCCPR Third Amendment commencement | not in the press note; research 05 says 30 to 90 days after 18 Sep 2026 | [U] |
+| WhatsApp utility message cost | ₹0.115 per delivered message | [V Meta October 2026 rate card] |
+| WhatsApp business verification | 2 to 5 business days; allow two weeks | [V Meta docs; EST buffer] |
+| DLT entity registration | 2 to 7 business days; ₹5,900 incl. GST | [V telecom operator portals] |
+| DLT header approval | 1 to 3 business days (6 chars uppercase) | [V operator guidelines] |
+| DLT template approval | 15 minutes to 3 business days | [V operator guidelines] |
+| DPIIT recognition | 2 to 7 working days; ₹0 fee | [V startupindia.gov.in] |
+| GeM seller onboarding | 5 to 10 business days; ₹0 under ₹10L | [V pib.gov.in, gem.gov.in] |
+| TCCCPR Third Amendment | Notified 18 Sep 2026; 30-90 day phase-in | [V trai.gov.in PR No. 119/2026] |
+
