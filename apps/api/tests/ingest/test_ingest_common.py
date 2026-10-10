@@ -98,7 +98,7 @@ def test_503_is_retried_with_exponential_backoff():
     answers = iter([httpx.Response(503), httpx.Response(502), httpx.Response(200, content=b"ok")])
     http = make(lambda r: (stamps.append(clock.t), next(answers))[1], clock)
     assert http.get(URL, 100) == b"ok"
-    assert clock.sleeps == [2.0, 4.0] and [t for t in stamps] == [0.0, 2.0, 6.0]
+    assert clock.sleeps == [2.0, 4.0] and list(stamps) == [0.0, 2.0, 6.0]
 
 
 def test_retries_are_bounded():

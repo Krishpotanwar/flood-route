@@ -33,7 +33,7 @@ SAMPLE, TRACE = RECORDING["route"], RECORDING["trace"]
 SHAPE = SAMPLE["trip"]["legs"][0]["shape"]
 POINTS = decode_polyline6(SHAPE)
 LOCATIONS = RECORDING["route_request"]["locations"]
-O, D = [(p["lat"], p["lon"]) for p in LOCATIONS]
+O, D = [(p["lat"], p["lon"]) for p in LOCATIONS]  # noqa: E741
 
 
 def segment_of(way_id, geometry):

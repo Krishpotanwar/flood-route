@@ -109,7 +109,7 @@ async def upload_photo(
         try:
             declared_n = int(declared)
         except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid Content-Length")
+            raise HTTPException(status_code=400, detail="Invalid Content-Length") from None
         if declared_n > MAX_PHOTO_BYTES:
             raise HTTPException(
                 status_code=413,
@@ -119,7 +119,7 @@ async def upload_photo(
     try:
         proc = await run_in_threadpool(sanitize_photo, raw_bytes)
     except PhotoSanitizationError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
     storage_dir = Path(__file__).resolve().parents[4] / "data" / "photos"
     await run_in_threadpool(store_photo, proc, storage_dir)

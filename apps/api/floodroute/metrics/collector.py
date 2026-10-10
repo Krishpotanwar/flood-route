@@ -50,7 +50,7 @@ class Counter:
             if not self._values:
                 lines.append(f"{self.name} 0.0")
             for key, val in sorted(self._values.items()):
-                label_dict = dict(zip(self.label_names, key)) if self.label_names else None
+                label_dict = dict(zip(self.label_names, key, strict=True)) if self.label_names else None
                 lines.append(f"{self.name}{_format_labels(label_dict)} {val}")
         return lines
 
@@ -91,7 +91,7 @@ class Gauge:
             if not self._values:
                 lines.append(f"{self.name} 0.0")
             for key, val in sorted(self._values.items()):
-                label_dict = dict(zip(self.label_names, key)) if self.label_names else None
+                label_dict = dict(zip(self.label_names, key, strict=True)) if self.label_names else None
                 lines.append(f"{self.name}{_format_labels(label_dict)} {val}")
         return lines
 
@@ -113,7 +113,7 @@ class Histogram:
         self.label_names = label_names
         self.buckets = tuple(sorted(buckets))
         self._counts: dict[tuple[Any, ...], dict[float, int]] = defaultdict(
-            lambda: {b: 0 for b in self.buckets}
+            lambda: dict.fromkeys(self.buckets, 0)
         )
         self._sums: dict[tuple[Any, ...], float] = defaultdict(float)
         self._totals: dict[tuple[Any, ...], int] = defaultdict(int)
@@ -137,7 +137,7 @@ class Histogram:
                 lines.append(f"{self.name}_count 0")
                 lines.append(f"{self.name}_sum 0.0")
             for key in all_keys:
-                base_labels = dict(zip(self.label_names, key)) if self.label_names else {}
+                base_labels = dict(zip(self.label_names, key, strict=True)) if self.label_names else {}
                 b_counts = self._counts[key]
                 cumulative = 0
                 for b in self.buckets:

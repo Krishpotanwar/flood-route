@@ -206,7 +206,7 @@ def test_note_closed_evicts_expired_entries_and_caps_size():
     stale = TripState(closed_at={3: now - mins(16), 4: now - mins(14)})
     pruned = note_closed(stale, [], now)
     assert dict(pruned.closed_at) == {4: now - mins(14)}
-    big = TripState(closed_at={i: now for i in range(300)})
+    big = TripState(closed_at=dict.fromkeys(range(300), now))
     capped = note_closed(big, [1000], now, max_entries=10)
     assert len(capped.closed_at) == 10
     assert 1000 in capped.closed_at

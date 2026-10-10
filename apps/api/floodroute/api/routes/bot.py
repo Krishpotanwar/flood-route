@@ -162,4 +162,4 @@ def render_sms_endpoint(req: SMSRenderRequest) -> dict[str, Any]:
     try:
         return render_sms(req.template_key, req.variables, auto_truncate=req.auto_truncate)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e

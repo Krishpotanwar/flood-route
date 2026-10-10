@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Callable, Generator, Sequence
-from typing import Annotated
+from typing import Annotated, Any
 
 import httpx
 import psycopg
@@ -29,7 +29,7 @@ from floodroute.route.valhalla import ValhallaRouter
 from floodroute.score.config import Config as ScoreConfig
 from floodroute.score.config import load_config
 
-RouterCallable = Callable[[LatLon, LatLon, str, any, Sequence[Polygon]], Route | None]
+RouterCallable = Callable[[LatLon, LatLon, str, Any, Sequence[Polygon]], Route | None]
 
 # Forecast rows for one segment/vclass should come from a single scoring run.
 # Past this updated_at spread the horizons mix runs and the row is unusable.

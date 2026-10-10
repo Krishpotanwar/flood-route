@@ -91,7 +91,7 @@ def build(rows, city, geocoder):
         pts.append((la, lo) if la is not None and lo is not None and inside(la, lo, box) else None)
     toks = [tokens(r["name"]) for r in rows]
     names_at = defaultdict(set)
-    for p, r in zip(pts, rows):
+    for p, r in zip(pts, rows, strict=True):
         if p:
             names_at[p].add(r["name"].strip().lower())
 

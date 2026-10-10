@@ -339,7 +339,9 @@ def test_load_run_input_with_populated_tables(app_db):
     app_db.execute("insert into tenant (tenant_id, name, kind) values (1, 'Test Admin', 'admin')")
     app_db.execute(
         """
-        insert into override (tenant_id, segment_id, action, reason, operator_id, starts_at, expires_at)
+        insert into override (
+            tenant_id, segment_id, action, reason, operator_id, starts_at, expires_at
+        )
         values (1, 1001, 'close', 'Flooded water logging', 'op-42', %s, %s)
         """,
         (now - timedelta(minutes=5), now + timedelta(hours=2)),
@@ -431,11 +433,14 @@ def test_execute_score_run_end_to_end(app_db):
 
     # 2. Verify segment_risk has rows
     cur = app_db.execute(
-        "select segment_id, vclass, horizon_min, state, p_unusable, confidence from segment_risk where segment_id = 2001"
+        """
+        select segment_id, vclass, horizon_min, state, p_unusable, confidence
+        from segment_risk where segment_id = 2001
+        """
     )
     risk_rows = cur.fetchall()
     assert len(risk_rows) == len(SUPPORTED_VCLASSES) * len(cfg.horizons_min)
-    for sid, vclass, h, state, p, conf in risk_rows:
+    for sid, _vclass, _h, state, p, conf in risk_rows:
         assert sid == 2001
         assert state in ("clear", "watch", "risky", "impassable")
         assert 0.0 <= p <= 1.0
@@ -451,7 +456,7 @@ def test_execute_score_run_end_to_end(app_db):
     )
     audit_rows = cur.fetchall()
     assert len(audit_rows) > 0
-    for actor, action, seg_id, new_state in audit_rows:
+    for actor, action, seg_id, _new_state in audit_rows:
         assert actor == f"system:scoring:{cfg.model_version}"
         assert action == "state_change"
         assert seg_id == 2001
@@ -481,7 +486,8 @@ def test_persist_run_result_upsert_and_history(app_db):
     )
     # Light rain initially
     app_db.execute(
-        "insert into rain_obs (source, zone_id, ts, mm_60m, mm_24h) values ('gauge', 1, %s, 1.0, 2.0)",
+        "insert into rain_obs (source, zone_id, ts, mm_60m, mm_24h) "
+        "values ('gauge', 1, %s, 1.0, 2.0)",
         (now1,),
     )
 
@@ -490,7 +496,8 @@ def test_persist_run_result_upsert_and_history(app_db):
 
     # Add torrential rain
     app_db.execute(
-        "insert into rain_obs (source, zone_id, ts, mm_60m, mm_24h) values ('gauge', 1, %s, 90.0, 150.0)",
+        "insert into rain_obs (source, zone_id, ts, mm_60m, mm_24h) "
+        "values ('gauge', 1, %s, 90.0, 150.0)",
         (now2,),
     )
 
@@ -505,7 +512,8 @@ def test_persist_run_result_upsert_and_history(app_db):
 
     # segment_risk_history must contain rows from both runs
     cur = app_db.execute(
-        "select run_id, count(*) from segment_risk_history where segment_id = 3001 group by run_id order by run_id"
+        "select run_id, count(*) from segment_risk_history "
+        "where segment_id = 3001 group by run_id order by run_id"
     )
     history_counts = cur.fetchall()
     assert len(history_counts) == 2

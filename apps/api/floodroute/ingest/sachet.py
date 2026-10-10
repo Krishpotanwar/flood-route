@@ -328,7 +328,7 @@ def _references(text: str | None) -> list[dict]:
     for token in _limit((text or "").split(), MAX_REFERENCES, "references"):
         parts = token.split(",")
         out.append(
-            dict(zip(("sender", "identifier", "sent"), parts))
+            dict(zip(("sender", "identifier", "sent"), parts, strict=True))
             if len(parts) == 3
             else {"raw": token[:300]}
         )

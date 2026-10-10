@@ -166,7 +166,7 @@ def test_evidence_effect_decays_toward_zero_at_later_horizons():
     assert all(a > b > 0 for a, b in itertools.pairwise(gains))  # strictly fading
     assert gains[-1] < 0.2 * gains[0]
     # the fade matches exp(-h / horizon_tau) for the floor that dominates here
-    for h, gain in zip(CFG.horizons_min, gains):
+    for h, gain in zip(CFG.horizons_min, gains, strict=True):
         assert gain == pytest.approx(math.exp(-h / CFG.evidence.horizon_tau_min) * (0.9 - BASE))
 
 

@@ -410,7 +410,7 @@ def _handle_location_check(
             )
         )
 
-    for sid, rclass, state, p, d50, dist_m in rows[:3]:
+    for sid, rclass, state, _p, d50, dist_m in rows[:3]:
         dist_str = f"{int(dist_m)}m"
         depth_str = f"~{int(d50)}cm" if d50 else ""
         lines.append(f"- Road {sid} ({rclass}, {dist_str}): {state.upper()} {depth_str}".strip())

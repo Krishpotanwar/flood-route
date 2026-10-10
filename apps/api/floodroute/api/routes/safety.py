@@ -85,7 +85,7 @@ def engage_emergency_kill_switch(
             "record": record.to_dict(),
         }
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
 
 @router.post("/kill-switch/{switch_id}/disengage")
@@ -116,7 +116,7 @@ def disengage_emergency_kill_switch(
             "record": record.to_dict(),
         }
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
 
 @router.get("/kill-switch/history")
