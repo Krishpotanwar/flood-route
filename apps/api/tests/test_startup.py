@@ -1,4 +1,6 @@
-"""Tests for automated startup orchestration (database migrations, inventory seeding, snapshot priming)."""
+"""Tests for automated startup orchestration:
+migrations, inventory seeding, snapshot priming.
+"""
 
 from __future__ import annotations
 
@@ -9,7 +11,7 @@ from floodroute.startup import main, run_startup
 
 
 def test_startup_orchestration_full_flow(monkeypatch):
-    """Test full startup orchestration runs migrations, seeds inventory, primes snapshots, and checks tokens."""
+    """Test full startup orchestration runs migrations, seeds, primes snapshots."""
     monkeypatch.setenv("DATABASE_URL", "postgresql://test:test@localhost:5432/test")
     monkeypatch.setenv("FLOODROUTE_OPERATOR_TOKENS", json.dumps({"op-alpha": "secret-key-12345"}))
 
@@ -127,7 +129,10 @@ def test_startup_snapshot_failure_is_non_fatal(monkeypatch):
         patch("floodroute.startup.migrate"),
         patch("floodroute.startup.psycopg.connect", mock_connect),
         patch("floodroute.startup.seed_inventory"),
-        patch("floodroute.startup.generate_city_closure_snapshot", side_effect=RuntimeError("Snapshot error")),
+        patch(
+            "floodroute.startup.generate_city_closure_snapshot",
+            side_effect=RuntimeError("Snapshot error"),
+        ),
     ):
         summary = run_startup()
         assert summary["snapshot_errors"] >= 1

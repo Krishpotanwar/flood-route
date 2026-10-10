@@ -53,7 +53,7 @@ def test_live_closure_avoidance_and_reroute(app_db, monkeypatch):
         counts = Counter(baseline_ways)
         total_m = sum(edge.length_m for edge in baseline.edges)
         distance_m, candidates = 0.0, []
-        for i, (way_id, edge) in enumerate(zip(baseline_ways, baseline.edges)):
+        for i, (way_id, edge) in enumerate(zip(baseline_ways, baseline.edges, strict=True)):
             if (
                 counts[way_id] == 1
                 and 50 <= edge.length_m <= 300

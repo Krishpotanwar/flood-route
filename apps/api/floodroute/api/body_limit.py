@@ -12,15 +12,17 @@ class RequestBodyLimit:
     def __init__(self, app: ASGIApp):
         self.app = app
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
-            return await self.app(scope, receive, send)
+            await self.app(scope, receive, send)
+            return
         path = scope["path"]
         root = scope.get("root_path", "").rstrip("/")
         if root and (path == root or path.startswith(root + "/")):
             path = path[len(root):]
         if not path.startswith("/v1/"):
-            return await self.app(scope, receive, send)
+            await self.app(scope, receive, send)
+            return
         limit = MAX_PHOTO_BYTES if path.rstrip("/") == "/v1/reports/photo" else JSON_BODY_BYTES
         body = bytearray()
         while True:
@@ -30,7 +32,8 @@ class RequestBodyLimit:
             chunk = message.get("body", b"")
             if len(body) + len(chunk) > limit:
                 response = JSONResponse({"detail": "Request body exceeds limit"}, status_code=413)
-                return await response(scope, receive, send)
+                await response(scope, receive, send)
+                return
             body.extend(chunk)
             if not message.get("more_body", False):
                 break
@@ -44,3 +47,4 @@ class RequestBodyLimit:
             return await receive()
 
         await self.app(scope, replay, send)
+

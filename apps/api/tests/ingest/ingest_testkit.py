@@ -6,7 +6,6 @@ carries `<copyright>public domain</copyright>`. fixtures/metno holds one real Lo
 """
 
 # Keyword dict(...) reads better than literals in these tables.
-# ruff: noqa: C408
 
 import contextlib
 from datetime import UTC, datetime

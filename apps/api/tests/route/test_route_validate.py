@@ -416,7 +416,9 @@ def test_default_route_never_has_a_sampled_p_at_or_above_the_limit():
 
 
 def _cross(pa, pb, thr, a, b):  # independent maths: where logit-linear p from pa to pb hits thr
-    lg = lambda p: math.log(p / (1 - p))
+    def lg(p: float) -> float:
+        return math.log(p / (1 - p))
+
     return a + (lg(thr) - lg(pa)) / (lg(pb) - lg(pa)) * (b - a)
 
 

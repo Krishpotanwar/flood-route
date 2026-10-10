@@ -180,7 +180,7 @@ def test_route_no_path_and_exclusion_limits_return_none(code):
 
 def test_naive_depart_raises_instead_of_reading_as_utc():
     with pytest.raises(ValueError, match="timezone-aware"):
-        request_body(O, D, "car", depart=datetime(2026, 10, 5, 12, 0))  # noqa: DTZ001
+        request_body(O, D, "car", depart=datetime(2026, 10, 5, 12, 0))
 
 
 @pytest.mark.parametrize(

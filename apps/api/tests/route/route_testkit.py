@@ -35,10 +35,10 @@ def route(*edges: Edge) -> Route:
 
 def risk(p, *, issued: datetime = T0, states=None, confidence="medium", age=60) -> SegmentRisk:
     """p is one number (flat over the horizons) or {horizon: p}."""
-    ps = {h: p for h in HORIZONS} if isinstance(p, (int, float)) else dict(p)
+    ps = dict.fromkeys(HORIZONS, p) if isinstance(p, (int, float)) else dict(p)
     sts = states or {h: state_from_p(v) for h, v in ps.items()}
     if isinstance(sts, str):
-        sts = {h: sts for h in HORIZONS}
+        sts = dict.fromkeys(HORIZONS, sts)
     return SegmentRisk(issued, ps, dict(sts), confidence, age)
 
 

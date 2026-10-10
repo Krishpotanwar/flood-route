@@ -1,7 +1,6 @@
 """SACHET adapter: the CAP parser on real fixtures, hostile input, and the ingest loop on fakes."""
 
 # Keyword dict(...) reads better than literals in these tables.
-# ruff: noqa: C408
 
 import itertools
 import math
@@ -343,9 +342,9 @@ def test_invalid_alerts_are_refused(kwargs, message):
 
 
 def test_other_cap_versions_and_documents_are_refused():
-    with pytest.raises(Rejected, match="not a CAP 1.2"):
+    with pytest.raises(Rejected, match=r"not a CAP 1\.2"):
         sachet.parse_cap(cap_xml().replace(b"cap:1.2", b"cap:1.1"))
-    with pytest.raises(Rejected, match="not a CAP 1.2"):
+    with pytest.raises(Rejected, match=r"not a CAP 1\.2"):
         sachet.parse_cap(b"<alert><identifier>x</identifier></alert>")
 
 

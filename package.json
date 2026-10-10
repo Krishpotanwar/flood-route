@@ -4,6 +4,6 @@
   "packageManager": "pnpm@10.28.0",
   "engines": { "node": ">=22" },
   "scripts": {
-    "check": "pnpm --filter ui check"
+    "check": "pnpm --filter @floodroute/ui check && pnpm --filter @floodroute/citizen check"
   }
 }

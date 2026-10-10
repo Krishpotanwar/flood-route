@@ -48,7 +48,7 @@ def note_closed(
     Entries older than `closed_memory_s` are evicted and the map is capped at
     `max_entries` (newest win), so long trips cannot grow the payload without bound.
     """
-    merged = {**state.closed_at, **{s: now for s in segment_ids}}
+    merged = {**state.closed_at, **dict.fromkeys(segment_ids, now)}
     limit = timedelta(seconds=cfg.closed_memory_s)
     fresh = {s: t for s, t in merged.items() if now - t < limit}
     if len(fresh) > max_entries:
@@ -59,7 +59,7 @@ def note_closed(
 def _in_commit_zone(current: Assessment, cfg: Config) -> bool:
     """FR-RT6: a flooded edge starts within commit_zone_m and no junction offers a way off first."""
     dist = 0.0
-    for edge, check in zip(current.route.edges, current.checks):
+    for edge, check in zip(current.route.edges, current.checks, strict=True):
         if check.violation:
             return dist <= cfg.commit_zone_m
         if edge.turn_off_after:

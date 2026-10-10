@@ -194,8 +194,8 @@ def test_reseeding_synthetic_hotspots_preserves_identity_and_retires_rejected_ro
     path = tmp_path / "bengaluru.csv"
     fields = ["name", "lat", "lon", "raw_text", "source_url", "geocode_confidence", "needs_review"]
     points = [
-        dict(zip(fields, ["Point A", "12.97", "77.60", "underpass", "https://example.org/a", "high", "false"])),
-        dict(zip(fields, ["Point B", "12.98", "77.61", "dip", "https://example.org/b", "medium", "false"])),
+        dict(zip(fields, ["Point A", "12.97", "77.60", "underpass", "https://example.org/a", "high", "false"], strict=True)),
+        dict(zip(fields, ["Point B", "12.98", "77.61", "dip", "https://example.org/b", "medium", "false"], strict=True)),
     ]
 
     def write_rows(rows):

@@ -38,7 +38,7 @@ def test_style_rules_no_dashes_plain_text_short_sentences(lang):
 
 def test_every_template_renders_with_exactly_its_placeholders():
     for mid, text in EN.items():
-        params = {name: "7" for name in placeholders(text)}
+        params = dict.fromkeys(placeholders(text), "7")
         out = say(mid, "en", **params)
         assert "{" not in out and "}" not in out, mid
 

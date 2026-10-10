@@ -676,7 +676,7 @@ def test_photo_upload_rejects_wrong_type_and_oversize(client):
 
 def test_photo_allowlist_drops_mpo():
     assert "MPO" not in ALLOWED_FORMATS
-    assert ALLOWED_FORMATS == {"JPEG", "PNG", "WEBP"}
+    assert {"JPEG", "PNG", "WEBP"} == ALLOWED_FORMATS
 
 
 # ---- I18 + I19: metrics ----------------------------------------------------------

@@ -32,7 +32,11 @@ def test_prune_retention_purges_old_route_decisions_and_reports(app_db):
     app_db.execute(
         """
         insert into zone (zone_id, city_id, geom, params)
-        values (1, 1, 'SRID=4326;MULTIPOLYGON(((77.5 12.9, 77.7 12.9, 77.7 13.1, 77.5 13.1, 77.5 12.9)))', '{}')
+        values (
+            1, 1,
+            'SRID=4326;MULTIPOLYGON(((77.5 12.9, 77.7 12.9, 77.7 13.1, 77.5 13.1, 77.5 12.9)))',
+            '{}'
+        )
         """
     )
     app_db.execute(
@@ -233,8 +237,9 @@ def test_prune_retention_deactivates_expired_watches(app_db):
     now = datetime.now(UTC)
     old_id, live_id = uuid4(), uuid4()
     app_db.execute(
-        "insert into route_decision (decision_id, ts, vclass, depart_at, model_version, no_safe_route)"
-        " values (%s, %s, 'car', %s, 'v0.0.1', false), (%s, %s, 'car', %s, 'v0.0.1', false)",
+        "insert into route_decision "
+        "(decision_id, ts, vclass, depart_at, model_version, no_safe_route) "
+        "values (%s, %s, 'car', %s, 'v0.0.1', false), (%s, %s, 'car', %s, 'v0.0.1', false)",
         (old_id, now, now, live_id, now, now),
     )
     app_db.execute(
@@ -264,7 +269,10 @@ def _score_step(worker, now, freeze_record, changes, alerts):
         patch("floodroute.worker.run_ingest", return_value=0),
         patch("floodroute.worker.execute_score_run") as mock_score,
         patch("floodroute.worker.prune_retention"),
-        patch("floodroute.worker.generate_city_closure_snapshot", return_value={"feature_count": 0}),
+        patch(
+            "floodroute.worker.generate_city_closure_snapshot",
+            return_value={"feature_count": 0},
+        ),
         patch("floodroute.worker.get_active_kill_switch", return_value=freeze_record),
         patch("floodroute.worker.evaluate_route_watches", return_value=alerts) as mock_evaluate,
         patch("floodroute.worker.dispatch_event") as mock_dispatch,

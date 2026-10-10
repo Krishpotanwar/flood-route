@@ -10,6 +10,7 @@ import { CITY_PRESETS, RouteForm } from "./components/RouteForm";
 import type { ClosureSnapshot, HealthResponse, Language, LatLon, OfflineReportPayload, PlannedRoute, RerouteResponse, RiskState, RoutePlanResponse, Theme, VehicleClass } from "./types";
 import { apiUrl, fetchClosureSnapshot, flushOfflineReports, formatConditionsAsOf, queueOfflineReport, tryRegisterBackgroundSync } from "./utils/offline";
 import { createDemoRoute, createDemoStep } from "./utils/demo";
+import { getCityDisplayName } from "./utils/cities";
 
 const STATUS_LABELS: Record<RiskState, string> = { clear: "Clear", watch: "Watch", risky: "Likely flooded", impassable: "Closed", unknown: "No recent data" };
 const API_CONFIGURED = Boolean((import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_BASE_URL);
@@ -51,7 +52,7 @@ export const App: React.FC = () => {
   const requestId = useRef(0);
   const demoModeRef = useRef(demoMode);
   const conditionsText = snapshot ? formatConditionsAsOf(snapshot.conditions_as_of) : "No recent road data";
-  const cityName = { bengaluru: "Bengaluru", mumbai: "Mumbai", gurugram: "Gurugram" }[city] || "Bengaluru";
+  const cityName = getCityDisplayName(city);
 
   useEffect(() => { document.documentElement.setAttribute("data-theme", theme); }, [theme]);
   useEffect(() => { document.documentElement.setAttribute("lang", lang); }, [lang]);

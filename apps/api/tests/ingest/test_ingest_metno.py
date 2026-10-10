@@ -243,7 +243,7 @@ def test_a_bad_response_for_one_zone_fails_the_run_but_the_other_zones_are_store
 def test_a_point_outside_india_fails_that_zone_without_a_request():
     conn, http = FakeConn(), FakeHttp(routes((1, 12.9716, 77.5946)))
     points = [(1, 12.9716, 77.5946), (2, 77.59, 12.97)]
-    with pytest.raises(IngestError, match="zone 2: point 77.59,12.97 is outside India"):
+    with pytest.raises(IngestError, match=r"zone 2: point 77\.59,12\.97 is outside India"):
         metno.ingest(conn, http, points=points, now=NOW)
     assert http.calls == [BLR_URL] and {k[1] for k in conn.rain} == {1}
 

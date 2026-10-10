@@ -33,6 +33,20 @@ class CityMetadata:
     primary_drainage: str
     hotspot_count: int
 
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "city_id": self.city_id,
+            "display_name": self.display_name,
+            "state": self.state,
+            "bbox": list(self.bbox),
+            "center": list(self.center),
+            "hydrology_type": self.hydrology_type,
+            "rainfall_trigger_mm_h": self.rainfall_trigger_mm_h,
+            "primary_drainage": self.primary_drainage,
+            "hotspot_count": self.hotspot_count,
+        }
+
 
 CITY_REGISTRY: dict[str, CityMetadata] = {
     "bengaluru": CityMetadata(

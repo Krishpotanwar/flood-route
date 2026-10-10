@@ -253,7 +253,7 @@ def ring_from_circle(text: str) -> Ring:
     for i in range(32):
         a = 2 * math.pi * i / 32
         ring.append((lon + d * math.sin(a) / math.cos(math.radians(lat)), lat + d * math.cos(a)))
-    return ring + [ring[0]]
+    return [*ring, ring[0]]
 
 
 def parse_polygon_doc(data: bytes, identifier: str) -> tuple[list[Ring], list[str]]:
@@ -328,7 +328,7 @@ def _references(text: str | None) -> list[dict]:
     for token in _limit((text or "").split(), MAX_REFERENCES, "references"):
         parts = token.split(",")
         out.append(
-            dict(zip(("sender", "identifier", "sent"), parts))
+            dict(zip(("sender", "identifier", "sent"), parts, strict=True))
             if len(parts) == 3
             else {"raw": token[:300]}
         )
@@ -460,7 +460,7 @@ def build_row(alert: Alert, item: RssItem, xml: str, rings: list[Ring], errors: 
     try:
         wkt = to_wkt(rings)
     except Rejected as e:
-        wkt, errors = None, errors + [str(e)]
+        wkt, errors = None, [*errors, str(e)]
     raw = {
         "rss_key": item.key,
         "rss": {"guid": item.guid, "pub": item.pub.isoformat(), "author": item.author},

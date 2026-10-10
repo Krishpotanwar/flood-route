@@ -101,9 +101,9 @@ SPELL = {
 def tokens(name):
     """Distinctive lower-case tokens of a place name; single letters merge ('K R' -> 'kr')."""
     s = re.sub(r"\bward\.?\s*(?:no\.?)?\s*[-.]?\s*\d+(?:/\d+)?", " ", name.lower())
-    s = re.sub("[’'`]", "", s).replace("&", " and ")
+    s = re.sub(r"[\u2019'`]", "", s).replace("&", " and ")
     out, run = [], []
-    for t in re.findall(r"[a-z0-9]+", s) + [""]:
+    for t in [*re.findall(r"[a-z0-9]+", s), ""]:
         if len(t) == 1 and t.isalpha():
             run.append(t)
             continue

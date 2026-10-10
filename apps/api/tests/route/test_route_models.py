@@ -108,8 +108,8 @@ def test_config_rejects_values_that_would_silently_disable_a_rule(field, bad):
     ],
 )
 def test_malformed_segment_risk_fails_closed(mutate):
-    p = {h: 0.1 for h in HORIZONS}
-    s = {h: "watch" for h in HORIZONS}
+    p = dict.fromkeys(HORIZONS, 0.1)
+    s = dict.fromkeys(HORIZONS, "watch")
     mutate(p, s)
     with pytest.raises(ValueError):
         SegmentRisk(T0, p, s)
@@ -119,8 +119,8 @@ def test_segment_risk_needs_an_aware_time_and_accepts_the_bounds():
     with pytest.raises(ValueError):
         SegmentRisk(
             T0.replace(tzinfo=None),
-            {h: 0.1 for h in HORIZONS},
-            {h: "watch" for h in HORIZONS},
+            dict.fromkeys(HORIZONS, 0.1),
+            dict.fromkeys(HORIZONS, "watch"),
         )
     assert risk(0.0).p[0] == 0.0 and risk(1.0).p[120] == 1.0
 

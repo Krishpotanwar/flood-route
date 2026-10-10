@@ -9,6 +9,7 @@ import {
   latLonToCoords,
   sampleCoordinateAlongLine,
 } from "../utils/polyline";
+import { getCityCenterCoords } from "../utils/cities";
 
 export interface MapViewProps {
   theme: Theme;
@@ -58,12 +59,6 @@ export const CITY_HOTSPOTS: Record<string, Hotspot[]> = {
     { id: "narsinghpur", name: "Narsinghpur Express Corridor", coords: [76.9833, 28.4167], severity: "watch" },
     { id: "khandsa", name: "Khandsa Badshahpur Drain Breach", coords: [76.9944, 28.4278], severity: "unknown" },
   ],
-};
-
-const CITY_COORDS: Record<string, [number, number]> = {
-  bengaluru: [77.5946, 12.9716],
-  mumbai: [72.8777, 19.0760],
-  gurugram: [77.0266, 28.4595],
 };
 
 
@@ -131,7 +126,7 @@ export const MapView: React.FC<MapViewProps> = ({
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map || !mapLoaded || loadedMapRef.current !== map || activeRoute) return;
-    const center = CITY_COORDS[city] || CITY_COORDS.bengaluru;
+    const center = getCityCenterCoords(city);
     map.flyTo({ center, zoom: 12 });
   }, [city, mapLoaded, activeRoute]);
 
@@ -191,7 +186,7 @@ export const MapView: React.FC<MapViewProps> = ({
             },
           ],
         },
-        center: CITY_COORDS[city] || CITY_COORDS.bengaluru,
+        center: getCityCenterCoords(city),
         zoom: 12,
         attributionControl: false,
       });
@@ -552,7 +547,7 @@ export const MapView: React.FC<MapViewProps> = ({
     mapInstanceRef.current?.zoomOut();
   };
 
-  const center = CITY_COORDS[city] || CITY_COORDS.bengaluru;
+  const center = getCityCenterCoords(city);
   const bounds = calculateBounds([
     [center[0] - 0.025, center[1] - 0.025],
     [center[0] + 0.025, center[1] + 0.025],

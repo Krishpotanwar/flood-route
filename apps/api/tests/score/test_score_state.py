@@ -140,8 +140,9 @@ def test_reopen_invariants_hold_on_random_series(seed):
     while len(ps) < 300:
         lo, hi = rng.choice([(0, 0.2), (0.2, 0.5), (0.5, 1.0), (0.0, 1.0)])
         ps += [rng.uniform(lo, hi) for _ in range(rng.randint(3, 25))]
-    rows = drive(ps[:300])
-    for i, (p, r) in enumerate(zip(ps, rows)):
+    ps = ps[:300]
+    rows = drive(ps)
+    for i, (p, r) in enumerate(zip(ps, rows, strict=True)):
         if p >= 0.5:
             assert r.state == CLOSED
         if i and rows[i - 1].state == CLOSED and r.state != CLOSED:  # a reopen at minute i

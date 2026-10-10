@@ -196,13 +196,9 @@ def render_sms(
                 if len(curr_val) > overflow + 3:
                     adjusted_vars[v_name] = curr_val[: -overflow - 1] + "."
                     return render_sms(template_key, adjusted_vars, auto_truncate=False)
-            raise ValueError(
-                f"Rendered SMS ({actual_length} chars) exceeds DLT limit ({char_limit} chars): '{rendered}'"
-            )
-        else:
-            raise ValueError(
-                f"Rendered SMS ({actual_length} chars) exceeds DLT limit ({char_limit} chars): '{rendered}'"
-            )
+        raise ValueError(
+            f"Rendered SMS ({actual_length} chars) exceeds DLT limit ({char_limit} chars): '{rendered}'"
+        )
 
     return {
         "template_id": tmpl.template_id,
