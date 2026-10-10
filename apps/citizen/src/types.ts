@@ -81,11 +81,17 @@ export interface HealthResponse {
   sources: Record<string, { last_ok?: string; last_error?: string; lag_s?: number }>;
 }
 
+export type GeoJsonCoordinates =
+  | [number, number]
+  | [number, number][]
+  | [number, number][][]
+  | [number, number][][][];
+
 export interface ClosureFeature {
   type: "Feature";
   geometry: {
     type: string;
-    coordinates: any;
+    coordinates: GeoJsonCoordinates;
   };
   properties: {
     segment_id: number;
