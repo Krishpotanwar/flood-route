@@ -33,7 +33,7 @@ SAMPLE, TRACE = RECORDING["route"], RECORDING["trace"]
 SHAPE = SAMPLE["trip"]["legs"][0]["shape"]
 POINTS = decode_polyline6(SHAPE)
 LOCATIONS = RECORDING["route_request"]["locations"]
-O, D = [(p["lat"], p["lon"]) for p in LOCATIONS]  # noqa: E741
+O, D = [(p["lat"], p["lon"]) for p in LOCATIONS]
 
 
 def segment_of(way_id, geometry):
@@ -180,7 +180,7 @@ def test_route_no_path_and_exclusion_limits_return_none(code):
 
 def test_naive_depart_raises_instead_of_reading_as_utc():
     with pytest.raises(ValueError, match="timezone-aware"):
-        request_body(O, D, "car", depart=datetime(2026, 10, 5, 12, 0))  # noqa: DTZ001
+        request_body(O, D, "car", depart=datetime(2026, 10, 5, 12, 0))
 
 
 @pytest.mark.parametrize(

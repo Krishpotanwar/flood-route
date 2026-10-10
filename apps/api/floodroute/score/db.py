@@ -330,7 +330,7 @@ def persist_run_result(
                 r.reopen_ok_since,
             )
             cur.execute(upsert_risk_sql, args)
-            cur.execute(insert_history_sql, args + (run_id,))
+            cur.execute(insert_history_sql, (*args, run_id))
         if skipped_vclasses:
             logger.warning(
                 "persist_run_result: omitted %d rows for vehicle classes outside "

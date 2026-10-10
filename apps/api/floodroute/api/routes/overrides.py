@@ -329,7 +329,7 @@ def query_audit_log(
     actor: str | None = Query(None, description="Filter by actor pattern"),
     action: str | None = Query(None, description="Filter by action pattern"),
     limit: int = Query(50, ge=1, le=500),
-    format: str = Query("json", description="Output format: json or csv"),
+    output_format: str = Query("json", alias="format", description="Output format: json or csv"),
 ) -> Any:
     """Query append-only audit trail records for compliance and post-incident verification."""
     conditions = []
@@ -353,7 +353,7 @@ def query_audit_log(
     params.append(limit)
     rows = db.execute(sql, tuple(params)).fetchall()
 
-    if format.lower() == "csv":
+    if output_format.lower() == "csv":
         output = io.StringIO()
         writer = csv.writer(output)
         writer.writerow(["audit_id", "timestamp", "actor", "action", "segment_id", "reason"])

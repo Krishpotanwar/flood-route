@@ -116,6 +116,7 @@ class Geocoder:
                 if e.code != 429 or pause is None:
                     raise
                 self._sleep(pause)
+        raise RuntimeError(f"exhausted retries for {url}")
 
     def search(self, query):
         """Up to 3 results inside the city box (Nominatim 'bounded' viewbox), best first; [] if none."""

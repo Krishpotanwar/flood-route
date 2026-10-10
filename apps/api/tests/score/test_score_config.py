@@ -71,22 +71,22 @@ def test_vehicle_profiles_follow_prd_11_2():
 
 
 def test_unknown_key_is_rejected_at_every_level():
-    with pytest.raises(ConfigError, match="unknown keys.*bogus"):
+    with pytest.raises(ConfigError, match=r"unknown keys.*bogus"):
         parse_config(mutated(lambda d: d.update(bogus=1)))
-    with pytest.raises(ConfigError, match="states.*bogus"):
+    with pytest.raises(ConfigError, match=r"states.*bogus"):
         parse_config(mutated(lambda d: d["states"].update(bogus=1)))
-    with pytest.raises(ConfigError, match="structures.underpass.*bogus"):
+    with pytest.raises(ConfigError, match=r"structures.underpass.*bogus"):
         parse_config(mutated(lambda d: d["structures"]["underpass"].update(bogus=1)))
 
 
 def test_missing_key_is_rejected_at_every_level():
-    with pytest.raises(ConfigError, match="missing keys.*staleness"):
+    with pytest.raises(ConfigError, match=r"missing keys.*staleness"):
         parse_config(mutated(lambda d: d.pop("staleness")))
-    with pytest.raises(ConfigError, match="missing keys.*reopen_hold_s"):
+    with pytest.raises(ConfigError, match=r"missing keys.*reopen_hold_s"):
         parse_config(mutated(lambda d: d["hysteresis"].pop("reopen_hold_s")))
-    with pytest.raises(ConfigError, match="missing keys.*basis"):
+    with pytest.raises(ConfigError, match=r"missing keys.*basis"):
         parse_config(mutated(lambda d: d["vehicle_profiles"]["car"].pop("basis")))
-    with pytest.raises(ConfigError, match="missing keys.*provisional"):
+    with pytest.raises(ConfigError, match=r"missing keys.*provisional"):
         parse_config(mutated(lambda d: d["rain"].pop("provisional")))
 
 

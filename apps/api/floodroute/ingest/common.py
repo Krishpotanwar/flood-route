@@ -131,6 +131,7 @@ class Http:
                 if attempt == self.retries:
                     raise FetchError(f"{type(e).__name__}: {e}") from e
             self._sleep(min(self.backoff * 2**attempt if wait is None else wait, MAX_WAIT))
+        raise FetchError(f"exhausted {self.retries} retries for {url}")
 
     def _pace(self, host: str) -> None:
         last = self._last.get(host)

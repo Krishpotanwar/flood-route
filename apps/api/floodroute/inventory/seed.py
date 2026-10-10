@@ -152,10 +152,7 @@ def seed_inventory(
     else:
         cand_p = Path(candidates_path)
 
-    if matched_path is None:
-        match_p = inv_dir / f"{city_norm}_matched.csv"
-    else:
-        match_p = Path(matched_path)
+    match_p = inv_dir / f"{city_norm}_matched.csv" if matched_path is None else Path(matched_path)
 
     if not cand_p.exists():
         raise FileNotFoundError(f"Candidates file not found: {cand_p}")

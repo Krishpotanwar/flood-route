@@ -168,7 +168,7 @@ def test_geocode_confidence_levels():
     assert confidence(pair, "Kuvempu Circle", BLR) == ("low", "ambiguous_namesakes")
     assert (
         confidence(
-            pair[:1] + [res("Kuvempu Circle", 30, tiny, lat=13.0301)], "Kuvempu Circle", BLR
+            [*pair[:1], res("Kuvempu Circle", 30, tiny, lat=13.0301)], "Kuvempu Circle", BLR
         )[0]
         == "high"
     )
