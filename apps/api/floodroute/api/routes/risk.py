@@ -8,6 +8,7 @@ import psycopg
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from floodroute.api.deps import get_db
+from floodroute.inventory import parse_bbox
 from floodroute.score.db import SUPPORTED_HORIZONS, SUPPORTED_VCLASSES
 
 router = APIRouter(prefix="/v1", tags=["risk"])
@@ -49,29 +50,11 @@ def get_risk(
 
     if bbox:
         try:
-            parts = [float(x.strip()) for x in bbox.split(",")]
-            if len(parts) != 4:
-                raise ValueError
-            min_lon, min_lat, max_lon, max_lat = parts
-            if min_lon > max_lon or min_lat > max_lat:
-                raise ValueError
-            if not (
-                -180.0 <= min_lon <= 180.0
-                and -180.0 <= max_lon <= 180.0
-                and -90.0 <= min_lat <= 90.0
-                and -90.0 <= max_lat <= 90.0
-            ):
-                raise ValueError
-        except ValueError:
-            raise HTTPException(
-                status_code=400,
-                detail="invalid bbox; expected min_lon,min_lat,max_lon,max_lat",
-            )
-        if max_lon - min_lon > MAX_BBOX_DEG or max_lat - min_lat > MAX_BBOX_DEG:
-            raise HTTPException(
-                status_code=422,
-                detail=f"bbox wider than {MAX_BBOX_DEG} degrees; query smaller windows",
-            )
+            min_lon, min_lat, max_lon, max_lat = parse_bbox(bbox, max_deg=MAX_BBOX_DEG)
+        except ValueError as err:
+            err_str = str(err)
+            status_code = 422 if "wider than" in err_str else 400
+            raise HTTPException(status_code=status_code, detail=err_str) from None
         clauses.append("ST_Intersects(s.geom, ST_MakeEnvelope(%s, %s, %s, %s, 4326))")
         params.extend([min_lon, min_lat, max_lon, max_lat])
 

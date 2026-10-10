@@ -21,7 +21,7 @@ from floodroute.api.deps import (
     get_router,
     get_score_config,
 )
-from floodroute.inventory import CITIES, CITY_IDS
+from floodroute.inventory import get_city_id_for_point
 from floodroute.route.explain import pick_lang, say
 from floodroute.route.models import (
     Config as RouteConfig,
@@ -53,19 +53,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/v1", tags=["route"])
 
 
-def _city_id_for(lat: float, lon: float) -> int | None:
-    """City id whose bbox contains the point, else None (outside all cities)."""
-    for name, (w, s, e, n) in CITIES.items():
-        if s <= lat <= n and w <= lon <= e:
-            return CITY_IDS[name]
-    return None
-
-
 def _route_city_ids(req: RouteRequest | RerouteRequest) -> set[int]:
     """City ids touched by the request endpoints, for city-scoped freeze checks."""
     ids = set()
     for pt in (req.origin, req.destination):
-        cid = _city_id_for(pt.lat, pt.lon)
+        cid = get_city_id_for_point(pt.lat, pt.lon)
         if cid is not None:
             ids.add(cid)
     return ids
@@ -207,10 +199,10 @@ def compute_route(
             cfg=route_cfg,
         )
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
     except (RuntimeError, httpx.HTTPError, psycopg.Error) as e:
         logger.warning("Routing failure for decision %s: %s", decision_id, e)
-        raise HTTPException(status_code=502, detail="routing temporarily unavailable")
+        raise HTTPException(status_code=502, detail="routing temporarily unavailable") from e
 
     # Safety Case: a freeze engaged mid-computation still stamps the answer.
     active_kill = _active_freeze(db, req)
@@ -353,7 +345,7 @@ def compute_reroute(
         raise HTTPException(
             status_code=400,
             detail="trip_state.closed_at keys must be integer segment ids",
-        )
+        ) from None
     st = TripState(
         last_suggestion_at=state_in.last_suggestion_at,
         baseline_band=state_in.baseline_band,
@@ -386,10 +378,10 @@ def compute_reroute(
             cfg=route_cfg,
         )
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
     except (RuntimeError, httpx.HTTPError, psycopg.Error) as e:
         logger.warning("Reroute failure for decision %s: %s", decision_id, e)
-        raise HTTPException(status_code=502, detail="routing temporarily unavailable")
+        raise HTTPException(status_code=502, detail="routing temporarily unavailable") from e
 
     if _active_freeze(db, req) is not None:
         return _frozen_reroute_response(
@@ -472,8 +464,8 @@ def watch_route_endpoint(
     except ValueError as e:
         err_msg = str(e)
         if "not found" in err_msg.lower():
-            raise HTTPException(status_code=404, detail=err_msg)
-        raise HTTPException(status_code=400, detail=err_msg)
+            raise HTTPException(status_code=404, detail=err_msg) from e
+        raise HTTPException(status_code=400, detail=err_msg) from e
 
 
 @router.get("/routes/{decision_id}/watch", response_model=WatchResponse)

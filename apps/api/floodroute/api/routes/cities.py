@@ -22,22 +22,7 @@ router = APIRouter(prefix="/v1/cities", tags=["cities"])
 @router.get("")
 def list_cities() -> list[dict[str, Any]]:
     """List all deployed and supported municipal jurisdictions."""
-    cities = list_supported_cities()
-    return [
-        {
-            "name": c.name,
-            "city_id": c.city_id,
-            "display_name": c.display_name,
-            "state": c.state,
-            "bbox": list(c.bbox),
-            "center": list(c.center),
-            "hydrology_type": c.hydrology_type,
-            "rainfall_trigger_mm_h": c.rainfall_trigger_mm_h,
-            "primary_drainage": c.primary_drainage,
-            "hotspot_count": c.hotspot_count,
-        }
-        for c in cities
-    ]
+    return [c.to_dict() for c in list_supported_cities()]
 
 
 @router.get("/{city}")
@@ -49,20 +34,9 @@ def get_city_details(city: str) -> dict[str, Any]:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"City '{city}' is not supported.",
-        )
+        ) from None
 
-    return {
-        "name": c.name,
-        "city_id": c.city_id,
-        "display_name": c.display_name,
-        "state": c.state,
-        "bbox": list(c.bbox),
-        "center": list(c.center),
-        "hydrology_type": c.hydrology_type,
-        "rainfall_trigger_mm_h": c.rainfall_trigger_mm_h,
-        "primary_drainage": c.primary_drainage,
-        "hotspot_count": c.hotspot_count,
-    }
+    return c.to_dict()
 
 
 @router.get("/{city}/hotspots")
@@ -78,7 +52,7 @@ def get_city_hotspots(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"City '{city}' is not supported.",
-        )
+        ) from None
 
     all_spots = load_city_hotspots(city)
     paged = all_spots[offset : offset + limit]
@@ -109,7 +83,7 @@ def seed_city(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"City '{city}' is not supported.",
-        )
+        ) from None
 
     stats = seed_city_hotspots_into_db(db, city)
     return {

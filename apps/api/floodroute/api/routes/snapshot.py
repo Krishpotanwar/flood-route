@@ -22,10 +22,11 @@ from floodroute.feed.snapshot import (
 )
 from floodroute.inventory import CITIES, CITY_IDS
 from floodroute.safety.kill_switch import get_active_kill_switch
+from floodroute.score.db import SUPPORTED_VCLASSES
 
 router = APIRouter(prefix="/v1/feed/snapshot", tags=["snapshot"])
 
-VALID_VCLASSES = frozenset({"two_wheeler", "car", "ambulance", "heavy"})
+VALID_VCLASSES = SUPPORTED_VCLASSES
 # Serve budget: max-age + stale-while-revalidate stays within the 300 s staleness bound.
 CACHE_CONTROL = "public, max-age=120, stale-while-revalidate=180"
 
